@@ -7,9 +7,9 @@ import WhatsAppButton from "../../../components/WhatsAppButton";
 import LoanCalculator from "../../../components/LoanCalculator";
 
 const COMPANY_NAME = "Kinetik Capital";
-const LOAN_TYPE = "Personal Loan";
+const LOAN_TYPE = "Home Loan";
 
-export default function PersonalLoanPage() {
+export default function HomeLoanPage() {
   const [formData, setFormData] = useState({
     fullName: "",
     mobile: "",
@@ -70,30 +70,29 @@ export default function PersonalLoanPage() {
       <main className="pt-20 min-h-screen bg-slate-50 dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-6 py-20">
           <div className="grid md:grid-cols-2 gap-12">
-            {/* Left - Info */}
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white">
-                Personal <span className="text-indigo-600">Loan</span>
+                Home <span className="text-indigo-600">Loan</span>
               </h1>
               <p className="mt-4 text-slate-600 dark:text-slate-400 text-lg">
-                Get instant personal loans up to ₹40 Lakhs at attractive interest rates starting from 10.99% p.a.
+                Get home loans up to ₹5 Crore at attractive interest rates starting from 8.50% p.a.
               </p>
               <ul className="mt-6 space-y-3 text-slate-600 dark:text-slate-400">
                 <li className="flex items-start gap-3">
                   <span className="text-indigo-500 text-xl mt-0.5">✓</span>
-                  <span>Loan amounts up to ₹40 Lakhs</span>
+                  <span>Loan amounts up to ₹5 Crore</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-indigo-500 text-xl mt-0.5">✓</span>
-                  <span>Interest rates from 10.99% p.a.</span>
+                  <span>Interest rates from 8.50% p.a.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-indigo-500 text-xl mt-0.5">✓</span>
-                  <span>Disbursal within 24 hours</span>
+                  <span>Quick Approval in 48 Hours</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-indigo-500 text-xl mt-0.5">✓</span>
-                  <span>No collateral required</span>
+                  <span>Up to 30 Years Tenure</span>
                 </li>
               </ul>
 
@@ -161,8 +160,6 @@ export default function PersonalLoanPage() {
                 </form>
               </div>
             </div>
-
-            {/* Right - Calculator */}
             <div>
               <LoanCalculator type="emi" />
             </div>
