@@ -16,6 +16,16 @@ const COMPANY_INITIAL = "K";
 // Pie Chart Colors
 const COLORS = ["#f59e0b", "#f97316", "#22c55e", "#ef4444"];
 
+// ✅ Notification Types
+interface Notification {
+  id: string;
+  type: "new_lead" | "follow_up" | "overdue" | "status_change";
+  message: string;
+  time: string;
+  read: boolean;
+  leadId?: string;
+}
+
 export default function AdminPage() {
   const [leads, setLeads] = useState<any[]>([]);
   const [search, setSearch] = useState("");
@@ -31,6 +41,11 @@ export default function AdminPage() {
   // ✅ Date Range Filter States
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  
+  // ✅ Notifications States
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   // ✅ Monthly Data for Bar Chart
   const monthlyData = useMemo(() => {
@@ -58,16 +73,11 @@ export default function AdminPage() {
   const filteredLeads = useMemo(() => {
     const searchText = search.toLowerCase();
     return leads.filter((lead) => {
-      // Search filter
       const matchesSearch =
         lead.fullName?.toLowerCase().includes(searchText) ||
         lead.mobile?.toString().includes(searchText);
-      
-      // Status filter
       const matchesStatus =
         statusFilter === "All" || lead.status === statusFilter;
-      
-      // ✅ Date Range filter
       let matchesDate = true;
       if (dateFrom && lead.createdAt) {
         const leadDate = new Date(lead.createdAt).toISOString().split("T")[0];
@@ -77,10 +87,125 @@ export default function AdminPage() {
         const leadDate = new Date(lead.createdAt).toISOString().split("T")[0];
         if (leadDate > dateTo) matchesDate = false;
       }
-      
       return matchesSearch && matchesStatus && matchesDate;
     });
   }, [leads, search, statusFilter, dateFrom, dateTo]);
+
+  // ✅ Generate Notifications
+  const generateNotifications = useMemo(() => {
+    const newNotifs: Notification[] = [];
+    const today = new Date().toISOString().split("T")[0];
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    // Today's Follow-ups
+    const todayFollows = leads.filter(
+      (l) => l.followUpDate && l.followUpDate.split("T")[0] === today
+    );
+    if (todayFollows.length > 0) {
+      newNotifs.push({
+        id: "followup_" + Date.now(),
+        type: "follow_up",
+        message: `📅 ${todayFollows.length} follow-up${todayFollows.length > 1 ? 's' : ''} due today`,
+        time: "Today",
+        read: false,
+      });
+    }
+
+    // Overdue Leads
+    const overdue = leads.filter(
+      (l) => l.followUpDate && new Date(l.followUpDate).getTime() < todayStart.getTime()
+    );
+    if (overdue.length > 0) {
+      newNotifs.push({
+        id: "overdue_" + Date.now(),
+        type: "overdue",
+        message: `🚨 ${overdue.length} lead${overdue.length > 1 ? 's' : ''} overdue for follow-up`,
+        time: "Today",
+        read: false,
+      });
+    }
+
+    // New Leads (last 24 hours)
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const newLeads = leads.filter(
+      (l) => l.createdAt && new Date(l.createdAt) > yesterday
+    );
+    if (newLeads.length > 0) {
+      newNotifs.push({
+        id: "new_" + Date.now(),
+        type: "new_lead",
+        message: `🆕 ${newLeads.length} new lead${newLeads.length > 1 ? 's' : ''} added in last 24 hours`,
+        time: "Today",
+        read: false,
+      });
+    }
+
+    // Status Changes - Approved leads
+    const approved = leads.filter((l) => l.status === "Approved");
+    if (approved.length > 0) {
+      const recentApproved = approved.filter(
+        (l) => l.updatedAt && new Date(l.updatedAt) > yesterday
+      );
+      if (recentApproved.length > 0) {
+        newNotifs.push({
+          id: "status_" + Date.now(),
+          type: "status_change",
+          message: `✅ ${recentApproved.length} lead${recentApproved.length > 1 ? 's' : ''} approved recently`,
+          time: "Today",
+          read: false,
+        });
+      }
+    }
+
+    // Rejected leads
+    const rejected = leads.filter((l) => l.status === "Rejected");
+    if (rejected.length > 0) {
+      const recentRejected = rejected.filter(
+        (l) => l.updatedAt && new Date(l.updatedAt) > yesterday
+      );
+      if (recentRejected.length > 0) {
+        newNotifs.push({
+          id: "status_rejected_" + Date.now(),
+          type: "status_change",
+          message: `❌ ${recentRejected.length} lead${recentRejected.length > 1 ? 's' : ''} rejected recently`,
+          time: "Today",
+          read: false,
+        });
+      }
+    }
+
+    return newNotifs;
+  }, [leads]);
+
+  // ✅ Update Notifications
+  useEffect(() => {
+    const existingIds = new Set(notifications.map(n => n.id));
+    const newNotifs = generateNotifications.filter(n => !existingIds.has(n.id));
+    if (newNotifs.length > 0) {
+      setNotifications(prev => [...newNotifs, ...prev]);
+    }
+  }, [generateNotifications]);
+
+  // ✅ Update Unread Count
+  useEffect(() => {
+    const unread = notifications.filter(n => !n.read).length;
+    setUnreadCount(unread);
+  }, [notifications]);
+
+  // ✅ Mark All as Read
+  const markAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    setUnreadCount(0);
+  };
+
+  // ✅ Mark Single as Read
+  const markAsRead = (id: string) => {
+    setNotifications(prev => prev.map(n => 
+      n.id === id ? { ...n, read: true } : n
+    ));
+  };
 
   // ✅ Clear Date Filters
   const clearDateFilter = () => {
@@ -97,7 +222,6 @@ export default function AdminPage() {
     }
   };
 
-  // ✅ Toggle Single Select
   const toggleSelect = (id: string) => {
     if (selectedLeads.includes(id)) {
       setSelectedLeads(selectedLeads.filter((s) => s !== id));
@@ -106,7 +230,7 @@ export default function AdminPage() {
     }
   };
 
-  // ✅ Bulk Approve
+  // ✅ Bulk Actions
   const bulkApprove = async () => {
     if (selectedLeads.length === 0) return;
     if (!confirm(`Approve ${selectedLeads.length} leads?`)) return;
@@ -126,7 +250,6 @@ export default function AdminPage() {
     }
   };
 
-  // ✅ Bulk Reject
   const bulkReject = async () => {
     if (selectedLeads.length === 0) return;
     if (!confirm(`Reject ${selectedLeads.length} leads?`)) return;
@@ -146,7 +269,6 @@ export default function AdminPage() {
     }
   };
 
-  // ✅ Bulk Delete
   const bulkDelete = async () => {
     if (selectedLeads.length === 0) return;
     if (!confirm(`Delete ${selectedLeads.length} leads?`)) return;
@@ -162,7 +284,6 @@ export default function AdminPage() {
     }
   };
 
-  // ✅ Bulk Export
   const bulkExport = () => {
     if (selectedLeads.length === 0) return;
     const selectedData = leads.filter((l) => selectedLeads.includes(l._id));
@@ -240,7 +361,6 @@ export default function AdminPage() {
     }
   };
 
-  // ✅ Refresh Function
   const refreshData = async () => {
     setIsRefreshing(true);
     await fetchLeads();
@@ -389,7 +509,7 @@ export default function AdminPage() {
   return (
     <div className="p-3 sm:p-4 md:p-10 bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen relative">
       
-      {/* ===== HEADER WITH REFRESH BUTTON ===== */}
+      {/* ===== HEADER WITH NOTIFICATIONS ===== */}
       <div className="flex flex-wrap justify-between items-center mb-6 md:mb-8 gap-3 md:gap-4 bg-white/80 backdrop-blur-md p-4 md:p-6 rounded-2xl shadow-xl border border-white/50">
         <div className="flex items-center gap-3 md:gap-4">
           <button
@@ -408,7 +528,68 @@ export default function AdminPage() {
             <p className="text-xs md:text-sm text-slate-400">Lead Management Dashboard</p>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2 md:gap-3">
+        <div className="flex flex-wrap items-center gap-2 md:gap-3">
+          {/* ✅ NOTIFICATION BELL */}
+          <div className="relative">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative p-2 md:p-2.5 bg-white/50 hover:bg-white rounded-xl transition-all duration-300 text-slate-600 hover:text-indigo-600"
+            >
+              🔔
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg shadow-red-500/30">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+
+            {/* ✅ NOTIFICATION DROPDOWN */}
+            {showNotifications && (
+              <div className="absolute right-0 top-12 w-80 md:w-96 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 max-h-[400px] overflow-hidden">
+                <div className="flex justify-between items-center p-4 border-b border-slate-100">
+                  <h3 className="font-bold text-slate-800 text-sm md:text-base">🔔 Notifications</h3>
+                  {unreadCount > 0 && (
+                    <button
+                      onClick={markAllAsRead}
+                      className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
+                    >
+                      Mark all read
+                    </button>
+                  )}
+                </div>
+                <div className="overflow-y-auto max-h-[300px]">
+                  {notifications.length === 0 ? (
+                    <div className="text-center py-8 text-slate-400 text-sm">
+                      <p className="text-3xl mb-2">🔕</p>
+                      <p>No notifications yet</p>
+                    </div>
+                  ) : (
+                    notifications.map((notif) => (
+                      <div
+                        key={notif.id}
+                        className={`p-3 border-b border-slate-50 hover:bg-slate-50 transition cursor-pointer ${
+                          !notif.read ? "bg-indigo-50/50" : ""
+                        }`}
+                        onClick={() => markAsRead(notif.id)}
+                      >
+                        <p className="text-sm text-slate-700">{notif.message}</p>
+                        <p className="text-xs text-slate-400 mt-1">{notif.time}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div className="p-2 border-t border-slate-100 text-center">
+                  <button
+                    onClick={() => setShowNotifications(false)}
+                    className="text-xs text-slate-400 hover:text-slate-600"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           <button
             onClick={refreshData}
             disabled={isRefreshing}
@@ -524,7 +705,7 @@ export default function AdminPage() {
         </span>
       </div>
 
-      {/* ===== STATS CARDS WITH STATUS COLORS ===== */}
+      {/* ===== STATS CARDS ===== */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 md:gap-4 mb-4 md:mb-8">
         <div className="bg-gradient-to-br from-orange-400 to-orange-500 text-white p-3 md:p-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
           <p className="text-[10px] md:text-xs opacity-90 font-medium uppercase tracking-wider">
@@ -577,7 +758,7 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* ===== CHARTS SECTION ===== */}
+      {/* ===== CHARTS ===== */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-4 md:p-6">
           <h3 className="text-base md:text-lg font-semibold text-slate-800 mb-4">
@@ -665,9 +846,8 @@ export default function AdminPage() {
         />
       </div>
 
-      {/* ===== FILTERS SECTION ===== */}
+      {/* ===== FILTERS ===== */}
       <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-4 md:mb-6 bg-white/80 backdrop-blur-sm p-3 md:p-4 rounded-2xl shadow-lg border border-white/50">
-        {/* Status Buttons */}
         <div className="flex flex-wrap gap-1.5 sm:gap-2">
           <button
             onClick={() => setStatusFilter("All")}
@@ -723,7 +903,6 @@ export default function AdminPage() {
 
         <span className="text-slate-300 hidden sm:inline">|</span>
 
-        {/* ✅ DATE RANGE FILTER */}
         <div className="flex flex-wrap items-center gap-2">
           <label className="text-xs md:text-sm text-slate-500 font-medium">📅 From:</label>
           <input
@@ -750,7 +929,7 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* ===== OVERDUE FOLLOW UPS ===== */}
+      {/* ===== OVERDUE ===== */}
       {overdueLeads.length > 0 && (
         <div className="border-2 border-red-200 bg-gradient-to-r from-red-50 to-rose-50 rounded-2xl p-3 md:p-4 mb-4 md:mb-6 shadow-lg">
           <h2 className="text-lg md:text-2xl text-red-600 font-bold mb-3 md:mb-4 flex items-center gap-2">
@@ -810,12 +989,11 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* ===== TABLE WITH BULK ACTIONS ===== */}
+      {/* ===== TABLE ===== */}
       <div className="overflow-x-auto bg-white/80 backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-xl border border-white/50">
         <table className="w-full">
           <thead>
             <tr className="bg-gradient-to-r from-slate-800 to-slate-900">
-              {/* ✅ Select All Checkbox */}
               <th className="p-2 md:p-4 text-left">
                 <input
                   type="checkbox"
@@ -887,7 +1065,6 @@ export default function AdminPage() {
                       isOverdue ? "bg-rose-50/50" : isToday ? "bg-amber-50/50" : ""
                     } ${selectedLeads.includes(lead._id) ? "bg-indigo-50/50" : ""}`}
                   >
-                    {/* ✅ Individual Checkbox */}
                     <td className="p-2 md:p-4">
                       <input
                         type="checkbox"
@@ -986,7 +1163,7 @@ export default function AdminPage() {
         </table>
       </div>
 
-      {/* ✅ BULK ACTIONS BAR */}
+      {/* ===== BULK ACTIONS BAR ===== */}
       {selectedLeads.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t-2 border-indigo-200 shadow-2xl p-3 md:p-4 z-50 animate-slide-up">
           <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
