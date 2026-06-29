@@ -24,6 +24,10 @@ export default function AdminPage() {
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  
+  // ✅ Bulk Actions States
+  const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
+  const [showBulkBar, setShowBulkBar] = useState(false);
 
   // ✅ Monthly Data for Bar Chart
   const monthlyData = useMemo(() => {
@@ -46,6 +50,107 @@ export default function AdminPage() {
     { name: "Approved", value: leads.filter((l) => l.status === "Approved").length, color: "#22c55e" },
     { name: "Rejected", value: leads.filter((l) => l.status === "Rejected").length, color: "#ef4444" },
   ].filter((d) => d.value > 0);
+
+  // ✅ Filtered Leads for Bulk Actions
+  const filteredLeads = useMemo(() => {
+    const searchText = search.toLowerCase();
+    return leads.filter((lead) => {
+      const matchesSearch =
+        lead.fullName?.toLowerCase().includes(searchText) ||
+        lead.mobile?.toString().includes(searchText);
+      const matchesStatus =
+        statusFilter === "All" || lead.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }, [leads, search, statusFilter]);
+
+  // ✅ Select All Toggle
+  const toggleSelectAll = () => {
+    if (selectedLeads.length === filteredLeads.length) {
+      setSelectedLeads([]);
+    } else {
+      setSelectedLeads(filteredLeads.map((l) => l._id));
+    }
+  };
+
+  // ✅ Toggle Single Select
+  const toggleSelect = (id: string) => {
+    if (selectedLeads.includes(id)) {
+      setSelectedLeads(selectedLeads.filter((s) => s !== id));
+    } else {
+      setSelectedLeads([...selectedLeads, id]);
+    }
+  };
+
+  // ✅ Bulk Approve
+  const bulkApprove = async () => {
+    if (selectedLeads.length === 0) return;
+    if (!confirm(`Approve ${selectedLeads.length} leads?`)) return;
+    try {
+      for (const id of selectedLeads) {
+        await fetch(`/api/leads/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "Approved" }),
+        });
+      }
+      fetchLeads();
+      setSelectedLeads([]);
+      alert(`✅ ${selectedLeads.length} leads approved!`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // ✅ Bulk Reject
+  const bulkReject = async () => {
+    if (selectedLeads.length === 0) return;
+    if (!confirm(`Reject ${selectedLeads.length} leads?`)) return;
+    try {
+      for (const id of selectedLeads) {
+        await fetch(`/api/leads/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "Rejected" }),
+        });
+      }
+      fetchLeads();
+      setSelectedLeads([]);
+      alert(`✅ ${selectedLeads.length} leads rejected!`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // ✅ Bulk Delete
+  const bulkDelete = async () => {
+    if (selectedLeads.length === 0) return;
+    if (!confirm(`Delete ${selectedLeads.length} leads?`)) return;
+    try {
+      for (const id of selectedLeads) {
+        await fetch(`/api/leads/${id}`, { method: "DELETE" });
+      }
+      fetchLeads();
+      setSelectedLeads([]);
+      alert(`✅ ${selectedLeads.length} leads deleted!`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // ✅ Bulk Export
+  const bulkExport = () => {
+    if (selectedLeads.length === 0) return;
+    const selectedData = leads.filter((l) => selectedLeads.includes(l._id));
+    const worksheet = XLSX.utils.json_to_sheet(selectedData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Selected");
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const file = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
+    saveAs(file, `Selected_${new Date().toISOString().split("T")[0]}.xlsx`);
+  };
 
   const deleteNote = async (noteId: string) => {
     try {
@@ -263,7 +368,6 @@ export default function AdminPage() {
       {/* ===== HEADER WITH REFRESH BUTTON ===== */}
       <div className="flex flex-wrap justify-between items-center mb-6 md:mb-8 gap-3 md:gap-4 bg-white/80 backdrop-blur-md p-4 md:p-6 rounded-2xl shadow-xl border border-white/50">
         <div className="flex items-center gap-3 md:gap-4">
-          {/* ✅ Mobile Menu Toggle */}
           <button
             onClick={() => setShowMobileMenu(!showMobileMenu)}
             className="md:hidden text-2xl text-slate-600 hover:text-indigo-600 transition"
@@ -451,7 +555,6 @@ export default function AdminPage() {
 
       {/* ===== CHARTS SECTION ===== */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
-        {/* ✅ BAR CHART - Monthly Leads */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-4 md:p-6">
           <h3 className="text-base md:text-lg font-semibold text-slate-800 mb-4">
             📊 Monthly Leads
@@ -471,12 +574,11 @@ export default function AdminPage() {
           )}
         </div>
 
-        {/* ✅ PIE CHART - Status Distribution */}
-        {pieData.length > 0 && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-4 md:p-6">
-            <h3 className="text-base md:text-lg font-semibold text-slate-800 mb-4">
-              📈 Status Distribution
-            </h3>
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-4 md:p-6">
+          <h3 className="text-base md:text-lg font-semibold text-slate-800 mb-4">
+            📈 Status Distribution
+          </h3>
+          {pieData.length > 0 ? (
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
@@ -504,27 +606,28 @@ export default function AdminPage() {
                 />
               </PieChart>
             </ResponsiveContainer>
-            {/* ✅ Status Color Legend */}
-            <div className="flex flex-wrap justify-center gap-2 md:gap-4 mt-3 md:mt-4">
-              <div className="flex items-center gap-1 md:gap-2">
-                <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-yellow-500"></div>
-                <span className="text-xs md:text-sm text-slate-600">New</span>
-              </div>
-              <div className="flex items-center gap-1 md:gap-2">
-                <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-orange-500"></div>
-                <span className="text-xs md:text-sm text-slate-600">Contacted</span>
-              </div>
-              <div className="flex items-center gap-1 md:gap-2">
-                <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-emerald-500"></div>
-                <span className="text-xs md:text-sm text-slate-600">Approved</span>
-              </div>
-              <div className="flex items-center gap-1 md:gap-2">
-                <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-rose-500"></div>
-                <span className="text-xs md:text-sm text-slate-600">Rejected</span>
-              </div>
+          ) : (
+            <p className="text-center text-slate-400 py-10">No data available</p>
+          )}
+          <div className="flex flex-wrap justify-center gap-2 md:gap-4 mt-3 md:mt-4">
+            <div className="flex items-center gap-1 md:gap-2">
+              <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-yellow-500"></div>
+              <span className="text-xs md:text-sm text-slate-600">New</span>
+            </div>
+            <div className="flex items-center gap-1 md:gap-2">
+              <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-orange-500"></div>
+              <span className="text-xs md:text-sm text-slate-600">Contacted</span>
+            </div>
+            <div className="flex items-center gap-1 md:gap-2">
+              <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-emerald-500"></div>
+              <span className="text-xs md:text-sm text-slate-600">Approved</span>
+            </div>
+            <div className="flex items-center gap-1 md:gap-2">
+              <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-rose-500"></div>
+              <span className="text-xs md:text-sm text-slate-600">Rejected</span>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* ===== SEARCH ===== */}
@@ -667,11 +770,20 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* ===== TABLE ===== */}
+      {/* ===== TABLE WITH BULK ACTIONS ===== */}
       <div className="overflow-x-auto bg-white/80 backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-xl border border-white/50">
         <table className="w-full">
           <thead>
             <tr className="bg-gradient-to-r from-slate-800 to-slate-900">
+              {/* ✅ Select All Checkbox */}
+              <th className="p-2 md:p-4 text-left">
+                <input
+                  type="checkbox"
+                  checked={selectedLeads.length === filteredLeads.length && filteredLeads.length > 0}
+                  onChange={toggleSelectAll}
+                  className="w-4 h-4 rounded border-white/30 bg-white/10 checked:bg-indigo-500"
+                />
+              </th>
               <th className="p-2 md:p-4 text-left text-[10px] md:text-xs font-medium text-white/80 uppercase tracking-wider">
                 Name
               </th>
@@ -699,17 +811,15 @@ export default function AdminPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {leads
-              .filter((lead) => {
-                const searchText = search.toLowerCase();
-                const matchesSearch =
-                  lead.fullName?.toLowerCase().includes(searchText) ||
-                  lead.mobile?.toString().includes(searchText);
-                const matchesStatus =
-                  statusFilter === "All" || lead.status === statusFilter;
-                return matchesSearch && matchesStatus;
-              })
-              .map((lead) => {
+            {filteredLeads.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="text-center py-12 md:py-16 text-slate-500">
+                  <p className="text-4xl mb-3">📭</p>
+                  <p className="font-medium">No leads found</p>
+                </td>
+              </tr>
+            ) : (
+              filteredLeads.map((lead) => {
                 const followUpDate = lead.followUpDate
                   ? new Date(lead.followUpDate)
                   : null;
@@ -721,7 +831,6 @@ export default function AdminPage() {
                     followUpDate < new Date(todayStart.getTime() + 86400000)
                   : false;
 
-                // ✅ Status Color Classes
                 const statusColorClass =
                   lead.status === "New"
                     ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
@@ -735,13 +844,18 @@ export default function AdminPage() {
                   <tr
                     key={lead._id}
                     className={`hover:bg-slate-50 transition-colors ${
-                      isOverdue
-                        ? "bg-rose-50/50"
-                        : isToday
-                        ? "bg-amber-50/50"
-                        : ""
-                    }`}
+                      isOverdue ? "bg-rose-50/50" : isToday ? "bg-amber-50/50" : ""
+                    } ${selectedLeads.includes(lead._id) ? "bg-indigo-50/50" : ""}`}
                   >
+                    {/* ✅ Individual Checkbox */}
+                    <td className="p-2 md:p-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedLeads.includes(lead._id)}
+                        onChange={() => toggleSelect(lead._id)}
+                        className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                      />
+                    </td>
                     <td className="p-2 md:p-4">
                       <div>
                         <p className="font-medium text-sm md:text-base text-slate-800">
@@ -789,9 +903,7 @@ export default function AdminPage() {
                     <td className="p-2 md:p-4">
                       <select
                         value={lead.status}
-                        onChange={(e) =>
-                          updateStatus(lead._id, e.target.value)
-                        }
+                        onChange={(e) => updateStatus(lead._id, e.target.value)}
                         className={`px-1.5 md:px-3 py-1 md:py-1.5 rounded-xl text-[10px] md:text-xs font-medium border-0 cursor-pointer transition-colors ${statusColorClass}`}
                       >
                         <option value="New">🟡 New</option>
@@ -810,7 +922,7 @@ export default function AdminPage() {
                           👁️
                         </button>
                         <a
-                          href={`https://wa.me/91${lead.mobile}?text=Hello ${lead.fullName}, regarding your ${lead.loanType} application.`}
+                          href={`https://wa.me/91${lead.mobile}`}
                           target="_blank"
                           className="p-1.5 md:p-2 text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all duration-200 text-sm md:text-base"
                           title="WhatsApp"
@@ -828,19 +940,59 @@ export default function AdminPage() {
                     </td>
                   </tr>
                 );
-              })}
+              })
+            )}
           </tbody>
         </table>
-        {leads.length === 0 && (
-          <div className="text-center py-12 md:py-16">
-            <p className="text-4xl mb-3">📭</p>
-            <p className="text-slate-400 font-medium">No leads found</p>
-          </div>
-        )}
       </div>
 
+      {/* ✅ BULK ACTIONS BAR */}
+      {selectedLeads.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t-2 border-indigo-200 shadow-2xl p-3 md:p-4 z-50 animate-slide-up">
+          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2 md:gap-4">
+              <span className="text-sm md:text-base font-semibold text-indigo-600">
+                ✅ {selectedLeads.length} selected
+              </span>
+              <button
+                onClick={() => setSelectedLeads([])}
+                className="text-xs md:text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 px-2 md:px-3 py-1 rounded-lg transition"
+              >
+                ✕ Clear
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-1.5 md:gap-2">
+              <button
+                onClick={bulkApprove}
+                className="px-3 md:px-4 py-1.5 md:py-2 bg-emerald-500 text-white rounded-lg text-xs md:text-sm hover:bg-emerald-600 transition font-medium"
+              >
+                ✅ Approve
+              </button>
+              <button
+                onClick={bulkReject}
+                className="px-3 md:px-4 py-1.5 md:py-2 bg-rose-500 text-white rounded-lg text-xs md:text-sm hover:bg-rose-600 transition font-medium"
+              >
+                ❌ Reject
+              </button>
+              <button
+                onClick={bulkExport}
+                className="px-3 md:px-4 py-1.5 md:py-2 bg-indigo-500 text-white rounded-lg text-xs md:text-sm hover:bg-indigo-600 transition font-medium"
+              >
+                📥 Export
+              </button>
+              <button
+                onClick={bulkDelete}
+                className="px-3 md:px-4 py-1.5 md:py-2 bg-red-500 text-white rounded-lg text-xs md:text-sm hover:bg-red-600 transition font-medium"
+              >
+                🗑️ Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ===== FOOTER ===== */}
-      <div className="mt-6 md:mt-8 text-center">
+      <div className="mt-6 md:mt-8 text-center pb-16 md:pb-0">
         <p className="text-xs md:text-sm text-slate-400">
           © {new Date().getFullYear()} {COMPANY_NAME}. All rights reserved.
         </p>
