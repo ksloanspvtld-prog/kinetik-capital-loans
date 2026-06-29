@@ -4,6 +4,7 @@ import { useState, FormEvent } from "react";
 import Navbar from "../components/Navbar";
 import WhatsAppButton from "../components/WhatsAppButton";
 
+
 // ✅ Company Name - येथे बदला
 const COMPANY_NAME = "Kinetik Capital";
 

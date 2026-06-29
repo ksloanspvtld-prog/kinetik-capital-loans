@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import Navbar from "../components/Navbar";
-import WhatsAppButton from "../components/WhatsAppButton";
+import Navbar from "../../components/Navbar";
+import WhatsAppButton from "../../components/WhatsAppButton";
 
 // ✅ Company Name - येथे बदला
 const COMPANY_NAME = "Kinetik Capital";
@@ -16,7 +16,7 @@ export default function AboutPage() {
       <Navbar />
       <WhatsAppButton />
       <main className="pt-20">
-        
+
         {/* ===== HERO SECTION ===== */}
         <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white">
           <div className="absolute inset-0 opacity-20">
@@ -29,24 +29,28 @@ export default function AboutPage() {
                 About {COMPANY_NAME}
               </h1>
               <p className="mt-6 text-lg text-white/80 max-w-2xl mx-auto">
-                India's Leading Loan Distribution Company. We Facilitate Wide Range of Financial Products That Suits Your Customer's Needs!
+                India&apos;s Leading Loan Distribution Company. We Facilitate Wide Range of Financial Products That Suits Your Customer&apos;s Needs!
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">
                 <button
                   onClick={() => {
-                    document.getElementById("contact")?.scrollIntoView({
-                      behavior: "smooth",
-                    });
+                    // ✅ Conditional check - Home page वर redirect होईल जर loanForm नसेल तर
+                    const loanFormElement = document.getElementById("loanForm");
+                    if (loanFormElement) {
+                      loanFormElement.scrollIntoView({ behavior: "smooth" });
+                    } else {
+                      window.location.href = "/#loanForm";
+                    }
                   }}
                   className="bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-semibold px-8 py-3 rounded-xl transition shadow-lg hover:shadow-yellow-400/30"
                 >
-                  Get in Touch
+                  Apply for Loan
                 </button>
                 <Link
                   href="/"
                   className="border-2 border-white/30 hover:bg-white/10 text-white font-medium px-8 py-3 rounded-xl transition backdrop-blur-sm"
                 >
-                  Apply for Loan
+                  Home
                 </Link>
               </div>
             </div>
@@ -79,15 +83,13 @@ export default function AboutPage() {
         <section className="max-w-7xl mx-auto px-6 py-20">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-                Who We Are
-              </h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Who We Are</h2>
               <div className="w-20 h-1 bg-indigo-600 rounded-full mt-4"></div>
               <p className="mt-6 text-slate-600 leading-relaxed">
-                {COMPANY_NAME} is India's most trusted and leading financial distribution company guided by our motto <strong>"Saath Chalenge, Aage Badhenge."</strong> ISO/IEC 27001:2022 certified, we are committed to delivering delight to all our stakeholders - be it customers, partners, employees, or associates.[reference:0]
+                {COMPANY_NAME} is India&apos;s most trusted and leading financial distribution company guided by our motto <strong>&quot;Saath Chalenge, Aage Badhenge.&quot;</strong> ISO/IEC 27001:2022 certified, we are committed to delivering delight to all our stakeholders - be it customers, partners, employees, or associates.
               </p>
               <p className="mt-4 text-slate-600 leading-relaxed">
-                With a beginning in {COMPANY_ESTABLISHED}, we have been at the forefront of the financial services industry. Today, we operate in 4,000+ cities across India through a wide branch network, with 275+ partner banks and NBFCs.[reference:1][reference:2]
+                With a beginning in {COMPANY_ESTABLISHED}, we have been at the forefront of the financial services industry. Today, we operate in 4,000+ cities across India through a wide branch network, with 275+ partner banks and NBFCs.
               </p>
               <div className="mt-8 grid grid-cols-2 gap-4">
                 <div className="bg-slate-50 rounded-xl p-4 text-center">
@@ -124,7 +126,7 @@ export default function AboutPage() {
               <div className="text-4xl mb-4">👁️</div>
               <h3 className="text-2xl font-bold text-slate-800">Our Vision</h3>
               <p className="mt-4 text-slate-600 leading-relaxed">
-                To be India's most preferred loan distribution platform, creating a sustainable ecosystem where partners thrive, customers succeed, and financial inclusion becomes a reality for every Indian. We envision a future where accessing the right financial product is seamless, transparent, and empowering for all.[reference:3]
+                To be India&apos;s most preferred loan distribution platform, creating a sustainable ecosystem where partners thrive, customers succeed, and financial inclusion becomes a reality for every Indian. We envision a future where accessing the right financial product is seamless, transparent, and empowering for all.
               </p>
             </div>
           </div>
@@ -133,9 +135,7 @@ export default function AboutPage() {
         {/* ===== CORE VALUES ===== */}
         <section className="max-w-7xl mx-auto px-6 py-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Our Core Values
-            </h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Our Core Values</h2>
             <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
               The principles that guide everything we do at {COMPANY_NAME}.
             </p>
@@ -147,10 +147,7 @@ export default function AboutPage() {
               { icon: "❤️", title: "Customer First", desc: "Our customers and partners are at the heart of everything we do. Their success is our success." },
               { icon: "⭐", title: "Excellence", desc: "We strive for excellence in service, quality, and delivery across all our operations." },
             ].map((value, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition hover:-translate-y-2 border border-slate-100 text-center"
-              >
+              <div key={idx} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition hover:-translate-y-2 border border-slate-100 text-center">
                 <div className="text-5xl mb-4">{value.icon}</div>
                 <h3 className="text-xl font-bold text-slate-800">{value.title}</h3>
                 <p className="mt-3 text-sm text-slate-500">{value.desc}</p>
@@ -162,19 +159,15 @@ export default function AboutPage() {
         {/* ===== LEADERSHIP TEAM ===== */}
         <section className="max-w-7xl mx-auto px-6 py-20 bg-slate-50 rounded-3xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Leadership Team
-            </h2>
-            <p className="mt-4 text-gray-600">
-              Meet the visionaries behind {COMPANY_NAME}.
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Leadership Team</h2>
+            <p className="mt-4 text-gray-600">Meet the visionaries behind {COMPANY_NAME}.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 name: COMPANY_FOUNDER,
                 role: "Founder & CEO",
-                desc: "With a vision to revolutionize loan distribution in India, {founder} founded {company} with a mission to make financial products accessible to every Indian.",
+                desc: `With a vision to revolutionize loan distribution in India, ${COMPANY_FOUNDER} founded ${COMPANY_NAME} with a mission to make financial products accessible to every Indian.`,
                 initial: COMPANY_FOUNDER.charAt(0),
               },
               {
@@ -186,24 +179,17 @@ export default function AboutPage() {
               {
                 name: "Amit Sharma",
                 role: "Chief Technology Officer",
-                desc: "Driving digital innovation at {company}, Amit leads the development of cutting-edge technology solutions for our partners and customers.",
+                desc: `Driving digital innovation at ${COMPANY_NAME}, Amit leads the development of cutting-edge technology solutions for our partners and customers.`,
                 initial: "A",
               },
             ].map((member, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition hover:-translate-y-2 border border-slate-100 text-center"
-              >
+              <div key={idx} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition hover:-translate-y-2 border border-slate-100 text-center">
                 <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-indigo-500/30">
                   {member.initial}
                 </div>
                 <h3 className="text-xl font-bold text-slate-800 mt-4">{member.name}</h3>
                 <p className="text-sm text-indigo-600 font-medium">{member.role}</p>
-                <p className="mt-3 text-sm text-slate-500">
-                  {member.desc
-                    .replace(/{founder}/g, COMPANY_FOUNDER)
-                    .replace(/{company}/g, COMPANY_NAME)}
-                </p>
+                <p className="mt-3 text-sm text-slate-500">{member.desc}</p>
               </div>
             ))}
           </div>
@@ -212,12 +198,8 @@ export default function AboutPage() {
         {/* ===== MILESTONES ===== */}
         <section className="max-w-7xl mx-auto px-6 py-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Our Journey
-            </h2>
-            <p className="mt-4 text-gray-600">
-              Milestones that define our growth story.
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Our Journey</h2>
+            <p className="mt-4 text-gray-600">Milestones that define our growth story.</p>
           </div>
           <div className="relative">
             <div className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-indigo-200 h-full hidden md:block"></div>
@@ -225,15 +207,10 @@ export default function AboutPage() {
               {[
                 { year: COMPANY_ESTABLISHED, title: "The Beginning", desc: `${COMPANY_NAME} was founded with a vision to simplify loan distribution in India.` },
                 { year: "2024", title: "First Milestone", desc: "Successfully facilitated over ₹1,000 Cr in loans and partnered with 50+ banks." },
-                { year: "2025", title: "Expansion", desc: "Expanded operations to 4,000+ cities and partnered with 275+ banks and NBFCs.[reference:4]" },
+                { year: "2025", title: "Expansion", desc: "Expanded operations to 4,000+ cities and partnered with 275+ banks and NBFCs." },
                 { year: "2026", title: "Digital Transformation", desc: "Launched our digital platform to empower partners with cutting-edge technology tools." },
               ].map((milestone, idx) => (
-                <div
-                  key={idx}
-                  className={`flex flex-col md:flex-row items-center ${
-                    idx % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-                  } gap-6 md:gap-10`}
-                >
+                <div key={idx} className={`flex flex-col md:flex-row items-center ${idx % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"} gap-6 md:gap-10`}>
                   <div className="flex-1 text-center md:text-right">
                     <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-100 hover:shadow-xl transition">
                       <p className="text-2xl font-bold text-indigo-600">{milestone.year}</p>
@@ -256,26 +233,19 @@ export default function AboutPage() {
         {/* ===== WHY CHOOSE US ===== */}
         <section className="max-w-7xl mx-auto px-6 py-20 bg-slate-50 rounded-3xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Why Choose {COMPANY_NAME}?
-            </h2>
-            <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
-              What makes us India's most trusted financial distribution partner.
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Why Choose {COMPANY_NAME}?</h2>
+            <p className="mt-4 text-gray-600 max-w-2xl mx-auto">What makes us India&apos;s most trusted financial distribution partner.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { icon: "🏦", title: "275+ Lenders", desc: "Access to India's top banks and NBFCs including HDFC, ICICI, SBI, and more.[reference:5]" },
-              { icon: "📱", title: "Digital Platform", desc: "Powerful digital tools like our partner app for lead management and tracking.[reference:6]" },
-              { icon: "🤝", title: "Strong Support", desc: "Dedicated backend support and timely payouts for our partners.[reference:7]" },
-              { icon: "🇮🇳", title: "Pan India Presence", desc: "Operating in 4,000+ cities across India through a wide branch network.[reference:8]" },
-              { icon: "💰", title: "High Earnings", desc: "Risk-free, high-gain business model with multiple revenue streams.[reference:9]" },
-              { icon: "⭐", title: "Trusted Brand", desc: "ISO/IEC 27001:2022 certified and India's most trusted financial distributor.[reference:10]" },
+              { icon: "🏦", title: "275+ Lenders", desc: "Access to India's top banks and NBFCs including HDFC, ICICI, SBI, and more." },
+              { icon: "📱", title: "Digital Platform", desc: "Powerful digital tools like our partner app for lead management and tracking." },
+              { icon: "🤝", title: "Strong Support", desc: "Dedicated backend support and timely payouts for our partners." },
+              { icon: "🇮🇳", title: "Pan India Presence", desc: "Operating in 4,000+ cities across India through a wide branch network." },
+              { icon: "💰", title: "High Earnings", desc: "Risk-free, high-gain business model with multiple revenue streams." },
+              { icon: "⭐", title: "Trusted Brand", desc: "ISO/IEC 27001:2022 certified and India's most trusted financial distributor." },
             ].map((item, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition hover:-translate-y-2 border border-slate-100"
-              >
+              <div key={idx} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition hover:-translate-y-2 border border-slate-100">
                 <div className="text-4xl mb-3">{item.icon}</div>
                 <h3 className="text-xl font-bold text-slate-800">{item.title}</h3>
                 <p className="mt-2 text-sm text-slate-500">{item.desc}</p>
@@ -287,24 +257,20 @@ export default function AboutPage() {
         {/* ===== CALL TO ACTION ===== */}
         <section id="contact" className="max-w-7xl mx-auto px-6 py-20">
           <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 md:p-12 text-center text-white">
-            <h2 className="text-3xl md:text-4xl font-bold">
-              Ready to Grow with {COMPANY_NAME}?
-            </h2>
-            <p className="mt-4 text-white/80 max-w-2xl mx-auto">
-              Join India's most trusted loan distribution network. Become a partner and start your journey today!
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold">Ready to Grow with {COMPANY_NAME}?</h2>
+            <p className="mt-4 text-white/80 max-w-2xl mx-auto">Join India&apos;s most trusted loan distribution network. Become a partner and start your journey today!</p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
-              <Link
-                href="/"
-                className="bg-white text-indigo-600 font-semibold px-8 py-3 rounded-xl hover:shadow-lg transition"
-              >
+              <Link href="/#loanForm" className="bg-white text-indigo-600 font-semibold px-8 py-3 rounded-xl hover:shadow-lg transition">
                 Apply for Loan
               </Link>
               <button
                 onClick={() => {
-                  document.getElementById("loanForm")?.scrollIntoView({
-                    behavior: "smooth",
-                  });
+                  const loanFormElement = document.getElementById("loanForm");
+                  if (loanFormElement) {
+                    loanFormElement.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    window.location.href = "/#loanForm";
+                  }
                 }}
                 className="border-2 border-white/30 hover:bg-white/10 text-white font-medium px-8 py-3 rounded-xl transition backdrop-blur-sm"
               >
@@ -315,13 +281,13 @@ export default function AboutPage() {
         </section>
 
         {/* ===== FOOTER ===== */}
-        <footer className="bg-slate-900 text-white mt-20">
+        <footer className="bg-slate-900 text-white">
           <div className="max-w-7xl mx-auto px-6 py-16">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10">
               <div>
                 <h3 className="text-2xl font-bold mb-4">{COMPANY_NAME}</h3>
                 <p className="text-gray-400 text-sm">
-                  India's Leading Loan Distribution Company. Compare and apply for Personal, Home, Business and Car Loans from India's top banks and NBFCs.
+                  India&apos;s Leading Loan Distribution Company. Compare and apply for Personal, Home, Business and Car Loans from India&apos;s top banks and NBFCs.
                 </p>
               </div>
               <div>
@@ -329,7 +295,7 @@ export default function AboutPage() {
                 <ul className="space-y-2 text-gray-400 text-sm">
                   <li><Link href="/" className="hover:text-white transition">Home</Link></li>
                   <li><Link href="/about" className="hover:text-white transition">About Us</Link></li>
-                  <li><Link href="/" className="hover:text-white transition">Loans</Link></li>
+                  <li><Link href="/#loanForm" className="hover:text-white transition">Apply for Loan</Link></li>
                   <li><Link href="/" className="hover:text-white transition">EMI Calculator</Link></li>
                 </ul>
               </div>
@@ -357,9 +323,7 @@ export default function AboutPage() {
                 <a href="#" className="hover:text-white transition">LinkedIn</a>
                 <a href="#" className="hover:text-white transition">YouTube</a>
               </div>
-              <p>
-                © {new Date().getFullYear()} {COMPANY_NAME}. All Rights Reserved.
-              </p>
+              <p>© {new Date().getFullYear()} {COMPANY_NAME}. All Rights Reserved.</p>
             </div>
           </div>
         </footer>
