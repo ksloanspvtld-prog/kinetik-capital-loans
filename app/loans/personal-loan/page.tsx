@@ -1,10 +1,9 @@
-import Link from "next/link";
+"use client";
+
 import Navbar from "../../../components/Navbar";
 import Footer from "../../../components/Footer";
 import WhatsAppButton from "../../../components/WhatsAppButton";
 import LoanCalculator from "../../../components/LoanCalculator";
-
-const COMPANY_NAME = "Kinetik Capital";
 
 export default function PersonalLoanPage() {
   return (
@@ -41,9 +40,12 @@ export default function PersonalLoanPage() {
               </ul>
               <button
                 onClick={() => {
-                  document.getElementById("loanForm")?.scrollIntoView({
-                    behavior: "smooth",
-                  });
+                  const form = document.getElementById("loanForm");
+                  if (form) {
+                    form.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    window.location.href = "/#loanForm";
+                  }
                 }}
                 className="mt-8 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl transition font-medium"
               >

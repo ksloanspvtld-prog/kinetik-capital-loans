@@ -3,8 +3,6 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import WhatsAppButton from "../../components/WhatsAppButton";
 
-const COMPANY_NAME = "Kinetik Capital";
-
 const blogPosts = [
   {
     slug: "how-to-get-personal-loan",

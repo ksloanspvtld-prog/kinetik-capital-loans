@@ -4,9 +4,6 @@ import { useState } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import WhatsAppButton from "../../components/WhatsAppButton";
-import DarkModeToggle from "../../components/DarkModeToggle";
-
-const COMPANY_NAME = "Kinetik Capital";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
