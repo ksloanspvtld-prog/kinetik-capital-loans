@@ -7,6 +7,20 @@ import WhatsAppButton from "../components/WhatsAppButton";
 // ✅ Company Name - येथे बदला
 const COMPANY_NAME = "Kinetik Capital";
 
+// Bank Logos Data (initial + color)
+const bankLogos: Record<string, { initial: string; color: string }> = {
+  "HDFC Bank": { initial: "H", color: "from-blue-500 to-blue-700" },
+  "ICICI Bank": { initial: "I", color: "from-purple-500 to-purple-700" },
+  "Axis Bank": { initial: "A", color: "from-red-500 to-red-700" },
+  "SBI": { initial: "S", color: "from-emerald-500 to-emerald-700" },
+  "Kotak Mahindra": { initial: "K", color: "from-orange-500 to-orange-700" },
+  "Bajaj Finserv": { initial: "B", color: "from-yellow-500 to-yellow-700" },
+  "Tata Capital": { initial: "T", color: "from-cyan-500 to-cyan-700" },
+  "IDFC First Bank": { initial: "I", color: "from-indigo-500 to-indigo-700" },
+  "PNB": { initial: "P", color: "from-rose-500 to-rose-700" },
+  "Bank of Baroda": { initial: "B", color: "from-amber-500 to-amber-700" },
+};
+
 export default function Home() {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -317,7 +331,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== TOP LENDERS SECTION ===== */}
+        {/* ===== TOP LENDERS SECTION WITH LOGOS ===== */}
         <section className="max-w-7xl mx-auto px-6 py-20 bg-slate-50 rounded-3xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
@@ -337,17 +351,22 @@ export default function Home() {
               "Bajaj Finserv",
               "Tata Capital",
               "IDFC First Bank",
-            ].map((bank) => (
-              <div
-                key={bank}
-                className="bg-white rounded-2xl shadow p-6 text-center hover:shadow-lg transition hover:-translate-y-1 border border-slate-100"
-              >
-                <div className="text-4xl mb-2">🏦</div>
-                <p className="font-semibold text-slate-800">{bank}</p>
-                <div className="mt-2 text-yellow-400 text-sm">★★★★★</div>
-                <p className="mt-1 text-xs text-slate-400">10.50% p.a.</p>
-              </div>
-            ))}
+            ].map((bank) => {
+              const logo = bankLogos[bank] || { initial: bank.charAt(0), color: "from-slate-500 to-slate-700" };
+              return (
+                <div
+                  key={bank}
+                  className="bg-white rounded-2xl shadow p-6 text-center hover:shadow-lg transition hover:-translate-y-1 border border-slate-100"
+                >
+                  <div className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-br ${logo.color} flex items-center justify-center text-white text-2xl font-bold shadow-md`}>
+                    {logo.initial}
+                  </div>
+                  <p className="font-semibold text-slate-800 mt-3">{bank}</p>
+                  <div className="mt-2 text-yellow-400 text-sm">★★★★★</div>
+                  <p className="mt-1 text-xs text-slate-400">10.50% p.a.</p>
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -395,14 +414,14 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== EMI CALCULATOR - FULLY ACTIVE ===== */}
+        {/* ===== EMI CALCULATOR ===== */}
         <section className="max-w-7xl mx-auto px-6 py-20">
           <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10">
             <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-10">
               📊 EMI Calculator
             </h2>
 
-            {/* ✅ Monthly EMI - Prominent Display */}
+            {/* Monthly EMI - Prominent Display */}
             <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 md:p-8 mb-8 text-center shadow-lg shadow-indigo-500/30">
               <p className="text-white/80 text-sm font-medium uppercase tracking-wider">Your Monthly EMI</p>
               <p className="text-5xl md:text-6xl font-bold text-white mt-2 animate-pulse">
@@ -735,8 +754,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== PARTNER BANKS ===== */}
-        <section className="py-20 overflow-hidden">
+        {/* ===== OUR LENDING PARTNERS WITH LOGOS (MARQUEE) ===== */}
+        <section className="py-20 overflow-hidden bg-white">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
               Our Lending Partners
@@ -768,14 +787,20 @@ export default function Home() {
                 "IDFC First",
                 "PNB",
                 "Bank of Baroda",
-              ].map((bank, index) => (
-                <div
-                  key={index}
-                  className="min-w-48 md:min-w-55 bg-white rounded-2xl shadow-md px-6 md:px-8 py-4 md:py-6 text-center font-semibold text-slate-900 border border-slate-100"
-                >
-                  🏦 {bank}
-                </div>
-              ))}
+              ].map((bank, index) => {
+                const logo = bankLogos[bank] || { initial: bank.charAt(0), color: "from-slate-500 to-slate-700" };
+                return (
+                  <div
+                    key={index}
+                    className="min-w-48 md:min-w-55 bg-white rounded-2xl shadow-md px-6 md:px-8 py-4 md:py-6 text-center border border-slate-100 flex flex-col items-center"
+                  >
+                    <div className={`w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br ${logo.color} flex items-center justify-center text-white text-xl md:text-2xl font-bold shadow-md`}>
+                      {logo.initial}
+                    </div>
+                    <p className="font-semibold text-slate-900 mt-2 text-sm md:text-base">{bank}</p>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
