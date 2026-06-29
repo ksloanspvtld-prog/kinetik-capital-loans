@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import Link from "next/link";
 import Navbar from "../components/Navbar";
 import WhatsAppButton from "../components/WhatsAppButton";
-
 
 // ✅ Company Name - येथे बदला
 const COMPANY_NAME = "Kinetik Capital";
@@ -22,7 +22,6 @@ export default function Home() {
   const [loanAmount, setLoanAmount] = useState(500000);
   const [interestRate, setInterestRate] = useState(10);
   const [tenure, setTenure] = useState(5);
-  const [sortOrder, setSortOrder] = useState("low");
 
   // ✅ EMI Calculation
   const monthlyRate = interestRate / 12 / 100;
@@ -170,156 +169,280 @@ export default function Home() {
     <>
       <Navbar />
       <WhatsAppButton />
-      <main className="pt-20">
+      <main className="pt-16">
         
-        {/* ===== HERO SECTION - Ruloans Style ===== */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 text-white">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-10 left-10 w-64 h-64 bg-indigo-500 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-500 rounded-full blur-3xl"></div>
-          </div>
-          <div className="relative max-w-7xl mx-auto px-6 py-20 md:py-28">
-            <div className="text-center max-w-4xl mx-auto">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                We Facilitate Wide Range of <br />
-                <span className="text-indigo-400">Financial Products</span>
-              </h1>
-              <p className="mt-6 text-lg text-white/70 max-w-2xl mx-auto">
-                That suits your customer's needs! Get the best Personal, Home, Business and Car Loan offers from trusted banks and financial institutions.
-              </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <button
-                  onClick={() => {
-                    document.getElementById("loanForm")?.scrollIntoView({
-                      behavior: "smooth",
-                    });
-                  }}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3 rounded-xl transition shadow-lg hover:shadow-indigo-500/30"
-                >
-                  Apply Now
-                </button>
-                <button className="border-2 border-white/30 hover:bg-white/10 text-white font-medium px-8 py-3 rounded-xl transition backdrop-blur-sm">
-                  Check Eligibility
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ===== PRODUCT GRID - Ruloans Style ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-20">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              We Facilitate Wide Range of Financial Products
-            </h2>
-            <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
-              That suits your customer's needs!
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { icon: "🏠", title: "Home Loan", desc: "Your Dream Home Awaits - Explore Our Range Of Home Loan Products." },
-              { icon: "🏢", title: "Loan against Property", desc: "Unlock your property's value with tailored loan solutions." },
-              { icon: "💳", title: "Personal Loan", desc: "Achieve your dreams with our versatile personal loan options." },
-              { icon: "📈", title: "Business Loan", desc: "Boost your business growth with our flexible financing options." },
-              { icon: "🎓", title: "Education Loan", desc: "Invest in your child's future with our specialized education loans." },
-              { icon: "🚗", title: "Car Loan", desc: "Drive your dream car with our quick and flexible car loans." },
-              { icon: "🥇", title: "Gold Loan", desc: "Meet your financial needs with gold loans from trusted banks." },
-              { icon: "💳", title: "Credit Cards", desc: "Upgrade your lifestyle with feature-packed, rewarding credit cards." },
-            ].map((product, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition hover:-translate-y-2 border border-slate-100"
-              >
-                <div className="text-4xl mb-3">{product.icon}</div>
-                <h3 className="text-xl font-bold text-slate-800">{product.title}</h3>
-                <p className="mt-2 text-sm text-slate-500">{product.desc}</p>
-                <button
-                  onClick={() => {
-                    document.getElementById("loanForm")?.scrollIntoView({
-                      behavior: "smooth",
-                    });
-                  }}
-                  className="mt-4 text-indigo-600 font-medium hover:text-indigo-700 transition text-sm flex items-center gap-1"
-                >
-                  Check Eligibility →
-                </button>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ===== STATISTICS - Ruloans Style ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-20 bg-slate-50 rounded-3xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <p className="text-4xl font-bold text-indigo-600">25+</p>
-              <p className="text-sm text-slate-500 mt-1">Years of Experience</p>
-            </div>
-            <div className="text-center">
-              <p className="text-4xl font-bold text-indigo-600">275+</p>
-              <p className="text-sm text-slate-500 mt-1">Partner Banks & NBFCs</p>
-            </div>
-            <div className="text-center">
-              <p className="text-4xl font-bold text-indigo-600">4,000+</p>
-              <p className="text-sm text-slate-500 mt-1">Branches Across India</p>
-            </div>
-            <div className="text-center">
-              <p className="text-4xl font-bold text-indigo-600">₹1,00,000 Cr+</p>
-              <p className="text-sm text-slate-500 mt-1">Successful Disbursal</p>
-            </div>
-          </div>
-        </section>
-
-        {/* ===== PARTNER APP SECTION - Ruloans Style ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-20">
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 md:p-12 text-white">
-            <div className="grid md:grid-cols-2 gap-10 items-center">
+        {/* ===== HERO SECTION - UrbanMoney Style ===== */}
+        <section className="bg-gradient-to-br from-slate-50 to-indigo-50/50 py-16 md:py-24">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-3xl md:text-4xl font-bold">
-                  {COMPANY_NAME} App - India's First B2B Loan Distribution Channel Partner App
-                </h2>
-                <p className="mt-4 text-white/80">
-                  Discover {COMPANY_NAME}, India's first B2B fintech app in the loan distribution domain.
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight">
+                  Find the Right <br />
+                  <span className="text-indigo-600">Financial Product</span>
+                </h1>
+                <p className="mt-4 text-lg text-slate-600">
+                  Get started in minutes with our simple, fast, and convenient application process.
                 </p>
-                <ul className="mt-6 space-y-3">
-                  <li className="flex items-center gap-3">
-                    <span className="text-2xl">✓</span>
-                    <span>Access a PAN India network of lenders and customers</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="text-2xl">✓</span>
-                    <span>Benefit from being the first in the industry to offer a Free CIBIL Check</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="text-2xl">✓</span>
-                    <span>Use convenient features like an EMI calculator to assist customers</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="text-2xl">✓</span>
-                    <span>Start your journey as a successful loan distribution partner</span>
-                  </li>
-                </ul>
-                <button className="mt-6 bg-white text-indigo-600 font-semibold px-8 py-3 rounded-xl hover:shadow-lg transition">
-                  Learn More →
-                </button>
+                <div className="mt-8 flex flex-wrap gap-4">
+                  <button
+                    onClick={() => {
+                      document.getElementById("loanForm")?.scrollIntoView({
+                        behavior: "smooth",
+                      });
+                    }}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3 rounded-xl transition shadow-lg hover:shadow-indigo-500/30"
+                  >
+                    Get Started
+                  </button>
+                  <Link
+                    href="/about"
+                    className="border-2 border-slate-300 hover:border-indigo-600 text-slate-700 hover:text-indigo-600 font-medium px-8 py-3 rounded-xl transition"
+                  >
+                    Learn More
+                  </Link>
+                </div>
               </div>
-              <div className="flex justify-center">
-                <div className="w-48 h-48 bg-white/20 rounded-3xl backdrop-blur-sm flex items-center justify-center border-2 border-white/30">
-                  <span className="text-7xl">📱</span>
+              <div className="hidden md:flex justify-center">
+                <div className="w-72 h-72 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-3xl flex items-center justify-center">
+                  <span className="text-8xl">🏦</span>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ===== EMI CALCULATOR ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-20">
-          <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-10">
-              📊 EMI Calculator
-            </h2>
+        {/* ===== PRODUCT CARDS - UrbanMoney Style ===== */}
+        <section className="max-w-7xl mx-auto px-6 py-16">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                icon: "💼",
+                title: "Business Loan",
+                desc: "Instant Funds for Instant Growth",
+                color: "from-blue-500 to-blue-600",
+                link: "/#loanForm",
+              },
+              {
+                icon: "🏠",
+                title: "Loan Against Property",
+                desc: "Lowest Interest Rate Unlock Offers",
+                color: "from-emerald-500 to-emerald-600",
+                link: "/#loanForm",
+              },
+              {
+                icon: "📊",
+                title: "Credit Score",
+                desc: "Check your Credit Score for Free",
+                color: "from-purple-500 to-purple-600",
+                link: "/#loanForm",
+              },
+              {
+                icon: "🎓",
+                title: "Education Loan",
+                desc: "Fund your studies abroad",
+                color: "from-rose-500 to-rose-600",
+                link: "/#loanForm",
+              },
+            ].map((product, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition hover:-translate-y-2 border border-slate-100 group cursor-pointer"
+                onClick={() => {
+                  document.getElementById("loanForm")?.scrollIntoView({
+                    behavior: "smooth",
+                  });
+                }}
+              >
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${product.color} flex items-center justify-center text-2xl text-white shadow-lg`}>
+                  {product.icon}
+                </div>
+                <h3 className="text-xl font-bold text-slate-800 mt-4 group-hover:text-indigo-600 transition">
+                  {product.title}
+                </h3>
+                <p className="mt-2 text-sm text-slate-500">{product.desc}</p>
+                <span className="inline-block mt-4 text-indigo-600 font-medium text-sm group-hover:translate-x-1 transition">
+                  Learn More →
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
 
+        {/* ===== CREDIT CARDS SECTION ===== */}
+        <section className="max-w-7xl mx-auto px-6 py-16 bg-slate-50 rounded-3xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
+              Smart Credit Cards <span className="text-indigo-600">Designed For You</span>
+            </h2>
+            <p className="mt-4 text-slate-600 max-w-2xl mx-auto">
+              Explore top credit card options suited to your spending and goals. {COMPANY_NAME} assists you in comparing, choosing, and applying online to boost your credit and enjoy rewards.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: "🌍",
+                title: "Global Acceptance",
+                desc: "Use your card anywhere in the world.",
+              },
+              {
+                icon: "🛎️",
+                title: "24/7 Concierge Service",
+                desc: "Personal travel assistance anytime.",
+              },
+              {
+                icon: "✈️",
+                title: "Accelerated Rewards",
+                desc: "Double points on flight & hotel bookings.",
+              },
+            ].map((feature, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition hover:-translate-y-1 border border-slate-100 text-center"
+              >
+                <div className="text-5xl mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-bold text-slate-800">{feature.title}</h3>
+                <p className="mt-2 text-sm text-slate-500">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ===== LOAN CATEGORIES ===== */}
+        <section className="max-w-7xl mx-auto px-6 py-16">
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: "💳",
+                title: "Personal Loan",
+                features: [
+                  "Loan amounts up to ₹40 Lakhs",
+                  "Interest rates from 10.99% p.a.",
+                  "Disbursal within 24 hours",
+                ],
+                color: "from-indigo-500 to-indigo-600",
+              },
+              {
+                icon: "🏠",
+                title: "Home Loan",
+                features: [
+                  "Up to ₹5 Crore Loan Amount",
+                  "Interest rates from 8.50% p.a.",
+                  "Quick Approval in 48 Hours",
+                ],
+                color: "from-emerald-500 to-emerald-600",
+              },
+              {
+                icon: "🎓",
+                title: "Education Loan",
+                features: [
+                  "Loan up to ₹2cr for India & Abroad",
+                  "Interest rates from 8.33% p.a.",
+                  "Moratorium period available",
+                ],
+                color: "from-purple-500 to-purple-600",
+              },
+            ].map((loan, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition hover:-translate-y-2 border border-slate-100"
+              >
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${loan.color} flex items-center justify-center text-2xl text-white shadow-lg`}>
+                  {loan.icon}
+                </div>
+                <h3 className="text-2xl font-bold text-slate-800 mt-4">{loan.title}</h3>
+                <ul className="mt-4 space-y-2">
+                  {loan.features.map((feature, i) => (
+                    <li key={i} className="text-sm text-slate-600 flex items-start gap-2">
+                      <span className="text-indigo-500 mt-0.5">✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => {
+                    document.getElementById("loanForm")?.scrollIntoView({
+                      behavior: "smooth",
+                    });
+                  }}
+                  className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl transition font-medium"
+                >
+                  Apply Now
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ===== HOW IT WORKS ===== */}
+        <section className="max-w-7xl mx-auto px-6 py-16 bg-slate-50 rounded-3xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
+              Easy. Convenient. <span className="text-indigo-600">Quick.</span>
+            </h2>
+            <p className="mt-4 text-slate-600">The simple & quick steps to your loan.</p>
+          </div>
+          <div className="grid md:grid-cols-4 gap-6">
+            {[
+              {
+                step: "01",
+                title: "Eligibility",
+                desc: "Tell us your requirement in 2 minutes",
+              },
+              {
+                step: "02",
+                title: "Compare",
+                desc: "AI matches best banks with 90+ criteria",
+              },
+              {
+                step: "03",
+                title: "Apply",
+                desc: "Digital application complete digitally",
+              },
+              {
+                step: "04",
+                title: "Disbursement",
+                desc: "Get quick sanction in minutes not weeks",
+              },
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition border border-slate-100 text-center"
+              >
+                <div className="w-16 h-16 mx-auto rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-2xl font-bold">
+                  {item.step}
+                </div>
+                <h3 className="text-xl font-bold text-slate-800 mt-4">{item.title}</h3>
+                <p className="mt-2 text-sm text-slate-500">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <button
+              onClick={() => {
+                document.getElementById("loanForm")?.scrollIntoView({
+                  behavior: "smooth",
+                });
+              }}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3 rounded-xl transition shadow-lg hover:shadow-indigo-500/30"
+            >
+              Get Started
+            </button>
+          </div>
+        </section>
+
+        {/* ===== EMI CALCULATOR ===== */}
+        <section className="max-w-7xl mx-auto px-6 py-16">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
+              Financial <span className="text-indigo-600">Calculators</span>
+            </h2>
+            <p className="mt-4 text-slate-600 max-w-2xl mx-auto">
+              Our calculators assist you in planning your finances, estimating payments, and making informed money decisions, from EMIs to FDs.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10">
             {/* Monthly EMI - Prominent Display */}
             <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 md:p-8 mb-8 text-center shadow-lg shadow-indigo-500/30">
               <p className="text-white/80 text-sm font-medium uppercase tracking-wider">Your Monthly EMI</p>
@@ -419,212 +542,93 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== LOAN COMPARISON TABLE ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-20 bg-slate-50 rounded-3xl">
-          <div className="text-center mb-10">
+        {/* ===== FAQ SECTION ===== */}
+        <section className="max-w-7xl mx-auto px-6 py-16 bg-slate-50 rounded-3xl">
+          <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Compare Loan Offers
+              We&apos;re Here to Answer <span className="text-indigo-600">All Your Questions</span>
             </h2>
-            <p className="mt-3 text-gray-600">
-              Compare interest rates, fees, approval time and loan amounts from top lenders.
+            <p className="mt-4 text-slate-600">
+              From refinancing to reducing your interest, we have the answers right here.
             </p>
           </div>
-
-          <div className="flex justify-end mb-4">
-            <select
-              className="border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-            >
-              <option value="low">Interest Rate: Low to High</option>
-              <option value="high">Interest Rate: High to Low</option>
-            </select>
-          </div>
-
-          <div className="overflow-x-auto bg-white rounded-3xl shadow-xl border border-gray-100">
-            <table className="w-full min-w-[700px]">
-              <thead className="bg-slate-800 text-white">
-                <tr>
-                  <th className="p-4 text-left text-sm">Bank</th>
-                  <th className="p-4 text-left text-sm">Interest Rate</th>
-                  <th className="p-4 text-left text-sm">Processing Fee</th>
-                  <th className="p-4 text-left text-sm">Max Loan Amount</th>
-                  <th className="p-4 text-left text-sm">Tenure</th>
-                  <th className="p-4 text-left text-sm">Approval Time</th>
-                  <th className="p-4 text-center text-sm">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {[
-                  {
-                    bank: "HDFC Bank",
-                    rate: "10.50%",
-                    fee: "2%",
-                    amount: "₹50L",
-                    tenure: "7 Years",
-                    approval: "24 Hours",
-                  },
-                  {
-                    bank: "ICICI Bank",
-                    rate: "10.75%",
-                    fee: "1.5%",
-                    amount: "₹40L",
-                    tenure: "7 Years",
-                    approval: "48 Hours",
-                  },
-                  {
-                    bank: "Axis Bank",
-                    rate: "10.99%",
-                    fee: "2%",
-                    amount: "₹35L",
-                    tenure: "5 Years",
-                    approval: "24 Hours",
-                  },
-                  {
-                    bank: "SBI",
-                    rate: "9.90%",
-                    fee: "1%",
-                    amount: "₹30L",
-                    tenure: "6 Years",
-                    approval: "72 Hours",
-                  },
-                  {
-                    bank: "Kotak Mahindra",
-                    rate: "10.25%",
-                    fee: "2%",
-                    amount: "₹45L",
-                    tenure: "7 Years",
-                    approval: "48 Hours",
-                  },
-                ].map((loan, index) => (
-                  <tr key={index} className="hover:bg-slate-50 transition">
-                    <td className="p-4 font-semibold text-slate-800">
-                      {loan.bank}
-                    </td>
-                    <td className="p-4">{loan.rate}</td>
-                    <td className="p-4">{loan.fee}</td>
-                    <td className="p-4">{loan.amount}</td>
-                    <td className="p-4">{loan.tenure}</td>
-                    <td className="p-4">{loan.approval}</td>
-                    <td className="p-4 text-center">
-                      <button
-                        onClick={() => {
-                          document.getElementById("loanForm")?.scrollIntoView({
-                            behavior: "smooth",
-                          });
-                        }}
-                        className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-xl hover:shadow-lg hover:shadow-indigo-500/30 transition text-sm"
-                      >
-                        Apply
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="max-w-3xl mx-auto space-y-4">
+            {[
+              {
+                q: `What is ${COMPANY_NAME}?`,
+                a: `${COMPANY_NAME} is a fintech loan aggregator that assists millions in achieving their dream of owning a home. Since 2024, ${COMPANY_NAME} has changed how lending works by offering personalised loan options from various banks and NBFCs. It guides clients through every loan process step—from selecting the right loan to handling paperwork, legal support, insurance, and disbursing the loan.`,
+              },
+              {
+                q: `How does ${COMPANY_NAME} work?`,
+                a: `${COMPANY_NAME} simplifies borrowing by connecting individuals with various financial products. We offer personal loans, home loans, business loans, and loans against property. Through our digital platform, users can compare loan options from over 95 lenders, ensuring they find the best fit for their financial needs.`,
+              },
+              {
+                q: `Is ${COMPANY_NAME} safe?`,
+                a: `${COMPANY_NAME} is a reputable fintech company in India, partnering with over 95 trusted banks and financial institutions to deliver reliable services. With advanced technology, we safeguard user data and transactions, following strict security protocols to ensure privacy.`,
+              },
+            ].map((faq, idx) => (
+              <div key={idx} className="bg-white rounded-2xl shadow-md p-6 border border-slate-100 hover:shadow-lg transition">
+                <h3 className="text-lg font-semibold text-slate-800">{faq.q}</h3>
+                <p className="mt-2 text-sm text-slate-600 leading-relaxed">{faq.a}</p>
+              </div>
+            ))}
           </div>
         </section>
 
-        {/* ===== TESTIMONIALS ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-20">
-          <div className="text-center mb-14">
+        {/* ===== BANKING PARTNERS ===== */}
+        <section className="max-w-7xl mx-auto px-6 py-16">
+          <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              What People Say About Us?
+              Our <span className="text-indigo-600">100+ Banking Partners</span>
             </h2>
-            <p className="mt-4 text-gray-600">
-              Trusted by thousands of customers across India.
+            <p className="mt-4 text-slate-600">
+              Explore our network of top financial institutions and gain valuable insights to support your confident loan and financing choices.
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex flex-wrap justify-center gap-4 md:gap-6">
             {[
-              {
-                name: "Rahul Sharma",
-                role: "Manager - Advertising",
-                review:
-                  "I really appreciate your kind efforts, which helped me secure the Personal Loan disbursed from HDFC Bank through {COMPANY_NAME}. It was a wonderful experience dealing with you. Your dedication and hardworking approach are highly appreciable.",
-              },
-              {
-                name: "Priya Patel",
-                role: "Business Owner",
-                review:
-                  "Very easy process and great loan comparison options. I got the best deal for my business loan. Highly recommended!",
-              },
-              {
-                name: "Amit Verma",
-                role: "IT Professional",
-                review:
-                  "Lowest interest rate among all lenders I checked. The team was very helpful throughout the process.",
-              },
-            ].map((testimonial, index) => (
+              "HDFC Bank",
+              "ICICI Bank",
+              "Axis Bank",
+              "SBI",
+              "Kotak Mahindra",
+              "Bajaj Finserv",
+              "Tata Capital",
+              "IDFC First Bank",
+              "PNB",
+              "Bank of Baroda",
+            ].map((bank, idx) => (
               <div
-                key={index}
-                className="bg-white rounded-2xl p-6 md:p-8 shadow-lg hover:shadow-2xl transition duration-300 border border-slate-100"
+                key={idx}
+                className="bg-white rounded-2xl shadow-md px-6 py-4 border border-slate-100 hover:shadow-lg transition hover:-translate-y-1"
               >
-                <div className="text-yellow-400 text-xl mb-3">⭐⭐⭐⭐⭐</div>
-                <p className="text-gray-600 text-sm italic mb-6">
-                  &quot;{testimonial.review.replace(/{COMPANY_NAME}/g, COMPANY_NAME)}&quot;
-                </p>
-                <h4 className="font-bold text-slate-900">
-                  {testimonial.name}
-                </h4>
-                <p className="text-sm text-gray-500">{testimonial.role}</p>
+                <span className="font-semibold text-slate-700 text-sm">{bank}</span>
               </div>
             ))}
           </div>
         </section>
 
         {/* ===== LEAD GENERATION FORM ===== */}
-        <section id="loanForm" className="max-w-7xl mx-auto px-6 py-20 bg-slate-50 rounded-3xl">
+        <section id="loanForm" className="max-w-7xl mx-auto px-6 py-16 bg-slate-50 rounded-3xl">
           {loanForm}
-        </section>
-
-        {/* ===== FAQS ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-20">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Frequently Asked Questions
-            </h2>
-          </div>
-          <div className="max-w-3xl mx-auto space-y-4">
-            {[
-              {
-                q: "Who can become a partner with Kinetik Capital?",
-                a: "Anyone from loan agents, ex-bankers, financial analysts, Insurance agents, mutual fund agents, chartered accountants, builders, or professionals from any other field can become a partner with Kinetik Capital.",
-              },
-              {
-                q: "How to become a DSA Partner with Kinetik Capital?",
-                a: "Step 1: Visit the Kinetik Capital website and click on the 'Become a Partner' option. Step 2: Complete the registration form. Step 3: A member of the support team will contact you. Step 4: A Manager will explain the lead generation process. Step 5: An agreement will be signed and you will officially become a DSA Agent.",
-              },
-              {
-                q: "What products does Kinetik Capital offer?",
-                a: "We offer a wide range of financial products including Home Loans, Personal Loans, Business Loans, Education Loans, Car Loans, Gold Loans, Credit Cards, and Insurance.",
-              },
-            ].map((faq, idx) => (
-              <div key={idx} className="bg-white rounded-2xl shadow-md p-6 border border-slate-100">
-                <h3 className="text-lg font-semibold text-slate-800">{faq.q}</h3>
-                <p className="mt-2 text-sm text-slate-600">{faq.a}</p>
-              </div>
-            ))}
-          </div>
         </section>
 
         {/* ===== FOOTER ===== */}
         <footer className="bg-slate-900 text-white">
           <div className="max-w-7xl mx-auto px-6 py-16">
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10">
+            <div className="grid md:grid-cols-4 gap-10">
               <div>
                 <h3 className="text-2xl font-bold mb-4">{COMPANY_NAME}</h3>
                 <p className="text-gray-400 text-sm">
-                  India's Leading Loan Distribution Company. Compare and apply for Personal, Home, Business and Car Loans from India's top banks and NBFCs.
+                  One Fintech for all Banking and Finance Services. Compare and apply for Personal, Home, Business and Car Loans.
                 </p>
               </div>
               <div>
                 <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
                 <ul className="space-y-2 text-gray-400 text-sm">
-                  <li><a href="#" className="hover:text-white transition">Home</a></li>
-                  <li><a href="#" className="hover:text-white transition">Loans</a></li>
-                  <li><a href="#" className="hover:text-white transition">EMI Calculator</a></li>
-                  <li><a href="#" className="hover:text-white transition">Become a Partner</a></li>
+                  <li><Link href="/" className="hover:text-white transition">Home</Link></li>
+                  <li><Link href="/about" className="hover:text-white transition">About Us</Link></li>
+                  <li><Link href="/#loanForm" className="hover:text-white transition">Apply for Loan</Link></li>
                 </ul>
               </div>
               <div>
@@ -645,15 +649,7 @@ export default function Home() {
               </div>
             </div>
             <div className="border-t border-slate-700 mt-10 pt-6 text-center text-gray-400 text-sm">
-              <div className="flex justify-center gap-6 mb-4">
-                <a href="#" className="hover:text-white transition">Facebook</a>
-                <a href="#" className="hover:text-white transition">Instagram</a>
-                <a href="#" className="hover:text-white transition">LinkedIn</a>
-                <a href="#" className="hover:text-white transition">YouTube</a>
-              </div>
-              <p>
-                © {new Date().getFullYear()} {COMPANY_NAME}. All Rights Reserved.
-              </p>
+              <p>© {new Date().getFullYear()} {COMPANY_NAME}. All Rights Reserved.</p>
             </div>
           </div>
         </footer>
