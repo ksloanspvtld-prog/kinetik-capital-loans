@@ -131,7 +131,7 @@ export default function LoanCalculator({ type = "emi" }: LoanCalculatorProps) {
       </div>
 
       {/* Results */}
-      <div className="mt-6 p-6 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-2xl">
+      <div className="mt-6 p-6 bg-linear-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-2xl">
         {type === "emi" ? (
           <>
             <p className="text-sm text-slate-500 dark:text-slate-400">Monthly EMI</p>

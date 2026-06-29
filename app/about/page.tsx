@@ -18,7 +18,7 @@ export default function AboutPage() {
       <main className="pt-20">
 
         {/* ===== HERO SECTION ===== */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white">
+        <section className="relative overflow-hidden bg-linear-to-br from-indigo-600 via-purple-600 to-pink-500 text-white">
           <div className="absolute inset-0 opacity-20">
             <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
             <div className="absolute bottom-10 right-10 w-96 h-96 bg-yellow-300 rounded-full blur-3xl"></div>
@@ -184,7 +184,7 @@ export default function AboutPage() {
               },
             ].map((member, idx) => (
               <div key={idx} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition hover:-translate-y-2 border border-slate-100 text-center">
-                <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-indigo-500/30">
+                <div className="w-24 h-24 mx-auto rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-indigo-500/30">
                   {member.initial}
                 </div>
                 <h3 className="text-xl font-bold text-slate-800 mt-4">{member.name}</h3>
@@ -256,7 +256,7 @@ export default function AboutPage() {
 
         {/* ===== CALL TO ACTION ===== */}
         <section id="contact" className="max-w-7xl mx-auto px-6 py-20">
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 md:p-12 text-center text-white">
+          <div className="bg-linear-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 md:p-12 text-center text-white">
             <h2 className="text-3xl md:text-4xl font-bold">Ready to Grow with {COMPANY_NAME}?</h2>
             <p className="mt-4 text-white/80 max-w-2xl mx-auto">Join India&apos;s most trusted loan distribution network. Become a partner and start your journey today!</p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">

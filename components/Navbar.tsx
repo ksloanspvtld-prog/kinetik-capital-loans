@@ -36,7 +36,7 @@ export default function Navbar() {
                 <span className="text-xs">▼</span>
               </button>
               {isLoanMenuOpen && (
-                <div className="absolute top-8 left-0 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-4 min-w-[200px] border border-slate-100 dark:border-slate-700">
+                <div className="absolute top-8 left-0 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-4 min-w-50 border border-slate-100 dark:border-slate-700">
                   <Link href="/loans/personal-loan" className="block px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition">
                     Personal Loan
                   </Link>

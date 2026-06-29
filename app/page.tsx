@@ -1,12 +1,25 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import Link from "next/link";
 import Navbar from "../components/Navbar";
 import WhatsAppButton from "../components/WhatsAppButton";
 
 // ✅ Company Name - येथे बदला
 const COMPANY_NAME = "Kinetik Capital";
+
+// Bank Logos Data (initial + color)
+const bankLogos: Record<string, { initial: string; color: string }> = {
+  "HDFC Bank": { initial: "H", color: "from-blue-500 to-blue-700" },
+  "ICICI Bank": { initial: "I", color: "from-purple-500 to-purple-700" },
+  "Axis Bank": { initial: "A", color: "from-red-500 to-red-700" },
+  "SBI": { initial: "S", color: "from-emerald-500 to-emerald-700" },
+  "Kotak Mahindra": { initial: "K", color: "from-orange-500 to-orange-700" },
+  "Bajaj Finserv": { initial: "B", color: "from-yellow-500 to-yellow-700" },
+  "Tata Capital": { initial: "T", color: "from-cyan-500 to-cyan-700" },
+  "IDFC First Bank": { initial: "I", color: "from-indigo-500 to-indigo-700" },
+  "PNB": { initial: "P", color: "from-rose-500 to-rose-700" },
+  "Bank of Baroda": { initial: "B", color: "from-amber-500 to-amber-700" },
+};
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -22,6 +35,7 @@ export default function Home() {
   const [loanAmount, setLoanAmount] = useState(500000);
   const [interestRate, setInterestRate] = useState(10);
   const [tenure, setTenure] = useState(5);
+  const [sortOrder, setSortOrder] = useState("low");
 
   // ✅ EMI Calculation
   const monthlyRate = interestRate / 12 / 100;
@@ -169,19 +183,24 @@ export default function Home() {
     <>
       <Navbar />
       <WhatsAppButton />
-      <main className="pt-16">
+      <main className="pt-20">
         
-        {/* ===== HERO SECTION - UrbanMoney Style ===== */}
-        <section className="bg-gradient-to-br from-slate-50 to-indigo-50/50 py-16 md:py-24">
-          <div className="max-w-7xl mx-auto px-6">
+        {/* ===== HERO SECTION ===== */}
+        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white">
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+            <div className="absolute bottom-10 right-10 w-96 h-96 bg-yellow-300 rounded-full blur-3xl"></div>
+          </div>
+          <div className="relative max-w-7xl mx-auto px-6 py-20 md:py-28">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight">
-                  Find the Right <br />
-                  <span className="text-indigo-600">Financial Product</span>
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+                  Compare Loan Offers from <br />
+                  <span className="text-yellow-300">Top Banks & NBFCs</span>
                 </h1>
-                <p className="mt-4 text-lg text-slate-600">
-                  Get started in minutes with our simple, fast, and convenient application process.
+                <p className="mt-6 text-lg text-white/80 max-w-lg">
+                  Get the best Personal, Home, Business and Car Loan offers
+                  from trusted banks and financial institutions.
                 </p>
                 <div className="mt-8 flex flex-wrap gap-4">
                   <button
@@ -190,182 +209,120 @@ export default function Home() {
                         behavior: "smooth",
                       });
                     }}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3 rounded-xl transition shadow-lg hover:shadow-indigo-500/30"
+                    className="bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-semibold px-8 py-3 rounded-xl transition shadow-lg hover:shadow-yellow-400/30"
                   >
-                    Get Started
+                    Apply Now
                   </button>
-                  <Link
-                    href="/about"
-                    className="border-2 border-slate-300 hover:border-indigo-600 text-slate-700 hover:text-indigo-600 font-medium px-8 py-3 rounded-xl transition"
-                  >
-                    Learn More
-                  </Link>
+                  <button className="border-2 border-white/30 hover:bg-white/10 text-white font-medium px-8 py-3 rounded-xl transition backdrop-blur-sm">
+                    Check Eligibility
+                  </button>
+                </div>
+                <div className="mt-10 flex flex-wrap gap-3">
+                  <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm">
+                    ✓ Secure Process
+                  </span>
+                  <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm">
+                    ✓ Trusted Lenders
+                  </span>
+                  <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm">
+                    ✓ Fast Approval
+                  </span>
                 </div>
               </div>
               <div className="hidden md:flex justify-center">
-                <div className="w-72 h-72 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-3xl flex items-center justify-center">
-                  <span className="text-8xl">🏦</span>
+                <div className="w-80 h-80 bg-white/10 rounded-full backdrop-blur-sm flex items-center justify-center border border-white/20">
+                  <span className="text-6xl">🏦</span>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ===== PRODUCT CARDS - UrbanMoney Style ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-16">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                icon: "💼",
-                title: "Business Loan",
-                desc: "Instant Funds for Instant Growth",
-                color: "from-blue-500 to-blue-600",
-                link: "/#loanForm",
-              },
-              {
-                icon: "🏠",
-                title: "Loan Against Property",
-                desc: "Lowest Interest Rate Unlock Offers",
-                color: "from-emerald-500 to-emerald-600",
-                link: "/#loanForm",
-              },
-              {
-                icon: "📊",
-                title: "Credit Score",
-                desc: "Check your Credit Score for Free",
-                color: "from-purple-500 to-purple-600",
-                link: "/#loanForm",
-              },
-              {
-                icon: "🎓",
-                title: "Education Loan",
-                desc: "Fund your studies abroad",
-                color: "from-rose-500 to-rose-600",
-                link: "/#loanForm",
-              },
-            ].map((product, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition hover:-translate-y-2 border border-slate-100 group cursor-pointer"
-                onClick={() => {
-                  document.getElementById("loanForm")?.scrollIntoView({
-                    behavior: "smooth",
-                  });
-                }}
-              >
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${product.color} flex items-center justify-center text-2xl text-white shadow-lg`}>
-                  {product.icon}
-                </div>
-                <h3 className="text-xl font-bold text-slate-800 mt-4 group-hover:text-indigo-600 transition">
-                  {product.title}
-                </h3>
-                <p className="mt-2 text-sm text-slate-500">{product.desc}</p>
-                <span className="inline-block mt-4 text-indigo-600 font-medium text-sm group-hover:translate-x-1 transition">
-                  Learn More →
-                </span>
-              </div>
-            ))}
+        {/* ===== STATISTICS SECTION ===== */}
+        <section className="max-w-7xl mx-auto px-6 -mt-10 relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            <div className="bg-white rounded-2xl shadow-xl p-6 text-center hover:shadow-2xl transition hover:-translate-y-1">
+              <h3 className="text-3xl font-bold text-indigo-600">₹5000Cr+</h3>
+              <p className="text-sm text-slate-500 mt-1">Loans Facilitated</p>
+            </div>
+            <div className="bg-white rounded-2xl shadow-xl p-6 text-center hover:shadow-2xl transition hover:-translate-y-1">
+              <h3 className="text-3xl font-bold text-indigo-600">50+</h3>
+              <p className="text-sm text-slate-500 mt-1">Lending Partners</p>
+            </div>
+            <div className="bg-white rounded-2xl shadow-xl p-6 text-center hover:shadow-2xl transition hover:-translate-y-1">
+              <h3 className="text-3xl font-bold text-indigo-600">2L+</h3>
+              <p className="text-sm text-slate-500 mt-1">Happy Customers</p>
+            </div>
+            <div className="bg-white rounded-2xl shadow-xl p-6 text-center hover:shadow-2xl transition hover:-translate-y-1">
+              <h3 className="text-3xl font-bold text-indigo-600">98%</h3>
+              <p className="text-sm text-slate-500 mt-1">Approval Assistance</p>
+            </div>
           </div>
         </section>
 
-        {/* ===== CREDIT CARDS SECTION ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-16 bg-slate-50 rounded-3xl">
+        {/* ===== LOAN CATEGORIES SECTION ===== */}
+        <section className="max-w-7xl mx-auto px-6 py-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Smart Credit Cards <span className="text-indigo-600">Designed For You</span>
+              Explore Loan Categories
             </h2>
-            <p className="mt-4 text-slate-600 max-w-2xl mx-auto">
-              Explore top credit card options suited to your spending and goals. {COMPANY_NAME} assists you in comparing, choosing, and applying online to boost your credit and enjoy rewards.
+            <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
+              Find the right loan for your financial needs.
             </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                icon: "🌍",
-                title: "Global Acceptance",
-                desc: "Use your card anywhere in the world.",
-              },
-              {
-                icon: "🛎️",
-                title: "24/7 Concierge Service",
-                desc: "Personal travel assistance anytime.",
-              },
-              {
-                icon: "✈️",
-                title: "Accelerated Rewards",
-                desc: "Double points on flight & hotel bookings.",
-              },
-            ].map((feature, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition hover:-translate-y-1 border border-slate-100 text-center"
-              >
-                <div className="text-5xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold text-slate-800">{feature.title}</h3>
-                <p className="mt-2 text-sm text-slate-500">{feature.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ===== LOAN CATEGORIES ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-16">
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
                 icon: "💳",
                 title: "Personal Loan",
-                features: [
-                  "Loan amounts up to ₹40 Lakhs",
-                  "Interest rates from 10.99% p.a.",
-                  "Disbursal within 24 hours",
-                ],
-                color: "from-indigo-500 to-indigo-600",
+                desc: "Instant approval with attractive rates.",
+                features: ["✔ Starting from 10.5% p.a.", "✔ Instant Approval"],
+                color: "from-blue-500 to-blue-600",
               },
               {
                 icon: "🏠",
                 title: "Home Loan",
-                features: [
-                  "Up to ₹5 Crore Loan Amount",
-                  "Interest rates from 8.50% p.a.",
-                  "Quick Approval in 48 Hours",
-                ],
+                desc: "Low interest and long tenure options.",
+                features: ["✔ Low Interest Rates", "✔ Up to 30 Years Tenure"],
                 color: "from-emerald-500 to-emerald-600",
               },
               {
-                icon: "🎓",
-                title: "Education Loan",
-                features: [
-                  "Loan up to ₹2cr for India & Abroad",
-                  "Interest rates from 8.33% p.a.",
-                  "Moratorium period available",
-                ],
+                icon: "🏢",
+                title: "Business Loan",
+                desc: "Fast funding for business growth.",
+                features: ["✔ Fast Funding", "✔ Flexible Repayment"],
                 color: "from-purple-500 to-purple-600",
               },
-            ].map((loan, idx) => (
+              {
+                icon: "🚗",
+                title: "Car Loan",
+                desc: "Finance your dream car easily.",
+                features: ["✔ Quick Processing", "✔ High Approval Rate"],
+                color: "from-rose-500 to-rose-600",
+              },
+            ].map((category, idx) => (
               <div
                 key={idx}
                 className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition hover:-translate-y-2 border border-slate-100"
               >
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${loan.color} flex items-center justify-center text-2xl text-white shadow-lg`}>
-                  {loan.icon}
-                </div>
-                <h3 className="text-2xl font-bold text-slate-800 mt-4">{loan.title}</h3>
-                <ul className="mt-4 space-y-2">
-                  {loan.features.map((feature, i) => (
-                    <li key={i} className="text-sm text-slate-600 flex items-start gap-2">
-                      <span className="text-indigo-500 mt-0.5">✓</span>
-                      {feature}
-                    </li>
+                <div className="text-5xl mb-4">{category.icon}</div>
+                <h3 className="text-2xl font-bold text-slate-800">
+                  {category.title}
+                </h3>
+                <p className="mt-2 text-slate-500 text-sm">{category.desc}</p>
+                <ul className="mt-4 text-sm space-y-2 text-slate-600">
+                  {category.features.map((f, i) => (
+                    <li key={i}>{f}</li>
                   ))}
                 </ul>
                 <button
                   onClick={() => {
+                    setFormData((prev) => ({ ...prev, loanType: category.title }));
                     document.getElementById("loanForm")?.scrollIntoView({
                       behavior: "smooth",
                     });
                   }}
-                  className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl transition font-medium"
+                  className={`mt-6 w-full bg-gradient-to-r ${category.color} text-white py-2.5 rounded-xl hover:shadow-lg transition font-medium`}
                 >
                   Apply Now
                 </button>
@@ -374,75 +331,96 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== HOW IT WORKS ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-16 bg-slate-50 rounded-3xl">
+        {/* ===== TOP LENDERS SECTION WITH LOGOS ===== */}
+        <section className="max-w-7xl mx-auto px-6 py-20 bg-slate-50 rounded-3xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Easy. Convenient. <span className="text-indigo-600">Quick.</span>
+              Top Lending Partners
             </h2>
-            <p className="mt-4 text-slate-600">The simple & quick steps to your loan.</p>
+            <p className="mt-4 text-gray-600">
+              Compare loan offers from India&apos;s leading banks and NBFCs.
+            </p>
           </div>
-          <div className="grid md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {[
-              {
-                step: "01",
-                title: "Eligibility",
-                desc: "Tell us your requirement in 2 minutes",
-              },
-              {
-                step: "02",
-                title: "Compare",
-                desc: "AI matches best banks with 90+ criteria",
-              },
-              {
-                step: "03",
-                title: "Apply",
-                desc: "Digital application complete digitally",
-              },
-              {
-                step: "04",
-                title: "Disbursement",
-                desc: "Get quick sanction in minutes not weeks",
-              },
-            ].map((item, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition border border-slate-100 text-center"
-              >
-                <div className="w-16 h-16 mx-auto rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-2xl font-bold">
-                  {item.step}
+              "HDFC Bank",
+              "ICICI Bank",
+              "Axis Bank",
+              "SBI",
+              "Kotak Mahindra",
+              "Bajaj Finserv",
+              "Tata Capital",
+              "IDFC First Bank",
+            ].map((bank) => {
+              const logo = bankLogos[bank] || { initial: bank.charAt(0), color: "from-slate-500 to-slate-700" };
+              return (
+                <div
+                  key={bank}
+                  className="bg-white rounded-2xl shadow p-6 text-center hover:shadow-lg transition hover:-translate-y-1 border border-slate-100"
+                >
+                  <div className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-br ${logo.color} flex items-center justify-center text-white text-2xl font-bold shadow-md`}>
+                    {logo.initial}
+                  </div>
+                  <p className="font-semibold text-slate-800 mt-3">{bank}</p>
+                  <div className="mt-2 text-yellow-400 text-sm">★★★★★</div>
+                  <p className="mt-1 text-xs text-slate-400">10.50% p.a.</p>
                 </div>
-                <h3 className="text-xl font-bold text-slate-800 mt-4">{item.title}</h3>
-                <p className="mt-2 text-sm text-slate-500">{item.desc}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
-          <div className="text-center mt-8">
-            <button
-              onClick={() => {
-                document.getElementById("loanForm")?.scrollIntoView({
-                  behavior: "smooth",
-                });
-              }}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3 rounded-xl transition shadow-lg hover:shadow-indigo-500/30"
-            >
-              Get Started
-            </button>
+        </section>
+
+        {/* ===== SEARCH & FILTER SECTION ===== */}
+        <section className="max-w-7xl mx-auto px-6 py-20">
+          <div className="bg-white rounded-3xl shadow-xl p-6 md:p-8 border border-gray-100">
+            <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">
+              Find Your Best Loan Offer
+            </h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-6 gap-4">
+              <input
+                type="text"
+                placeholder="Search lender or loan type"
+                className="border-2 border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              />
+              <select className="border-2 border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                <option>Loan Type</option>
+                <option>Personal Loan</option>
+                <option>Home Loan</option>
+                <option>Business Loan</option>
+                <option>Car Loan</option>
+              </select>
+              <select className="border-2 border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                <option>Interest Rate</option>
+                <option>Below 10%</option>
+                <option>10% - 12%</option>
+                <option>12% - 15%</option>
+              </select>
+              <select className="border-2 border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                <option>Loan Amount</option>
+                <option>₹1L - ₹5L</option>
+                <option>₹5L - ₹20L</option>
+                <option>₹20L+</option>
+              </select>
+              <select className="border-2 border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                <option>Tenure</option>
+                <option>1-3 Years</option>
+                <option>3-5 Years</option>
+                <option>5+ Years</option>
+              </select>
+              <button className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl px-6 py-3 hover:shadow-lg hover:shadow-indigo-500/30 transition">
+                Search
+              </button>
+            </div>
           </div>
         </section>
 
         {/* ===== EMI CALCULATOR ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-16">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Financial <span className="text-indigo-600">Calculators</span>
-            </h2>
-            <p className="mt-4 text-slate-600 max-w-2xl mx-auto">
-              Our calculators assist you in planning your finances, estimating payments, and making informed money decisions, from EMIs to FDs.
-            </p>
-          </div>
-
+        <section className="max-w-7xl mx-auto px-6 py-20">
           <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-10">
+              📊 EMI Calculator
+            </h2>
+
             {/* Monthly EMI - Prominent Display */}
             <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 md:p-8 mb-8 text-center shadow-lg shadow-indigo-500/30">
               <p className="text-white/80 text-sm font-medium uppercase tracking-wider">Your Monthly EMI</p>
@@ -542,98 +520,313 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== FAQ SECTION ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-16 bg-slate-50 rounded-3xl">
-          <div className="text-center mb-12">
+        {/* ===== LOAN COMPARISON TABLE ===== */}
+        <section className="max-w-7xl mx-auto px-6 py-20 bg-slate-50 rounded-3xl">
+          <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              We&apos;re Here to Answer <span className="text-indigo-600">All Your Questions</span>
+              Compare Loan Offers
             </h2>
-            <p className="mt-4 text-slate-600">
-              From refinancing to reducing your interest, we have the answers right here.
+            <p className="mt-3 text-gray-600">
+              Compare interest rates, fees, approval time and loan amounts from top lenders.
             </p>
           </div>
-          <div className="max-w-3xl mx-auto space-y-4">
-            {[
-              {
-                q: `What is ${COMPANY_NAME}?`,
-                a: `${COMPANY_NAME} is a fintech loan aggregator that assists millions in achieving their dream of owning a home. Since 2024, ${COMPANY_NAME} has changed how lending works by offering personalised loan options from various banks and NBFCs. It guides clients through every loan process step—from selecting the right loan to handling paperwork, legal support, insurance, and disbursing the loan.`,
-              },
-              {
-                q: `How does ${COMPANY_NAME} work?`,
-                a: `${COMPANY_NAME} simplifies borrowing by connecting individuals with various financial products. We offer personal loans, home loans, business loans, and loans against property. Through our digital platform, users can compare loan options from over 95 lenders, ensuring they find the best fit for their financial needs.`,
-              },
-              {
-                q: `Is ${COMPANY_NAME} safe?`,
-                a: `${COMPANY_NAME} is a reputable fintech company in India, partnering with over 95 trusted banks and financial institutions to deliver reliable services. With advanced technology, we safeguard user data and transactions, following strict security protocols to ensure privacy.`,
-              },
-            ].map((faq, idx) => (
-              <div key={idx} className="bg-white rounded-2xl shadow-md p-6 border border-slate-100 hover:shadow-lg transition">
-                <h3 className="text-lg font-semibold text-slate-800">{faq.q}</h3>
-                <p className="mt-2 text-sm text-slate-600 leading-relaxed">{faq.a}</p>
-              </div>
-            ))}
+
+          <div className="flex justify-end mb-4">
+            <select
+              className="border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+            >
+              <option value="low">Interest Rate: Low to High</option>
+              <option value="high">Interest Rate: High to Low</option>
+            </select>
+          </div>
+
+          <div className="overflow-x-auto bg-white rounded-3xl shadow-xl border border-gray-100">
+            <table className="w-full min-w-[700px]">
+              <thead className="bg-slate-800 text-white">
+                <tr>
+                  <th className="p-4 text-left text-sm">Bank</th>
+                  <th className="p-4 text-left text-sm">Interest Rate</th>
+                  <th className="p-4 text-left text-sm">Processing Fee</th>
+                  <th className="p-4 text-left text-sm">Max Loan Amount</th>
+                  <th className="p-4 text-left text-sm">Tenure</th>
+                  <th className="p-4 text-left text-sm">Approval Time</th>
+                  <th className="p-4 text-center text-sm">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {[
+                  {
+                    bank: "HDFC Bank",
+                    rate: "10.50%",
+                    fee: "2%",
+                    amount: "₹50L",
+                    tenure: "7 Years",
+                    approval: "24 Hours",
+                  },
+                  {
+                    bank: "ICICI Bank",
+                    rate: "10.75%",
+                    fee: "1.5%",
+                    amount: "₹40L",
+                    tenure: "7 Years",
+                    approval: "48 Hours",
+                  },
+                  {
+                    bank: "Axis Bank",
+                    rate: "10.99%",
+                    fee: "2%",
+                    amount: "₹35L",
+                    tenure: "5 Years",
+                    approval: "24 Hours",
+                  },
+                  {
+                    bank: "SBI",
+                    rate: "9.90%",
+                    fee: "1%",
+                    amount: "₹30L",
+                    tenure: "6 Years",
+                    approval: "72 Hours",
+                  },
+                  {
+                    bank: "Kotak Mahindra",
+                    rate: "10.25%",
+                    fee: "2%",
+                    amount: "₹45L",
+                    tenure: "7 Years",
+                    approval: "48 Hours",
+                  },
+                ].map((loan, index) => (
+                  <tr key={index} className="hover:bg-slate-50 transition">
+                    <td className="p-4 font-semibold text-slate-800">
+                      {loan.bank}
+                    </td>
+                    <td className="p-4">{loan.rate}</td>
+                    <td className="p-4">{loan.fee}</td>
+                    <td className="p-4">{loan.amount}</td>
+                    <td className="p-4">{loan.tenure}</td>
+                    <td className="p-4">{loan.approval}</td>
+                    <td className="p-4 text-center">
+                      <button
+                        onClick={() => {
+                          document.getElementById("loanForm")?.scrollIntoView({
+                            behavior: "smooth",
+                          });
+                        }}
+                        className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-xl hover:shadow-lg hover:shadow-indigo-500/30 transition text-sm"
+                      >
+                        Apply
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </section>
 
-        {/* ===== BANKING PARTNERS ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-16">
-          <div className="text-center mb-10">
+        {/* ===== WHY CHOOSE US ===== */}
+        <section className="max-w-7xl mx-auto px-6 py-20">
+          <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Our <span className="text-indigo-600">100+ Banking Partners</span>
+              Why Choose {COMPANY_NAME}?
             </h2>
-            <p className="mt-4 text-slate-600">
-              Explore our network of top financial institutions and gain valuable insights to support your confident loan and financing choices.
+            <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
+              We help you compare, choose and apply for the best loan offers from trusted banks and NBFCs.
             </p>
           </div>
-          <div className="flex flex-wrap justify-center gap-4 md:gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {[
-              "HDFC Bank",
-              "ICICI Bank",
-              "Axis Bank",
-              "SBI",
-              "Kotak Mahindra",
-              "Bajaj Finserv",
-              "Tata Capital",
-              "IDFC First Bank",
-              "PNB",
-              "Bank of Baroda",
-            ].map((bank, idx) => (
+              {
+                icon: "🏦",
+                title: "Compare Multiple Lenders",
+                desc: "Compare loan offers from top banks and NBFCs in one place.",
+              },
+              {
+                icon: "⚡",
+                title: "Fast Approvals",
+                desc: "Quick processing and faster approvals from lending partners.",
+              },
+              {
+                icon: "📉",
+                title: "Lowest Interest Rates",
+                desc: "Access competitive interest rates and save more money.",
+              },
+              {
+                icon: "🔒",
+                title: "Secure Application",
+                desc: "Your personal information is protected with secure encryption.",
+              },
+              {
+                icon: "👨‍💼",
+                title: "Expert Assistance",
+                desc: "Dedicated loan experts guide you throughout the process.",
+              },
+              {
+                icon: "💻",
+                title: "100% Online Process",
+                desc: "Apply, upload documents and track status completely online.",
+              },
+            ].map((item, index) => (
               <div
-                key={idx}
-                className="bg-white rounded-2xl shadow-md px-6 py-4 border border-slate-100 hover:shadow-lg transition hover:-translate-y-1"
+                key={index}
+                className="bg-white rounded-3xl p-6 md:p-8 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition duration-300 border border-slate-100"
               >
-                <span className="font-semibold text-slate-700 text-sm">{bank}</span>
+                <div className="text-5xl mb-4">{item.icon}</div>
+                <h3 className="text-2xl font-bold text-slate-900">
+                  {item.title}
+                </h3>
+                <p className="mt-3 text-gray-600">{item.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* ===== LEAD GENERATION FORM ===== */}
-        <section id="loanForm" className="max-w-7xl mx-auto px-6 py-16 bg-slate-50 rounded-3xl">
+        <section id="loanForm" className="max-w-7xl mx-auto px-6 py-20">
           {loanForm}
         </section>
 
+        {/* ===== TESTIMONIALS ===== */}
+        <section className="max-w-7xl mx-auto px-6 py-20 bg-slate-50 rounded-3xl">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
+              What Our Customers Say
+            </h2>
+            <p className="mt-4 text-gray-600">
+              Trusted by thousands of customers across India.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                name: "Rahul Sharma",
+                city: "Mumbai",
+                review:
+                  "Got my personal loan approved within 24 hours. Excellent support team.",
+              },
+              {
+                name: "Priya Patel",
+                city: "Ahmedabad",
+                review:
+                  "Very easy process and great loan comparison options.",
+              },
+              {
+                name: "Amit Verma",
+                city: "Delhi",
+                review:
+                  "Lowest interest rate among all lenders I checked.",
+              },
+              {
+                name: "Sneha Joshi",
+                city: "Pune",
+                review:
+                  "Professional guidance from start to finish.",
+              },
+              {
+                name: "Vikram Singh",
+                city: "Jaipur",
+                review:
+                  "Quick documentation and smooth approval process.",
+              },
+              {
+                name: "Neha Gupta",
+                city: "Bangalore",
+                review:
+                  "Highly recommended for business loan applications.",
+              },
+            ].map((testimonial, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-2xl p-6 md:p-8 shadow-lg hover:shadow-2xl transition duration-300"
+              >
+                <div className="text-yellow-400 text-xl mb-3">⭐⭐⭐⭐⭐</div>
+                <p className="text-gray-600 mb-6">
+                  &quot;{testimonial.review}&quot;
+                </p>
+                <h4 className="font-bold text-slate-900">
+                  {testimonial.name}
+                </h4>
+                <p className="text-sm text-gray-500">{testimonial.city}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ===== OUR LENDING PARTNERS WITH LOGOS (MARQUEE) ===== */}
+        <section className="py-20 overflow-hidden bg-white">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
+              Our Lending Partners
+            </h2>
+            <p className="mt-4 text-gray-600">
+              Trusted by India&apos;s leading banks and NBFCs.
+            </p>
+          </div>
+          <div className="relative">
+            <div className="flex gap-8 animate-marquee whitespace-nowrap">
+              {[
+                "HDFC Bank",
+                "ICICI Bank",
+                "Axis Bank",
+                "SBI",
+                "Kotak Mahindra",
+                "Bajaj Finserv",
+                "Tata Capital",
+                "IDFC First",
+                "PNB",
+                "Bank of Baroda",
+                "HDFC Bank",
+                "ICICI Bank",
+                "Axis Bank",
+                "SBI",
+                "Kotak Mahindra",
+                "Bajaj Finserv",
+                "Tata Capital",
+                "IDFC First",
+                "PNB",
+                "Bank of Baroda",
+              ].map((bank, index) => {
+                const logo = bankLogos[bank] || { initial: bank.charAt(0), color: "from-slate-500 to-slate-700" };
+                return (
+                  <div
+                    key={index}
+                    className="min-w-48 md:min-w-55 bg-white rounded-2xl shadow-md px-6 md:px-8 py-4 md:py-6 text-center border border-slate-100 flex flex-col items-center"
+                  >
+                    <div className={`w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br ${logo.color} flex items-center justify-center text-white text-xl md:text-2xl font-bold shadow-md`}>
+                      {logo.initial}
+                    </div>
+                    <p className="font-semibold text-slate-900 mt-2 text-sm md:text-base">{bank}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
         {/* ===== FOOTER ===== */}
-        <footer className="bg-slate-900 text-white">
+        <footer className="bg-slate-900 text-white mt-20">
           <div className="max-w-7xl mx-auto px-6 py-16">
-            <div className="grid md:grid-cols-4 gap-10">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10">
               <div>
                 <h3 className="text-2xl font-bold mb-4">{COMPANY_NAME}</h3>
-                <p className="text-gray-400 text-sm">
-                  One Fintech for all Banking and Finance Services. Compare and apply for Personal, Home, Business and Car Loans.
+                <p className="text-gray-400">
+                  Compare and apply for Personal, Home, Business and Car Loans from India&apos;s top banks and NBFCs.
                 </p>
               </div>
               <div>
                 <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-                <ul className="space-y-2 text-gray-400 text-sm">
-                  <li><Link href="/" className="hover:text-white transition">Home</Link></li>
-                  <li><Link href="/about" className="hover:text-white transition">About Us</Link></li>
-                  <li><Link href="/#loanForm" className="hover:text-white transition">Apply for Loan</Link></li>
+                <ul className="space-y-2 text-gray-400">
+                  <li><a href="#" className="hover:text-white transition">Home</a></li>
+                  <li><a href="#" className="hover:text-white transition">Loans</a></li>
+                  <li><a href="#" className="hover:text-white transition">EMI Calculator</a></li>
+                  <li><a href="#" className="hover:text-white transition">DSA Registration</a></li>
                 </ul>
               </div>
               <div>
                 <h4 className="text-lg font-semibold mb-4">Legal</h4>
-                <ul className="space-y-2 text-gray-400 text-sm">
+                <ul className="space-y-2 text-gray-400">
                   <li><a href="#" className="hover:text-white transition">Privacy Policy</a></li>
                   <li><a href="#" className="hover:text-white transition">Terms &amp; Conditions</a></li>
                   <li><a href="#" className="hover:text-white transition">Disclaimer</a></li>
@@ -641,15 +834,23 @@ export default function Home() {
               </div>
               <div>
                 <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
-                <ul className="space-y-2 text-gray-400 text-sm">
+                <ul className="space-y-2 text-gray-400">
                   <li>📞 +91 9765435411</li>
                   <li>✉️ info@kinetikcapital.com</li>
                   <li>📍 Maharashtra, India</li>
                 </ul>
               </div>
             </div>
-            <div className="border-t border-slate-700 mt-10 pt-6 text-center text-gray-400 text-sm">
-              <p>© {new Date().getFullYear()} {COMPANY_NAME}. All Rights Reserved.</p>
+            <div className="border-t border-slate-700 mt-10 pt-6 text-center text-gray-400">
+              <div className="flex justify-center gap-6 mb-4">
+                <a href="#" className="hover:text-white transition">Facebook</a>
+                <a href="#" className="hover:text-white transition">Instagram</a>
+                <a href="#" className="hover:text-white transition">LinkedIn</a>
+                <a href="#" className="hover:text-white transition">YouTube</a>
+              </div>
+              <p>
+                © {new Date().getFullYear()} {COMPANY_NAME}. All Rights Reserved.
+              </p>
             </div>
           </div>
         </footer>
