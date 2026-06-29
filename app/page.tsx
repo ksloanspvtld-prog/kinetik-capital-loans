@@ -389,7 +389,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== EMI CALCULATOR ===== */}
+        {/* ===== EMI CALCULATOR - ACTIVE ===== */}
         <section className="max-w-7xl mx-auto px-6 py-20">
           <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10">
             <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-10">
@@ -398,8 +398,9 @@ export default function Home() {
             <div className="grid md:grid-cols-2 gap-10">
               <div className="space-y-6">
                 <div>
-                  <label className="font-semibold text-slate-700">
-                    Loan Amount: ₹{loanAmount.toLocaleString()}
+                  <label className="font-semibold text-slate-700 flex justify-between">
+                    <span>Loan Amount</span>
+                    <span className="text-indigo-600">₹{loanAmount.toLocaleString()}</span>
                   </label>
                   <input
                     type="range"
@@ -408,12 +409,18 @@ export default function Home() {
                     step="50000"
                     value={loanAmount}
                     onChange={(e) => setLoanAmount(Number(e.target.value))}
-                    className="w-full mt-2 accent-indigo-600"
+                    className="w-full mt-2 accent-indigo-600 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
                   />
+                  <div className="flex justify-between text-xs text-slate-400 mt-1">
+                    <span>₹1L</span>
+                    <span>₹50L</span>
+                  </div>
                 </div>
+
                 <div>
-                  <label className="font-semibold text-slate-700">
-                    Interest Rate: {interestRate}%
+                  <label className="font-semibold text-slate-700 flex justify-between">
+                    <span>Interest Rate</span>
+                    <span className="text-indigo-600">{interestRate}%</span>
                   </label>
                   <input
                     type="range"
@@ -422,12 +429,18 @@ export default function Home() {
                     step="0.5"
                     value={interestRate}
                     onChange={(e) => setInterestRate(Number(e.target.value))}
-                    className="w-full mt-2 accent-indigo-600"
+                    className="w-full mt-2 accent-indigo-600 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
                   />
+                  <div className="flex justify-between text-xs text-slate-400 mt-1">
+                    <span>5%</span>
+                    <span>25%</span>
+                  </div>
                 </div>
+
                 <div>
-                  <label className="font-semibold text-slate-700">
-                    Tenure: {tenure} Years
+                  <label className="font-semibold text-slate-700 flex justify-between">
+                    <span>Tenure</span>
+                    <span className="text-indigo-600">{tenure} Years</span>
                   </label>
                   <input
                     type="range"
@@ -435,29 +448,36 @@ export default function Home() {
                     max="30"
                     value={tenure}
                     onChange={(e) => setTenure(Number(e.target.value))}
-                    className="w-full mt-2 accent-indigo-600"
+                    className="w-full mt-2 accent-indigo-600 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
                   />
+                  <div className="flex justify-between text-xs text-slate-400 mt-1">
+                    <span>1 Year</span>
+                    <span>30 Years</span>
+                  </div>
                 </div>
               </div>
-              <div className="bg-slate-50 rounded-3xl p-6 md:p-8 flex flex-col justify-center">
-                <div className="text-center">
-                  <p className="text-slate-500 text-sm">Monthly EMI</p>
-                  <h3 className="text-4xl font-bold text-indigo-600">
-                    ₹{Math.round(emi).toLocaleString()}
-                  </h3>
-                </div>
-                <div className="grid grid-cols-2 gap-4 mt-6">
-                  <div className="text-center">
-                    <p className="text-slate-500 text-xs">Total Interest</p>
-                    <p className="text-xl font-bold text-slate-800">
-                      ₹{Math.round(totalInterest).toLocaleString()}
+
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl p-6 md:p-8 flex flex-col justify-center border border-slate-200">
+                <div className="text-center space-y-6">
+                  <div>
+                    <p className="text-sm text-slate-500 font-medium uppercase tracking-wider">Monthly EMI</p>
+                    <p className="text-4xl md:text-5xl font-bold text-indigo-600">
+                      ₹{Math.round(emi).toLocaleString()}
                     </p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-slate-500 text-xs">Total Payment</p>
-                    <p className="text-xl font-bold text-slate-800">
-                      ₹{Math.round(totalPayment).toLocaleString()}
-                    </p>
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200">
+                    <div>
+                      <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Total Interest</p>
+                      <p className="text-lg font-bold text-rose-600">
+                        ₹{Math.round(totalInterest).toLocaleString()}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Total Payment</p>
+                      <p className="text-lg font-bold text-emerald-600">
+                        ₹{Math.round(totalPayment).toLocaleString()}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -571,7 +591,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== WHY CHOOSE US SECTION ===== */}
+        {/* ===== WHY CHOOSE US ===== */}
         <section className="max-w-7xl mx-auto px-6 py-20">
           <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
@@ -633,7 +653,7 @@ export default function Home() {
           {loanForm}
         </section>
 
-        {/* ===== CUSTOMER TESTIMONIALS ===== */}
+        {/* ===== TESTIMONIALS ===== */}
         <section className="max-w-7xl mx-auto px-6 py-20 bg-slate-50 rounded-3xl">
           <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
@@ -699,7 +719,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== PARTNER BANKS SECTION ===== */}
+        {/* ===== PARTNER BANKS ===== */}
         <section className="py-20 overflow-hidden">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
