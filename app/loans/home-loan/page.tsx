@@ -5,6 +5,7 @@ import Navbar from "../../../components/Navbar";
 import Footer from "../../../components/Footer";
 import WhatsAppButton from "../../../components/WhatsAppButton";
 import LoanCalculator from "../../../components/LoanCalculator";
+import AddressInput from "../../../components/AddressInput"; // ✅ Import
 
 const COMPANY_NAME = "Kinetik Capital";
 const LOAN_TYPE = "Home Loan";
@@ -17,6 +18,7 @@ export default function HomeLoanPage() {
     state: "",
     loanType: LOAN_TYPE,
     monthlyIncome: "",
+     pincode: "", // ✅ Add pincode field
   });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -53,6 +55,7 @@ export default function HomeLoanPage() {
         state: "",
         loanType: LOAN_TYPE,
         monthlyIncome: "",
+         pincode: "", // ✅ Add pincode field
       });
       setTimeout(() => setSubmitted(false), 5000);
     } catch (error) {
@@ -103,7 +106,7 @@ export default function HomeLoanPage() {
                 </h3>
                 {submitted && (
                   <div className="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 rounded-xl p-3 mb-4 text-emerald-700 dark:text-emerald-400 text-sm">
-                    ✅ Application submitted successfully! We'll contact you soon.
+                    ✅ Application submitted successfully! We&apos;ll contact you soon.
                   </div>
                 )}
                 <form onSubmit={handleSubmit} className="space-y-4">

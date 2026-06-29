@@ -5,6 +5,7 @@ import Navbar from "../../../components/Navbar";
 import Footer from "../../../components/Footer";
 import WhatsAppButton from "../../../components/WhatsAppButton";
 import LoanCalculator from "../../../components/LoanCalculator";
+import AddressInput from "../../../components/AddressInput"; // ✅ Import
 
 const COMPANY_NAME = "Kinetik Capital";
 const LOAN_TYPE = "Personal Loan";
@@ -17,9 +18,19 @@ export default function PersonalLoanPage() {
     state: "",
     loanType: LOAN_TYPE,
     monthlyIncome: "",
+    pincode: "", // ✅ Add pincode field
   });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const handleAddressChange = (data: { city: string; state: string; pincode: string }) => {
+    setFormData((prev) => ({
+      ...prev,
+      city: data.city,
+      state: data.state,
+      pincode: data.pincode,
+    }));
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,6 +64,7 @@ export default function PersonalLoanPage() {
         state: "",
         loanType: LOAN_TYPE,
         monthlyIncome: "",
+        pincode: "",
       });
       setTimeout(() => setSubmitted(false), 5000);
     } catch (error) {
@@ -70,7 +82,7 @@ export default function PersonalLoanPage() {
       <main className="pt-20 min-h-screen bg-slate-50 dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-6 py-20">
           <div className="grid md:grid-cols-2 gap-12">
-            {/* Left - Info */}
+            {/* Left - Info & Form */}
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white">
                 Personal <span className="text-indigo-600">Loan</span>
@@ -97,7 +109,6 @@ export default function PersonalLoanPage() {
                 </li>
               </ul>
 
-              {/* ✅ Working Form */}
               <div className="mt-8 bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6">
                 <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4">
                   Apply for {LOAN_TYPE}
@@ -128,22 +139,18 @@ export default function PersonalLoanPage() {
                     className="w-full border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
                     required
                   />
-                  <div className="grid grid-cols-2 gap-3">
-                    <input
-                      type="text"
-                      placeholder="City"
-                      value={formData.city}
-                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      className="w-full border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
-                    />
-                    <input
-                      type="text"
-                      placeholder="State"
-                      value={formData.state}
-                      onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                      className="w-full border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
-                    />
-                  </div>
+
+                  {/* ✅ Address Input with State, City, Pincode */}
+                  <AddressInput
+                    value={{
+                      city: formData.city,
+                      state: formData.state,
+                      pincode: formData.pincode,
+                    }}
+                    onChange={handleAddressChange}
+                    required
+                  />
+
                   <input
                     type="number"
                     placeholder="Monthly Income"

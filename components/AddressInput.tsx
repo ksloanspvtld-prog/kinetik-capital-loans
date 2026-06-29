@@ -5,7 +5,7 @@ import Navbar from "../../../components/Navbar";
 import Footer from "../../../components/Footer";
 import WhatsAppButton from "../../../components/WhatsAppButton";
 import LoanCalculator from "../../../components/LoanCalculator";
-import AddressInput from "../../../components/AddressInput";
+import AddressInput from "../../../components/AddressInput"; // ✅ Import
 
 const COMPANY_NAME = "Kinetik Capital";
 const LOAN_TYPE = "Home Loan";
@@ -18,11 +18,12 @@ export default function HomeLoanPage() {
     state: "",
     loanType: LOAN_TYPE,
     monthlyIncome: "",
-    pincode: "",
+    pincode: "", // ✅ Add pincode field
   });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  // ✅ Address change handler
   const handleAddressChange = (data: { city: string; state: string; pincode: string }) => {
     setFormData((prev) => ({
       ...prev,
@@ -82,7 +83,6 @@ export default function HomeLoanPage() {
       <main className="pt-20 min-h-screen bg-slate-50 dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-6 py-20">
           <div className="grid md:grid-cols-2 gap-12">
-            {/* Left Column - Info & Form */}
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white">
                 Home <span className="text-indigo-600">Loan</span>
@@ -141,7 +141,7 @@ export default function HomeLoanPage() {
                     required
                   />
 
-                  {/* ✅ Address Input with State, City, Pincode */}
+                  {/* ✅ AddressInput - Auto-fill City/State/Pincode */}
                   <AddressInput
                     value={{
                       city: formData.city,
@@ -169,8 +169,6 @@ export default function HomeLoanPage() {
                 </form>
               </div>
             </div>
-
-            {/* Right Column - Calculator */}
             <div>
               <LoanCalculator type="emi" />
             </div>
