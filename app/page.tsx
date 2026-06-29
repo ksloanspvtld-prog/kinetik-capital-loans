@@ -23,6 +23,7 @@ export default function Home() {
   const [tenure, setTenure] = useState(5);
   const [sortOrder, setSortOrder] = useState("low");
 
+  // ✅ EMI Calculation
   const monthlyRate = interestRate / 12 / 100;
   const months = tenure * 12;
   const emi =
@@ -31,6 +32,7 @@ export default function Home() {
   const totalPayment = emi * months;
   const totalInterest = totalPayment - loanAmount;
 
+  // ✅ Handle Form Submit
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -72,11 +74,15 @@ export default function Home() {
     }
   };
 
+  // ✅ Lead Form
   const loanForm = (
     <form
       onSubmit={handleSubmit}
       className="bg-white rounded-3xl shadow-xl p-6 md:p-8 max-w-3xl mx-auto"
     >
+      <h2 className="text-2xl md:text-3xl font-bold text-center text-slate-800 mb-6">
+        Get Loan Offers
+      </h2>
       <div className="grid md:grid-cols-2 gap-4 md:gap-5">
         <input
           type="text"
@@ -389,17 +395,27 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== EMI CALCULATOR - ACTIVE ===== */}
+        {/* ===== EMI CALCULATOR - FULLY ACTIVE ===== */}
         <section className="max-w-7xl mx-auto px-6 py-20">
           <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10">
             <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-10">
-              EMI Calculator
+              📊 EMI Calculator
             </h2>
+
+            {/* ✅ Monthly EMI - Prominent Display */}
+            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 md:p-8 mb-8 text-center shadow-lg shadow-indigo-500/30">
+              <p className="text-white/80 text-sm font-medium uppercase tracking-wider">Your Monthly EMI</p>
+              <p className="text-5xl md:text-6xl font-bold text-white mt-2 animate-pulse">
+                ₹{Math.round(emi).toLocaleString()}
+              </p>
+              <p className="text-white/60 text-xs mt-2">Based on your loan details</p>
+            </div>
+
             <div className="grid md:grid-cols-2 gap-10">
               <div className="space-y-6">
                 <div>
                   <label className="font-semibold text-slate-700 flex justify-between">
-                    <span>Loan Amount</span>
+                    <span>🏦 Loan Amount</span>
                     <span className="text-indigo-600">₹{loanAmount.toLocaleString()}</span>
                   </label>
                   <input
@@ -419,7 +435,7 @@ export default function Home() {
 
                 <div>
                   <label className="font-semibold text-slate-700 flex justify-between">
-                    <span>Interest Rate</span>
+                    <span>📈 Interest Rate</span>
                     <span className="text-indigo-600">{interestRate}%</span>
                   </label>
                   <input
@@ -439,7 +455,7 @@ export default function Home() {
 
                 <div>
                   <label className="font-semibold text-slate-700 flex justify-between">
-                    <span>Tenure</span>
+                    <span>📅 Tenure</span>
                     <span className="text-indigo-600">{tenure} Years</span>
                   </label>
                   <input
@@ -459,22 +475,22 @@ export default function Home() {
 
               <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl p-6 md:p-8 flex flex-col justify-center border border-slate-200">
                 <div className="text-center space-y-6">
-                  <div>
-                    <p className="text-sm text-slate-500 font-medium uppercase tracking-wider">Monthly EMI</p>
-                    <p className="text-4xl md:text-5xl font-bold text-indigo-600">
-                      ₹{Math.round(emi).toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200">
-                    <div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                      <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Monthly EMI</p>
+                      <p className="text-xl font-bold text-indigo-600">
+                        ₹{Math.round(emi).toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
                       <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Total Interest</p>
-                      <p className="text-lg font-bold text-rose-600">
+                      <p className="text-xl font-bold text-rose-600">
                         ₹{Math.round(totalInterest).toLocaleString()}
                       </p>
                     </div>
-                    <div>
+                    <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 col-span-2">
                       <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Total Payment</p>
-                      <p className="text-lg font-bold text-emerald-600">
+                      <p className="text-xl font-bold text-emerald-600">
                         ₹{Math.round(totalPayment).toLocaleString()}
                       </p>
                     </div>
