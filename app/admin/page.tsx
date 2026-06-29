@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import {
-  PieChart, Pie, Cell, ResponsiveContainer, Tooltip
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell
 } from "recharts";
 
 // ✅ Company Name - येथे बदला
@@ -23,13 +24,27 @@ export default function AdminPage() {
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  // ✅ Monthly Data for Bar Chart
+  const monthlyData = useMemo(() => {
+    const months: Record<string, number> = {};
+    leads.forEach((lead) => {
+      if (lead.createdAt) {
+        const month = new Date(lead.createdAt).toLocaleString("default", {
+          month: "short",
+        });
+        months[month] = (months[month] || 0) + 1;
+      }
+    });
+    return Object.entries(months).map(([name, count]) => ({ name, count }));
+  }, [leads]);
+
   // ✅ Pie Chart Data with Colors
   const pieData = [
     { name: "New", value: leads.filter((l) => l.status === "New").length, color: "#f59e0b" },
     { name: "Contacted", value: leads.filter((l) => l.status === "Contacted").length, color: "#f97316" },
     { name: "Approved", value: leads.filter((l) => l.status === "Approved").length, color: "#22c55e" },
     { name: "Rejected", value: leads.filter((l) => l.status === "Rejected").length, color: "#ef4444" },
-  ].filter(d => d.value > 0);
+  ].filter((d) => d.value > 0);
 
   const deleteNote = async (noteId: string) => {
     try {
@@ -102,7 +117,8 @@ export default function AdminPage() {
     setTimeout(() => {
       setIsRefreshing(false);
       const toast = document.createElement("div");
-      toast.className = "fixed top-4 right-4 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-2xl z-50 animate-slide-in text-sm font-medium";
+      toast.className =
+        "fixed top-4 right-4 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-2xl z-50 animate-slide-in text-sm font-medium";
       toast.textContent = "✅ Data Refreshed Successfully!";
       document.body.appendChild(toast);
       setTimeout(() => toast.remove(), 3000);
@@ -233,7 +249,8 @@ export default function AdminPage() {
     });
 
     const file = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
     });
 
     saveAs(file, `${COMPANY_NAME}_Leads.xlsx`);
@@ -241,7 +258,6 @@ export default function AdminPage() {
 
   return (
     <div className="p-4 md:p-10 bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen relative">
-      
       {/* ===== HEADER WITH REFRESH BUTTON ===== */}
       <div className="flex flex-wrap justify-between items-center mb-8 gap-4 bg-white/80 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-white/50">
         <div className="flex items-center gap-4">
@@ -260,16 +276,32 @@ export default function AdminPage() {
             onClick={refreshData}
             disabled={isRefreshing}
             className={`px-5 py-3 rounded-xl transition-all duration-300 flex items-center gap-2 text-white font-medium ${
-              isRefreshing 
-                ? "bg-slate-400 cursor-not-allowed" 
+              isRefreshing
+                ? "bg-slate-400 cursor-not-allowed"
                 : "bg-gradient-to-r from-blue-500 to-blue-600 hover:shadow-lg hover:shadow-blue-500/30"
             }`}
           >
             {isRefreshing ? (
               <>
-                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Refreshing...
               </>
@@ -305,92 +337,133 @@ export default function AdminPage() {
       {/* ===== STATS CARDS WITH STATUS COLORS ===== */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
         <div className="bg-gradient-to-br from-orange-400 to-orange-500 text-white p-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-          <p className="text-xs opacity-90 font-medium uppercase tracking-wider">Today's Follow Ups</p>
+          <p className="text-xs opacity-90 font-medium uppercase tracking-wider">
+            Today&apos;s Follow Ups
+          </p>
           <h2 className="text-3xl font-bold mt-2">{todayFollowUps.length}</h2>
         </div>
 
         <div className="bg-gradient-to-br from-indigo-400 to-indigo-500 text-white p-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-          <p className="text-xs opacity-90 font-medium uppercase tracking-wider">Total Leads</p>
+          <p className="text-xs opacity-90 font-medium uppercase tracking-wider">
+            Total Leads
+          </p>
           <h2 className="text-3xl font-bold mt-2">{leads.length}</h2>
         </div>
 
-        {/* 🟡 NEW - Yellow */}
         <div className="bg-gradient-to-br from-yellow-400 to-yellow-500 text-white p-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-          <p className="text-xs opacity-90 font-medium uppercase tracking-wider">New</p>
-          <h2 className="text-3xl font-bold mt-2">{leads.filter((l) => l.status === "New").length}</h2>
+          <p className="text-xs opacity-90 font-medium uppercase tracking-wider">
+            New
+          </p>
+          <h2 className="text-3xl font-bold mt-2">
+            {leads.filter((l) => l.status === "New").length}
+          </h2>
         </div>
 
-        {/* 🟠 CONTACTED - Orange */}
         <div className="bg-gradient-to-br from-orange-400 to-orange-500 text-white p-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-          <p className="text-xs opacity-90 font-medium uppercase tracking-wider">Contacted</p>
-          <h2 className="text-3xl font-bold mt-2">{leads.filter((l) => l.status === "Contacted").length}</h2>
+          <p className="text-xs opacity-90 font-medium uppercase tracking-wider">
+            Contacted
+          </p>
+          <h2 className="text-3xl font-bold mt-2">
+            {leads.filter((l) => l.status === "Contacted").length}
+          </h2>
         </div>
 
-        {/* 🟢 APPROVED - Green */}
         <div className="bg-gradient-to-br from-emerald-400 to-emerald-500 text-white p-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-          <p className="text-xs opacity-90 font-medium uppercase tracking-wider">Approved</p>
-          <h2 className="text-3xl font-bold mt-2">{leads.filter((l) => l.status === "Approved").length}</h2>
+          <p className="text-xs opacity-90 font-medium uppercase tracking-wider">
+            Approved
+          </p>
+          <h2 className="text-3xl font-bold mt-2">
+            {leads.filter((l) => l.status === "Approved").length}
+          </h2>
         </div>
 
-        {/* 🔴 REJECTED - Red */}
         <div className="bg-gradient-to-br from-rose-400 to-rose-500 text-white p-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-          <p className="text-xs opacity-90 font-medium uppercase tracking-wider">Rejected</p>
-          <h2 className="text-3xl font-bold mt-2">{leads.filter((l) => l.status === "Rejected").length}</h2>
+          <p className="text-xs opacity-90 font-medium uppercase tracking-wider">
+            Rejected
+          </p>
+          <h2 className="text-3xl font-bold mt-2">
+            {leads.filter((l) => l.status === "Rejected").length}
+          </h2>
         </div>
       </div>
 
-      {/* ===== PIE CHART SECTION ===== */}
-      {pieData.length > 0 && (
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4">📈 Status Distribution</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie
-                data={pieData}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={90}
-                fill="#8884d8"
-                paddingAngle={5}
-                dataKey="value"
-                label={({ name, value }) => `${name}: ${value}`}
-              >
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'white', 
-                  borderRadius: '12px',
-                  border: '1px solid #e2e8f0',
-                  boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)'
-                }} 
-              />
-            </PieChart>
-          </ResponsiveContainer>
-          {/* ✅ Status Color Legend */}
-          <div className="flex flex-wrap justify-center gap-4 mt-4">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
-              <span className="text-sm text-slate-600">New</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-orange-500"></div>
-              <span className="text-sm text-slate-600">Contacted</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-emerald-500"></div>
-              <span className="text-sm text-slate-600">Approved</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-rose-500"></div>
-              <span className="text-sm text-slate-600">Rejected</span>
+      {/* ===== CHARTS SECTION ===== */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* ✅ BAR CHART - Monthly Leads */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-6">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4">
+            📊 Monthly Leads
+          </h3>
+          {monthlyData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={monthlyData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="count" fill="#6366f1" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <p className="text-center text-slate-400 py-10">No data available</p>
+          )}
+        </div>
+
+        {/* ✅ PIE CHART - Status Distribution */}
+        {pieData.length > 0 && (
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-6">
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">
+              📈 Status Distribution
+            </h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={90}
+                  fill="#8884d8"
+                  paddingAngle={5}
+                  dataKey="value"
+                  label={({ name, value }) => `${name}: ${value}`}
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "white",
+                    borderRadius: "12px",
+                    border: "1px solid #e2e8f0",
+                    boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)",
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+            {/* ✅ Status Color Legend */}
+            <div className="flex flex-wrap justify-center gap-4 mt-4">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
+                <span className="text-sm text-slate-600">New</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-orange-500"></div>
+                <span className="text-sm text-slate-600">Contacted</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-emerald-500"></div>
+                <span className="text-sm text-slate-600">Approved</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-rose-500"></div>
+                <span className="text-sm text-slate-600">Rejected</span>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* ===== SEARCH ===== */}
       <div className="mb-6">
@@ -506,7 +579,7 @@ export default function AdminPage() {
       {todayFollowUps.length > 0 && (
         <div className="border-2 border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl p-4 mb-6 shadow-lg">
           <h2 className="text-amber-600 text-2xl font-bold mb-4 flex items-center gap-2">
-            📞 Today's Follow Ups ({todayFollowUps.length})
+            📞 Today&apos;s Follow Ups ({todayFollowUps.length})
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {todayFollowUps.map((lead) => (
@@ -537,14 +610,30 @@ export default function AdminPage() {
         <table className="w-full">
           <thead>
             <tr className="bg-gradient-to-r from-slate-800 to-slate-900">
-              <th className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider">Name</th>
-              <th className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider hidden sm:table-cell">Mobile</th>
-              <th className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider hidden md:table-cell">City</th>
-              <th className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider hidden lg:table-cell">Loan Type</th>
-              <th className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider hidden xl:table-cell">Income</th>
-              <th className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider hidden lg:table-cell">Follow Up</th>
-              <th className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider">Status</th>
-              <th className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider">Actions</th>
+              <th className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
+                Name
+              </th>
+              <th className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider hidden sm:table-cell">
+                Mobile
+              </th>
+              <th className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider hidden md:table-cell">
+                City
+              </th>
+              <th className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider hidden lg:table-cell">
+                Loan Type
+              </th>
+              <th className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider hidden xl:table-cell">
+                Income
+              </th>
+              <th className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider hidden lg:table-cell">
+                Follow Up
+              </th>
+              <th className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -571,53 +660,76 @@ export default function AdminPage() {
                   : false;
 
                 // ✅ Status Color Classes
-                const statusColorClass = 
-                  lead.status === "New" ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200" :
-                  lead.status === "Contacted" ? "bg-orange-100 text-orange-700 hover:bg-orange-200" :
-                  lead.status === "Approved" ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200" :
-                  "bg-rose-100 text-rose-700 hover:bg-rose-200";
-
-                // ✅ Status Emoji
-                const statusEmoji = 
-                  lead.status === "New" ? "🟡" :
-                  lead.status === "Contacted" ? "🟠" :
-                  lead.status === "Approved" ? "🟢" : "🔴";
+                const statusColorClass =
+                  lead.status === "New"
+                    ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
+                    : lead.status === "Contacted"
+                    ? "bg-orange-100 text-orange-700 hover:bg-orange-200"
+                    : lead.status === "Approved"
+                    ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                    : "bg-rose-100 text-rose-700 hover:bg-rose-200";
 
                 return (
                   <tr
                     key={lead._id}
                     className={`hover:bg-slate-50 transition-colors ${
-                      isOverdue ? "bg-rose-50/50" : isToday ? "bg-amber-50/50" : ""
+                      isOverdue
+                        ? "bg-rose-50/50"
+                        : isToday
+                        ? "bg-amber-50/50"
+                        : ""
                     }`}
                   >
                     <td className="p-4">
                       <div>
-                        <p className="font-medium text-slate-800">{lead.fullName}</p>
+                        <p className="font-medium text-slate-800">
+                          {lead.fullName}
+                        </p>
                         {isOverdue && (
-                          <span className="inline-block mt-1 text-[10px] bg-rose-600 text-white px-2 py-0.5 rounded-full font-bold">OVERDUE</span>
+                          <span className="inline-block mt-1 text-[10px] bg-rose-600 text-white px-2 py-0.5 rounded-full font-bold">
+                            OVERDUE
+                          </span>
                         )}
                         {isToday && (
-                          <span className="inline-block mt-1 text-[10px] bg-amber-500 text-white px-2 py-0.5 rounded-full font-bold">TODAY</span>
+                          <span className="inline-block mt-1 text-[10px] bg-amber-500 text-white px-2 py-0.5 rounded-full font-bold">
+                            TODAY
+                          </span>
                         )}
                       </div>
                     </td>
-                    <td className="p-4 hidden sm:table-cell text-sm text-slate-600">{lead.mobile}</td>
-                    <td className="p-4 hidden md:table-cell text-sm text-slate-600">{lead.city}</td>
+                    <td className="p-4 hidden sm:table-cell text-sm text-slate-600">
+                      {lead.mobile}
+                    </td>
+                    <td className="p-4 hidden md:table-cell text-sm text-slate-600">
+                      {lead.city}
+                    </td>
                     <td className="p-4 hidden lg:table-cell">
                       <span className="px-2 py-1 bg-slate-100 rounded-full text-xs font-medium text-slate-600">
                         {lead.loanType}
                       </span>
                     </td>
-                    <td className="p-4 hidden xl:table-cell text-sm font-medium text-slate-700">₹ {lead.monthlyIncome}</td>
+                    <td className="p-4 hidden xl:table-cell text-sm font-medium text-slate-700">
+                      ₹ {lead.monthlyIncome}
+                    </td>
                     <td className="p-4 hidden lg:table-cell text-sm">
-                      <span className={isOverdue ? "text-rose-600 font-bold" : isToday ? "text-amber-600 font-bold" : "text-slate-500"}>
+                      <span
+                        className={
+                          isOverdue
+                            ? "text-rose-600 font-bold"
+                            : isToday
+                            ? "text-amber-600 font-bold"
+                            : "text-slate-500"
+                        }
+                      >
                         {lead.followUpDate || "-"}
                       </span>
                     </td>
                     <td className="p-4">
                       <select
                         value={lead.status}
-                        onChange={(e) => updateStatus(lead._id, e.target.value)}
+                        onChange={(e) =>
+                          updateStatus(lead._id, e.target.value)
+                        }
                         className={`px-3 py-1.5 rounded-xl text-xs font-medium border-0 cursor-pointer transition-colors ${statusColorClass}`}
                       >
                         <option value="New">🟡 New</option>
@@ -707,7 +819,9 @@ export default function AdminPage() {
                 <h2 className="text-2xl font-bold text-slate-800">
                   📋 {selectedLead.fullName}
                 </h2>
-                <p className="text-sm text-slate-400">ID: {selectedLead._id.slice(-8)}</p>
+                <p className="text-sm text-slate-400">
+                  ID: {selectedLead._id.slice(-8)}
+                </p>
               </div>
               <button
                 onClick={() => setSelectedLead(null)}
@@ -731,7 +845,9 @@ export default function AdminPage() {
             />
 
             <div className="mt-4">
-              <label className="font-semibold text-slate-700">Follow Up Date</label>
+              <label className="font-semibold text-slate-700">
+                Follow Up Date
+              </label>
               <input
                 type="date"
                 value={selectedLead.followUpDate || ""}
@@ -752,7 +868,9 @@ export default function AdminPage() {
               </div>
               <div className="bg-slate-50 p-3 rounded-xl">
                 <p className="text-xs text-gray-500">📍 Location</p>
-                <p className="font-semibold">{selectedLead.city}, {selectedLead.state}</p>
+                <p className="font-semibold">
+                  {selectedLead.city}, {selectedLead.state}
+                </p>
               </div>
               <div className="bg-slate-50 p-3 rounded-xl">
                 <p className="text-xs text-gray-500">🏦 Loan</p>
@@ -768,21 +886,30 @@ export default function AdminPage() {
             <div className="mt-5">
               <h3 className="font-bold text-lg mb-3">📝 Notes History</h3>
               <div className="max-h-40 overflow-y-auto space-y-2">
-                {selectedLead.notesHistory && selectedLead.notesHistory.length > 0 ? (
-                  selectedLead.notesHistory.slice().reverse().map((item: any) => (
-                    <div key={item._id} className="bg-slate-50 border rounded-xl p-3 flex justify-between items-center">
-                      <div>
-                        <p className="font-medium">{item.note}</p>
-                        <small className="text-gray-500 text-xs">{new Date(item.createdAt).toLocaleString()}</small>
-                      </div>
-                      <button
-                        onClick={() => deleteNote(item._id)}
-                        className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1.5 rounded-lg text-sm transition"
+                {selectedLead.notesHistory &&
+                selectedLead.notesHistory.length > 0 ? (
+                  selectedLead.notesHistory
+                    .slice()
+                    .reverse()
+                    .map((item: any) => (
+                      <div
+                        key={item._id}
+                        className="bg-slate-50 border rounded-xl p-3 flex justify-between items-center"
                       >
-                        🗑 Delete
-                      </button>
-                    </div>
-                  ))
+                        <div>
+                          <p className="font-medium">{item.note}</p>
+                          <small className="text-gray-500 text-xs">
+                            {new Date(item.createdAt).toLocaleString()}
+                          </small>
+                        </div>
+                        <button
+                          onClick={() => deleteNote(item._id)}
+                          className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1.5 rounded-lg text-sm transition"
+                        >
+                          🗑 Delete
+                        </button>
+                      </div>
+                    ))
                 ) : (
                   <p className="text-gray-500">No Notes Available</p>
                 )}
@@ -793,21 +920,32 @@ export default function AdminPage() {
             <div className="mt-5">
               <h3 className="font-bold text-lg mb-3">📅 Follow Up History</h3>
               <div className="space-y-2 max-h-40 overflow-y-auto">
-                {selectedLead.followUpHistory && selectedLead.followUpHistory.length > 0 ? (
-                  selectedLead.followUpHistory.slice().reverse().map((item: any, index: number) => (
-                    <div key={item._id || index} className="bg-green-50 border border-green-200 rounded-xl p-3 flex justify-between items-center">
-                      <div>
-                        <p className="font-semibold text-green-700">{item.date}</p>
-                        <small className="text-gray-500 text-xs">{new Date(item.createdAt).toLocaleString()}</small>
-                      </div>
-                      <button
-                        onClick={() => deleteNote(item._id)}
-                        className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1.5 rounded-lg text-sm transition"
+                {selectedLead.followUpHistory &&
+                selectedLead.followUpHistory.length > 0 ? (
+                  selectedLead.followUpHistory
+                    .slice()
+                    .reverse()
+                    .map((item: any, index: number) => (
+                      <div
+                        key={item._id || index}
+                        className="bg-green-50 border border-green-200 rounded-xl p-3 flex justify-between items-center"
                       >
-                        🗑 Delete
-                      </button>
-                    </div>
-                  ))
+                        <div>
+                          <p className="font-semibold text-green-700">
+                            {item.date}
+                          </p>
+                          <small className="text-gray-500 text-xs">
+                            {new Date(item.createdAt).toLocaleString()}
+                          </small>
+                        </div>
+                        <button
+                          onClick={() => deleteNote(item._id)}
+                          className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1.5 rounded-lg text-sm transition"
+                        >
+                          🗑 Delete
+                        </button>
+                      </div>
+                    ))
                 ) : (
                   <p className="text-gray-500">No Follow Ups Available</p>
                 )}
