@@ -3,27 +3,28 @@
 import { useState, useEffect } from "react";
 
 export default function DarkModeToggle() {
-  const [isDark, setIsDark] = useState(false);
+  // ✅ State directly from localStorage (no effect needed for initial value)
+  const [isDark, setIsDark] = useState(() => {
+    // This runs only once on mount
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("darkMode") === "true";
+    }
+    return false;
+  });
 
+  // ✅ Effect only for applying/removing the class and syncing storage
   useEffect(() => {
-    const saved = localStorage.getItem("darkMode") === "true";
-    setIsDark(saved);
-    if (saved) {
+    if (isDark) {
       document.documentElement.classList.add("dark");
+      localStorage.setItem("darkMode", "true");
     } else {
       document.documentElement.classList.remove("dark");
+      localStorage.setItem("darkMode", "false");
     }
-  }, []);
+  }, [isDark]);
 
   const toggleDarkMode = () => {
-    const newDark = !isDark;
-    setIsDark(newDark);
-    localStorage.setItem("darkMode", String(newDark));
-    if (newDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    setIsDark((prev) => !prev);
   };
 
   return (
