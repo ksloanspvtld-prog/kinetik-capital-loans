@@ -27,7 +27,10 @@ export default function AdminPage() {
   
   // ✅ Bulk Actions States
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
-  const [showBulkBar, setShowBulkBar] = useState(false);
+  
+  // ✅ Date Range Filter States
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   // ✅ Monthly Data for Bar Chart
   const monthlyData = useMemo(() => {
@@ -51,18 +54,39 @@ export default function AdminPage() {
     { name: "Rejected", value: leads.filter((l) => l.status === "Rejected").length, color: "#ef4444" },
   ].filter((d) => d.value > 0);
 
-  // ✅ Filtered Leads for Bulk Actions
+  // ✅ Filtered Leads with Date Range
   const filteredLeads = useMemo(() => {
     const searchText = search.toLowerCase();
     return leads.filter((lead) => {
+      // Search filter
       const matchesSearch =
         lead.fullName?.toLowerCase().includes(searchText) ||
         lead.mobile?.toString().includes(searchText);
+      
+      // Status filter
       const matchesStatus =
         statusFilter === "All" || lead.status === statusFilter;
-      return matchesSearch && matchesStatus;
+      
+      // ✅ Date Range filter
+      let matchesDate = true;
+      if (dateFrom && lead.createdAt) {
+        const leadDate = new Date(lead.createdAt).toISOString().split("T")[0];
+        if (leadDate < dateFrom) matchesDate = false;
+      }
+      if (dateTo && lead.createdAt) {
+        const leadDate = new Date(lead.createdAt).toISOString().split("T")[0];
+        if (leadDate > dateTo) matchesDate = false;
+      }
+      
+      return matchesSearch && matchesStatus && matchesDate;
     });
-  }, [leads, search, statusFilter]);
+  }, [leads, search, statusFilter, dateFrom, dateTo]);
+
+  // ✅ Clear Date Filters
+  const clearDateFilter = () => {
+    setDateFrom("");
+    setDateTo("");
+  };
 
   // ✅ Select All Toggle
   const toggleSelectAll = () => {
@@ -641,73 +665,89 @@ export default function AdminPage() {
         />
       </div>
 
-      {/* ===== FILTER BUTTONS ===== */}
-      <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 md:mb-6">
-        <button
-          onClick={() => setStatusFilter("All")}
-          className={`px-2.5 md:px-4 py-1.5 md:py-2 rounded-xl transition-all duration-300 text-xs md:text-sm font-medium ${
-            statusFilter === "All"
-              ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30"
-              : "bg-white/80 backdrop-blur-sm text-slate-600 hover:bg-white hover:shadow-md"
-          }`}
-        >
-          All
-        </button>
-        <button
-          onClick={() => setStatusFilter("New")}
-          className={`px-2.5 md:px-4 py-1.5 md:py-2 rounded-xl transition-all duration-300 text-xs md:text-sm font-medium ${
-            statusFilter === "New"
-              ? "bg-yellow-500 text-white shadow-lg shadow-yellow-500/30"
-              : "bg-white/80 backdrop-blur-sm text-slate-600 hover:bg-white hover:shadow-md"
-          }`}
-        >
-          🟡 New
-        </button>
-        <button
-          onClick={() => setStatusFilter("Contacted")}
-          className={`px-2.5 md:px-4 py-1.5 md:py-2 rounded-xl transition-all duration-300 text-xs md:text-sm font-medium ${
-            statusFilter === "Contacted"
-              ? "bg-orange-500 text-white shadow-lg shadow-orange-500/30"
-              : "bg-white/80 backdrop-blur-sm text-slate-600 hover:bg-white hover:shadow-md"
-          }`}
-        >
-          🟠 Contacted
-        </button>
-        <button
-          onClick={() => setStatusFilter("Approved")}
-          className={`px-2.5 md:px-4 py-1.5 md:py-2 rounded-xl transition-all duration-300 text-xs md:text-sm font-medium ${
-            statusFilter === "Approved"
-              ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30"
-              : "bg-white/80 backdrop-blur-sm text-slate-600 hover:bg-white hover:shadow-md"
-          }`}
-        >
-          🟢 Approved
-        </button>
-        <button
-          onClick={() => setStatusFilter("Rejected")}
-          className={`px-2.5 md:px-4 py-1.5 md:py-2 rounded-xl transition-all duration-300 text-xs md:text-sm font-medium ${
-            statusFilter === "Rejected"
-              ? "bg-rose-500 text-white shadow-lg shadow-rose-500/30"
-              : "bg-white/80 backdrop-blur-sm text-slate-600 hover:bg-white hover:shadow-md"
-          }`}
-        >
-          🔴 Rejected
-        </button>
-      </div>
+      {/* ===== FILTERS SECTION ===== */}
+      <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-4 md:mb-6 bg-white/80 backdrop-blur-sm p-3 md:p-4 rounded-2xl shadow-lg border border-white/50">
+        {/* Status Buttons */}
+        <div className="flex flex-wrap gap-1.5 sm:gap-2">
+          <button
+            onClick={() => setStatusFilter("All")}
+            className={`px-2.5 md:px-4 py-1.5 md:py-2 rounded-xl transition-all duration-300 text-xs md:text-sm font-medium ${
+              statusFilter === "All"
+                ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30"
+                : "bg-white/80 backdrop-blur-sm text-slate-600 hover:bg-white hover:shadow-md"
+            }`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setStatusFilter("New")}
+            className={`px-2.5 md:px-4 py-1.5 md:py-2 rounded-xl transition-all duration-300 text-xs md:text-sm font-medium ${
+              statusFilter === "New"
+                ? "bg-yellow-500 text-white shadow-lg shadow-yellow-500/30"
+                : "bg-white/80 backdrop-blur-sm text-slate-600 hover:bg-white hover:shadow-md"
+            }`}
+          >
+            🟡 New
+          </button>
+          <button
+            onClick={() => setStatusFilter("Contacted")}
+            className={`px-2.5 md:px-4 py-1.5 md:py-2 rounded-xl transition-all duration-300 text-xs md:text-sm font-medium ${
+              statusFilter === "Contacted"
+                ? "bg-orange-500 text-white shadow-lg shadow-orange-500/30"
+                : "bg-white/80 backdrop-blur-sm text-slate-600 hover:bg-white hover:shadow-md"
+            }`}
+          >
+            🟠 Contacted
+          </button>
+          <button
+            onClick={() => setStatusFilter("Approved")}
+            className={`px-2.5 md:px-4 py-1.5 md:py-2 rounded-xl transition-all duration-300 text-xs md:text-sm font-medium ${
+              statusFilter === "Approved"
+                ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30"
+                : "bg-white/80 backdrop-blur-sm text-slate-600 hover:bg-white hover:shadow-md"
+            }`}
+          >
+            🟢 Approved
+          </button>
+          <button
+            onClick={() => setStatusFilter("Rejected")}
+            className={`px-2.5 md:px-4 py-1.5 md:py-2 rounded-xl transition-all duration-300 text-xs md:text-sm font-medium ${
+              statusFilter === "Rejected"
+                ? "bg-rose-500 text-white shadow-lg shadow-rose-500/30"
+                : "bg-white/80 backdrop-blur-sm text-slate-600 hover:bg-white hover:shadow-md"
+            }`}
+          >
+            🔴 Rejected
+          </button>
+        </div>
 
-      {/* ===== STATUS DROPDOWN ===== */}
-      <div className="mb-4 md:mb-6">
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="w-full md:w-auto border-2 border-slate-200 p-2.5 md:p-3 rounded-xl bg-white/80 backdrop-blur-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all duration-300 text-sm md:text-base"
-        >
-          <option value="All">All Status</option>
-          <option value="New">🟡 New</option>
-          <option value="Contacted">🟠 Contacted</option>
-          <option value="Approved">🟢 Approved</option>
-          <option value="Rejected">🔴 Rejected</option>
-        </select>
+        <span className="text-slate-300 hidden sm:inline">|</span>
+
+        {/* ✅ DATE RANGE FILTER */}
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="text-xs md:text-sm text-slate-500 font-medium">📅 From:</label>
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            className="px-2 md:px-3 py-1.5 md:py-2 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 text-xs md:text-sm w-28 md:w-32"
+          />
+          <label className="text-xs md:text-sm text-slate-500 font-medium">To:</label>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            className="px-2 md:px-3 py-1.5 md:py-2 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all duration-300 bg-white/80 text-xs md:text-sm w-28 md:w-32"
+          />
+          {(dateFrom || dateTo) && (
+            <button
+              onClick={clearDateFilter}
+              className="px-2 md:px-3 py-1.5 md:py-2 bg-rose-500 text-white rounded-xl text-xs md:text-sm hover:bg-rose-600 transition"
+            >
+              ✕ Clear
+            </button>
+          )}
+        </div>
       </div>
 
       {/* ===== OVERDUE FOLLOW UPS ===== */}
