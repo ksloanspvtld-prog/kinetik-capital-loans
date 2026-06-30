@@ -5,6 +5,7 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import WhatsAppButton from "../components/WhatsAppButton";
 import AddressInput from "../components/AddressInput";
+import Chatbot from "../components/Chatbot"; // ✅ Chatbot Import
 
 // ✅ Company Name - येथे बदला
 const COMPANY_NAME = "Kinetik Capital";
@@ -912,6 +913,9 @@ export default function Home() {
           </div>
         </footer>
       </main>
+
+      {/* ✅ Chatbot - Floating Button & Window */}
+      <Chatbot />
     </>
   );
 }
