@@ -5,7 +5,7 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import WhatsAppButton from "../components/WhatsAppButton";
 import AddressInput from "../components/AddressInput";
-import Chatbot from "../components/Chatbot"; // ✅ Chatbot Import
+import Chatbot from "../components/Chatbot";
 
 // ✅ Company Name - येथे बदला
 const COMPANY_NAME = "Kinetik Capital";
@@ -53,13 +53,20 @@ export default function Home() {
   const [tenure, setTenure] = useState(5);
   const [sortOrder, setSortOrder] = useState("low");
 
+  // ✅ Partner Form State
+  const [partnerData, setPartnerData] = useState({
+    fullName: "",
+    email: "",
+    mobile: "",
+    city: "",
+    experience: "",
+  });
+  const [partnerLoading, setPartnerLoading] = useState(false);
+
   // Slider state
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
-  const cardWidth = 300; // approximate, will be computed dynamically
 
-  // Go to next/prev slide
   const goToSlide = (index: number) => {
     const container = sliderRef.current;
     if (!container) return;
@@ -70,7 +77,6 @@ export default function Home() {
     container.scrollTo({ left: scrollAmount, behavior: "smooth" });
   };
 
-  // Update current index on scroll
   useEffect(() => {
     const container = sliderRef.current;
     if (!container) return;
@@ -105,7 +111,7 @@ export default function Home() {
     }));
   };
 
-  // ===== Handle Form Submit =====
+  // ===== Handle Loan Form Submit =====
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -145,6 +151,47 @@ export default function Home() {
       alert("❌ Failed to submit. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // ===== Handle Partner Form Submit =====
+  const handlePartnerSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPartnerLoading(true);
+
+    if (partnerData.mobile.length !== 10) {
+      alert("Please enter a valid 10-digit mobile number");
+      setPartnerLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/partners", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(partnerData),
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        alert(data.message || "Something went wrong");
+        return;
+      }
+
+      alert("✅ Partner Registration Successful! We'll contact you soon.");
+      setPartnerData({
+        fullName: "",
+        email: "",
+        mobile: "",
+        city: "",
+        experience: "",
+      });
+    } catch (error) {
+      console.error(error);
+      alert("❌ Failed to submit. Please try again.");
+    } finally {
+      setPartnerLoading(false);
     }
   };
 
@@ -323,9 +370,7 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Slider Container */}
           <div className="relative">
-            {/* Left Arrow */}
             <button
               onClick={() => goToSlide(currentIndex - 1)}
               disabled={currentIndex === 0}
@@ -336,7 +381,6 @@ export default function Home() {
               </svg>
             </button>
 
-            {/* Slider Track */}
             <div
               ref={sliderRef}
               className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 hide-scrollbar"
@@ -362,7 +406,6 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Right Arrow */}
             <button
               onClick={() => goToSlide(currentIndex + 1)}
               disabled={currentIndex >= Math.ceil(loanProducts.length / 4) - 1}
@@ -374,7 +417,6 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Dots */}
           <div className="flex justify-center gap-2 mt-6">
             {Array.from({ length: Math.ceil(loanProducts.length / 4) }).map((_, idx) => (
               <button
@@ -479,7 +521,6 @@ export default function Home() {
               📊 EMI Calculator
             </h2>
 
-            {/* Monthly EMI - Prominent Display */}
             <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 md:p-8 mb-8 text-center shadow-lg shadow-indigo-500/30">
               <p className="text-white/80 text-sm font-medium uppercase tracking-wider">Your Monthly EMI</p>
               <p className="text-5xl md:text-6xl font-bold text-white mt-2 animate-pulse">
@@ -809,6 +850,118 @@ export default function Home() {
                 <p className="text-sm text-gray-500">{testimonial.city}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* ===== UNIQUE "Become a Partner" SECTION ===== */}
+        <section id="become-partner" className="max-w-7xl mx-auto px-6 py-20">
+          <div className="bg-white rounded-3xl shadow-2xl border-2 border-indigo-100 p-8 md:p-12 relative overflow-hidden">
+            {/* Decorative background element */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full opacity-30 -translate-y-1/2 translate-x-1/2"></div>
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-emerald-100 to-teal-100 rounded-full opacity-30 translate-y-1/2 -translate-x-1/2"></div>
+
+            <div className="relative z-10">
+              <div className="text-center mb-10">
+                <span className="inline-block px-4 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-semibold tracking-wider uppercase mb-3">
+                  Join the Network
+                </span>
+                <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
+                  Become a <span className="text-indigo-600">Partner</span>
+                </h2>
+                <p className="mt-4 text-slate-600 max-w-2xl mx-auto">
+                  Unlock a world of opportunities with India's most trusted loan distribution platform. 
+                  <br className="hidden sm:block" />
+                  Start your journey towards financial independence today.
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {/* Benefit Cards */}
+                <div className="bg-indigo-50 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition">
+                  <div className="w-14 h-14 bg-indigo-600 text-white rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">💰</div>
+                  <h4 className="text-lg font-bold text-slate-800">High Earnings</h4>
+                  <p className="text-sm text-slate-500 mt-2">Risk-free, high-gain business model with multiple revenue streams.</p>
+                </div>
+                <div className="bg-purple-50 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition">
+                  <div className="w-14 h-14 bg-purple-600 text-white rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">🤝</div>
+                  <h4 className="text-lg font-bold text-slate-800">Strong Support</h4>
+                  <p className="text-sm text-slate-500 mt-2">Dedicated backend support, training, and timely payouts.</p>
+                </div>
+                <div className="bg-emerald-50 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition">
+                  <div className="w-14 h-14 bg-emerald-600 text-white rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">📱</div>
+                  <h4 className="text-lg font-bold text-slate-800">Digital Platform</h4>
+                  <p className="text-sm text-slate-500 mt-2">Powerful partner app for lead management and tracking.</p>
+                </div>
+              </div>
+
+              {/* Partner Form - Unique card style */}
+              <div className="mt-10 max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-slate-200">
+                <h3 className="text-xl font-bold text-slate-800 text-center mb-6">Start Your Application</h3>
+                <form onSubmit={handlePartnerSubmit} className="grid md:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="Full Name"
+                    value={partnerData.fullName}
+                    onChange={(e) => setPartnerData({ ...partnerData, fullName: e.target.value })}
+                    className="col-span-2 md:col-span-1 border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+                    required
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email Address"
+                    value={partnerData.email}
+                    onChange={(e) => setPartnerData({ ...partnerData, email: e.target.value })}
+                    className="col-span-2 md:col-span-1 border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+                    required
+                  />
+                  <input
+                    type="tel"
+                    maxLength={10}
+                    placeholder="Mobile Number"
+                    value={partnerData.mobile}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, "");
+                      if (val.length <= 10) setPartnerData({ ...partnerData, mobile: val });
+                    }}
+                    className="col-span-2 md:col-span-1 border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+                    required
+                  />
+                  <select
+                    value={partnerData.city}
+                    onChange={(e) => setPartnerData({ ...partnerData, city: e.target.value })}
+                    className="col-span-2 md:col-span-1 border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+                  >
+                    <option value="">Select City</option>
+                    <option value="mumbai">Mumbai</option>
+                    <option value="delhi">Delhi</option>
+                    <option value="bangalore">Bangalore</option>
+                    <option value="pune">Pune</option>
+                    <option value="hyderabad">Hyderabad</option>
+                    <option value="chennai">Chennai</option>
+                    <option value="ahmedabad">Ahmedabad</option>
+                    <option value="kolkata">Kolkata</option>
+                    <option value="other">Other</option>
+                  </select>
+                  <textarea
+                    placeholder="Your Experience / Message"
+                    value={partnerData.experience}
+                    onChange={(e) => setPartnerData({ ...partnerData, experience: e.target.value })}
+                    rows={3}
+                    className="col-span-2 border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+                  />
+                  <button
+                    type="submit"
+                    disabled={partnerLoading}
+                    className="col-span-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-indigo-500/30 hover:shadow-indigo-600/40 disabled:opacity-50"
+                  >
+                    {partnerLoading ? "Submitting..." : "Submit Application"}
+                  </button>
+                </form>
+                <p className="text-xs text-slate-400 text-center mt-4">
+                  By submitting, you agree to our Terms &amp; Privacy Policy.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
