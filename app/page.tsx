@@ -470,49 +470,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== SEARCH & FILTER SECTION ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-20">
-          <div className="bg-white rounded-3xl shadow-xl p-6 md:p-8 border border-gray-100">
-            <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">
-              Find Your Best Loan Offer
-            </h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-6 gap-4">
-              <input
-                type="text"
-                placeholder="Search lender or loan type"
-                className="border-2 border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-              />
-              <select className="border-2 border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
-                <option>Loan Type</option>
-                <option>Personal Loan</option>
-                <option>Home Loan</option>
-                <option>Business Loan</option>
-                <option>Car Loan</option>
-              </select>
-              <select className="border-2 border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
-                <option>Interest Rate</option>
-                <option>Below 10%</option>
-                <option>10% - 12%</option>
-                <option>12% - 15%</option>
-              </select>
-              <select className="border-2 border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
-                <option>Loan Amount</option>
-                <option>₹1L - ₹5L</option>
-                <option>₹5L - ₹20L</option>
-                <option>₹20L+</option>
-              </select>
-              <select className="border-2 border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
-                <option>Tenure</option>
-                <option>1-3 Years</option>
-                <option>3-5 Years</option>
-                <option>5+ Years</option>
-              </select>
-              <button className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl px-6 py-3 hover:shadow-lg hover:shadow-indigo-500/30 transition">
-                Search
-              </button>
-            </div>
-          </div>
-        </section>
+        {/* ===== ❌ "Find Your Best Loan Offer" REMOVED ===== */}
+        {/* हा संपूर्ण section काढला आहे */}
 
         {/* ===== EMI CALCULATOR ===== */}
         <section className="max-w-7xl mx-auto px-6 py-20">
@@ -619,111 +578,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== LOAN COMPARISON TABLE ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-20 bg-slate-50 rounded-3xl">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Compare Loan Offers
-            </h2>
-            <p className="mt-3 text-gray-600">
-              Compare interest rates, fees, approval time and loan amounts from top lenders.
-            </p>
-          </div>
-
-          <div className="flex justify-end mb-4">
-            <select
-              className="border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-            >
-              <option value="low">Interest Rate: Low to High</option>
-              <option value="high">Interest Rate: High to Low</option>
-            </select>
-          </div>
-
-          <div className="overflow-x-auto bg-white rounded-3xl shadow-xl border border-gray-100">
-            <table className="w-full min-w-[700px]">
-              <thead className="bg-slate-800 text-white">
-                <tr>
-                  <th className="p-4 text-left text-sm">Bank</th>
-                  <th className="p-4 text-left text-sm">Interest Rate</th>
-                  <th className="p-4 text-left text-sm">Processing Fee</th>
-                  <th className="p-4 text-left text-sm">Max Loan Amount</th>
-                  <th className="p-4 text-left text-sm">Tenure</th>
-                  <th className="p-4 text-left text-sm">Approval Time</th>
-                  <th className="p-4 text-center text-sm">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {[
-                  {
-                    bank: "HDFC Bank",
-                    rate: "10.50%",
-                    fee: "2%",
-                    amount: "₹50L",
-                    tenure: "7 Years",
-                    approval: "24 Hours",
-                  },
-                  {
-                    bank: "ICICI Bank",
-                    rate: "10.75%",
-                    fee: "1.5%",
-                    amount: "₹40L",
-                    tenure: "7 Years",
-                    approval: "48 Hours",
-                  },
-                  {
-                    bank: "Axis Bank",
-                    rate: "10.99%",
-                    fee: "2%",
-                    amount: "₹35L",
-                    tenure: "5 Years",
-                    approval: "24 Hours",
-                  },
-                  {
-                    bank: "SBI",
-                    rate: "9.90%",
-                    fee: "1%",
-                    amount: "₹30L",
-                    tenure: "6 Years",
-                    approval: "72 Hours",
-                  },
-                  {
-                    bank: "Kotak Mahindra",
-                    rate: "10.25%",
-                    fee: "2%",
-                    amount: "₹45L",
-                    tenure: "7 Years",
-                    approval: "48 Hours",
-                  },
-                ].map((loan, index) => (
-                  <tr key={index} className="hover:bg-slate-50 transition">
-                    <td className="p-4 font-semibold text-slate-800">
-                      {loan.bank}
-                    </td>
-                    <td className="p-4">{loan.rate}</td>
-                    <td className="p-4">{loan.fee}</td>
-                    <td className="p-4">{loan.amount}</td>
-                    <td className="p-4">{loan.tenure}</td>
-                    <td className="p-4">{loan.approval}</td>
-                    <td className="p-4 text-center">
-                      <button
-                        onClick={() => {
-                          document.getElementById("loanForm")?.scrollIntoView({
-                            behavior: "smooth",
-                          });
-                        }}
-                        className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-xl hover:shadow-lg hover:shadow-indigo-500/30 transition text-sm"
-                      >
-                        Apply
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+        {/* ===== ❌ "Compare Loan Offers" REMOVED ===== */}
+        {/* हा संपूर्ण section काढला आहे */}
 
         {/* ===== WHY CHOOSE US ===== */}
         <section className="max-w-7xl mx-auto px-6 py-20">
@@ -856,7 +712,6 @@ export default function Home() {
         {/* ===== UNIQUE "Become a Partner" SECTION ===== */}
         <section id="become-partner" className="max-w-7xl mx-auto px-6 py-20">
           <div className="bg-white rounded-3xl shadow-2xl border-2 border-indigo-100 p-8 md:p-12 relative overflow-hidden">
-            {/* Decorative background element */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full opacity-30 -translate-y-1/2 translate-x-1/2"></div>
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-emerald-100 to-teal-100 rounded-full opacity-30 translate-y-1/2 -translate-x-1/2"></div>
 
@@ -869,14 +724,13 @@ export default function Home() {
                   Become a <span className="text-indigo-600">Partner</span>
                 </h2>
                 <p className="mt-4 text-slate-600 max-w-2xl mx-auto">
-                  Unlock a world of opportunities with India's most trusted loan distribution platform. 
+                  Unlock a world of opportunities with India&apos;s most trusted loan distribution platform. 
                   <br className="hidden sm:block" />
                   Start your journey towards financial independence today.
                 </p>
               </div>
 
               <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                {/* Benefit Cards */}
                 <div className="bg-indigo-50 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition">
                   <div className="w-14 h-14 bg-indigo-600 text-white rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">💰</div>
                   <h4 className="text-lg font-bold text-slate-800">High Earnings</h4>
@@ -894,7 +748,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Partner Form - Unique card style */}
               <div className="mt-10 max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-slate-200">
                 <h3 className="text-xl font-bold text-slate-800 text-center mb-6">Start Your Application</h3>
                 <form onSubmit={handlePartnerSubmit} className="grid md:grid-cols-2 gap-4">
