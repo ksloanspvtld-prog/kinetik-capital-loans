@@ -1,181 +1,165 @@
 "use client";
 
-import { useState, FormEvent } from "react";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
-import WhatsAppButton from "./WhatsAppButton";
-import LoanCalculator from "./LoanCalculator";
-import AddressInput from "./AddressInput"; // ✅ Import
+import { useState, useEffect } from "react";
 
-const COMPANY_NAME = "Kinetik Capital";
-const LOAN_TYPE = "Home Loan";
-
-export default function HomeLoanPage() {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    mobile: "",
-    city: "",
-    state: "",
-    loanType: LOAN_TYPE,
-    monthlyIncome: "",
-    pincode: "", // ✅ Add pincode field
-  });
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-
-  // ✅ Address change handler
-  const handleAddressChange = (data: { city: string; state: string; pincode: string }) => {
-    setFormData((prev) => ({
-      ...prev,
-      city: data.city,
-      state: data.state,
-      pincode: data.pincode,
-    }));
+interface AddressInputProps {
+  value: {
+    city: string;
+    state: string;
+    pincode: string;
   };
+  onChange: (data: { city: string; state: string; pincode: string }) => void;
+  required?: boolean;
+}
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
+export default function AddressInput({ value, onChange, required = false }: AddressInputProps) {
+  const [states, setStates] = useState<{ name: string; isoCode: string }[]>([]);
+  const [cities, setCities] = useState<string[]>([]);
+  const [selectedState, setSelectedState] = useState(value.state || "");
+  const [selectedCity, setSelectedCity] = useState(value.city || "");
+  const [pincode, setPincode] = useState(value.pincode || "");
+  const [isLoading, setIsLoading] = useState(false);
 
-    if (formData.mobile.length !== 10) {
-      alert("Please enter a valid 10-digit mobile number");
-      setLoading(false);
-      return;
-    }
+  useEffect(() => {
+    const loadStates = async () => {
+      const { State } = await import("country-state-city");
+      const indianStates = State.getStatesOfCountry("IN").map((s: { name: string; isoCode: string }) => ({
+        name: s.name,
+        isoCode: s.isoCode,
+      }));
+      setStates(indianStates);
+    };
+    loadStates();
+  }, []);
 
-    try {
-      const res = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-
-      if (!data.success) {
-        alert(data.message || "Something went wrong");
-        return;
+  useEffect(() => {
+    const loadCities = async () => {
+      if (selectedState) {
+        const { State, City } = await import("country-state-city");
+        const stateObj = State.getStatesOfCountry("IN").find((s: { isoCode: string }) => s.isoCode === selectedState);
+        if (stateObj) {
+          const cityList = City.getCitiesOfState("IN", stateObj.isoCode).map((c: { name: string }) => c.name);
+          setCities(cityList);
+        } else {
+          setCities([]);
+        }
+      } else {
+        setCities([]);
       }
+    };
+    loadCities();
+  }, [selectedState]);
 
-      setSubmitted(true);
-      setFormData({
-        fullName: "",
-        mobile: "",
-        city: "",
-        state: "",
-        loanType: LOAN_TYPE,
-        monthlyIncome: "",
-        pincode: "",
-      });
-      setTimeout(() => setSubmitted(false), 5000);
+  useEffect(() => {
+    if (selectedCity && selectedState) {
+      onChange({ city: selectedCity, state: selectedState, pincode });
+    }
+  }, [selectedCity, selectedState, pincode]);
+
+  const lookupPincode = async (code: string) => {
+    if (code.length !== 6) return;
+    setIsLoading(true);
+    try {
+      const res = await fetch(`https://api.postalpincode.in/pincode/${code}`);
+      const data = await res.json();
+      if (data[0]?.Status === "Success") {
+        const postOffice = data[0].PostOffice[0];
+        const cityName = postOffice.District;
+        const stateName = postOffice.State;
+        const { State, City } = await import("country-state-city");
+        const stateObj = State.getStatesOfCountry("IN").find((s: { name: string }) => s.name === stateName);
+        if (stateObj) {
+          setSelectedState(stateObj.isoCode);
+          const cityList = City.getCitiesOfState("IN", stateObj.isoCode);
+          const matchedCity = cityList.find((c: { name: string }) => c.name === cityName);
+          if (matchedCity) {
+            setSelectedCity(matchedCity.name);
+            setPincode(code);
+            onChange({ city: matchedCity.name, state: stateObj.isoCode, pincode: code });
+          } else {
+            setPincode(code);
+            onChange({ city: "", state: stateObj.isoCode, pincode: code });
+          }
+        } else {
+          setPincode(code);
+          onChange({ city: "", state: "", pincode: code });
+        }
+      } else {
+        alert("Invalid pincode or not found");
+      }
     } catch (error) {
       console.error(error);
-      alert("❌ Failed to submit. Please try again.");
+      alert("Failed to lookup pincode");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <>
-      <Navbar />
-      <WhatsAppButton />
-      <main className="pt-20 min-h-screen bg-slate-50 dark:bg-slate-900">
-        <div className="max-w-7xl mx-auto px-6 py-20">
-          <div className="grid md:grid-cols-2 gap-12">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white">
-                Home <span className="text-indigo-600">Loan</span>
-              </h1>
-              <p className="mt-4 text-slate-600 dark:text-slate-400 text-lg">
-                Get home loans up to ₹5 Crore at attractive interest rates starting from 8.50% p.a.
-              </p>
-              <ul className="mt-6 space-y-3 text-slate-600 dark:text-slate-400">
-                <li className="flex items-start gap-3">
-                  <span className="text-indigo-500 text-xl mt-0.5">✓</span>
-                  <span>Loan amounts up to ₹5 Crore</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-indigo-500 text-xl mt-0.5">✓</span>
-                  <span>Interest rates from 8.50% p.a.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-indigo-500 text-xl mt-0.5">✓</span>
-                  <span>Quick Approval in 48 Hours</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-indigo-500 text-xl mt-0.5">✓</span>
-                  <span>Up to 30 Years Tenure</span>
-                </li>
-              </ul>
+    <div className="space-y-3">
+      <select
+        value={selectedState}
+        onChange={(e) => {
+          setSelectedState(e.target.value);
+          setSelectedCity("");
+          setPincode("");
+          onChange({ city: "", state: e.target.value, pincode: "" });
+        }}
+        className="w-full border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+        required={required}
+      >
+        <option value="">Select State</option>
+        {states.map((state) => (
+          <option key={state.isoCode} value={state.isoCode}>
+            {state.name}
+          </option>
+        ))}
+      </select>
 
-              {/* ✅ Form with AddressInput */}
-              <div className="mt-8 bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6">
-                <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4">
-                  Apply for {LOAN_TYPE}
-                </h3>
-                {submitted && (
-                  <div className="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 rounded-xl p-3 mb-4 text-emerald-700 dark:text-emerald-400 text-sm">
-                    ✅ Application submitted successfully! We&apos;ll contact you soon.
-                  </div>
-                )}
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <input
-                    type="text"
-                    placeholder="Full Name"
-                    value={formData.fullName}
-                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    className="w-full border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
-                    required
-                  />
-                  <input
-                    type="tel"
-                    maxLength={10}
-                    placeholder="Mobile Number"
-                    value={formData.mobile}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, "");
-                      if (val.length <= 10) setFormData({ ...formData, mobile: val });
-                    }}
-                    className="w-full border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
-                    required
-                  />
+      <select
+        value={selectedCity}
+        onChange={(e) => {
+          setSelectedCity(e.target.value);
+          onChange({ city: e.target.value, state: selectedState, pincode });
+        }}
+        className="w-full border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+        disabled={!selectedState}
+        required={required}
+      >
+        <option value="">{selectedState ? "Select City" : "Select State First"}</option>
+        {cities.map((city) => (
+          <option key={city} value={city}>
+            {city}
+          </option>
+        ))}
+      </select>
 
-                  {/* ✅ AddressInput - Auto-fill City/State/Pincode */}
-                  <AddressInput
-                    value={{
-                      city: formData.city,
-                      state: formData.state,
-                      pincode: formData.pincode,
-                    }}
-                    onChange={handleAddressChange}
-                    required
-                  />
-
-                  <input
-                    type="number"
-                    placeholder="Monthly Income"
-                    value={formData.monthlyIncome}
-                    onChange={(e) => setFormData({ ...formData, monthlyIncome: e.target.value })}
-                    className="w-full border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
-                  />
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl transition font-medium disabled:opacity-50"
-                  >
-                    {loading ? "Submitting..." : "Apply Now"}
-                  </button>
-                </form>
-              </div>
-            </div>
-            <div>
-              <LoanCalculator type="emi" />
-            </div>
-          </div>
-        </div>
-      </main>
-      <Footer />
-    </>
+      <div className="flex gap-3">
+        <input
+          type="text"
+          maxLength={6}
+          placeholder="Pincode"
+          value={pincode}
+          onChange={(e) => {
+            const val = e.target.value.replace(/\D/g, "");
+            if (val.length <= 6) {
+              setPincode(val);
+              if (val.length === 6) {
+                lookupPincode(val);
+              }
+            }
+          }}
+          className="flex-1 border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+        />
+        <button
+          type="button"
+          onClick={() => lookupPincode(pincode)}
+          disabled={pincode.length !== 6 || isLoading}
+          className="px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition disabled:opacity-50"
+        >
+          {isLoading ? "..." : "🔍"}
+        </button>
+      </div>
+    </div>
   );
 }
