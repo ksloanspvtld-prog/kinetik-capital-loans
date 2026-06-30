@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useRef, useEffect } from "react";
+import Link from "next/link";
 import Navbar from "../components/Navbar";
 import WhatsAppButton from "../components/WhatsAppButton";
-import AddressInput from "../components/AddressInput"; // ✅ Import AddressInput
+import AddressInput from "../components/AddressInput";
 
 // ✅ Company Name - येथे बदला
 const COMPANY_NAME = "Kinetik Capital";
@@ -22,6 +23,18 @@ const bankLogos: Record<string, { initial: string; color: string }> = {
   "Bank of Baroda": { initial: "B", color: "from-amber-500 to-amber-700" },
 };
 
+// ===== LOAN PRODUCTS DATA =====
+const loanProducts = [
+  { id: "personal", title: "Personal Loan", icon: "💳", desc: "Instant approval with attractive rates.", link: "/loans/personal-loan" },
+  { id: "home", title: "Home Loan", icon: "🏠", desc: "Low interest and long tenure options.", link: "/loans/home-loan" },
+  { id: "business", title: "Business Loan", icon: "🏢", desc: "Fast funding for business growth.", link: "/loans/business-loan" },
+  { id: "car", title: "Car Loan", icon: "🚗", desc: "Finance your dream car easily.", link: "/loans/car-loan" },
+  { id: "education", title: "Education Loan", icon: "🎓", desc: "Fund your studies abroad.", link: "/#loanForm" },
+  { id: "gold", title: "Gold Loan", icon: "🥇", desc: "Quick gold loans at best rates.", link: "/#loanForm" },
+  { id: "property", title: "Loan Against Property", icon: "🏘️", desc: "Unlock your property's value.", link: "/#loanForm" },
+  { id: "creditcard", title: "Credit Cards", icon: "💳", desc: "Rewarding credit cards for you.", link: "/#loanForm" },
+];
+
 export default function Home() {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -30,7 +43,7 @@ export default function Home() {
     state: "",
     loanType: "",
     monthlyIncome: "",
-    pincode: "", // ✅ Add pincode field
+    pincode: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -39,7 +52,49 @@ export default function Home() {
   const [tenure, setTenure] = useState(5);
   const [sortOrder, setSortOrder] = useState("low");
 
-  // ✅ Address change handler
+  // Slider state
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const cardWidth = 300; // approximate, will be computed dynamically
+
+  // Go to next/prev slide
+  const goToSlide = (index: number) => {
+    const container = sliderRef.current;
+    if (!container) return;
+    const maxIndex = Math.ceil(loanProducts.length / 4) - 1;
+    const newIndex = Math.max(0, Math.min(index, maxIndex));
+    setCurrentIndex(newIndex);
+    const scrollAmount = newIndex * (container.scrollWidth / Math.ceil(loanProducts.length / 4));
+    container.scrollTo({ left: scrollAmount, behavior: "smooth" });
+  };
+
+  // Update current index on scroll
+  useEffect(() => {
+    const container = sliderRef.current;
+    if (!container) return;
+    const handleScroll = () => {
+      const scrollLeft = container.scrollLeft;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      const progress = maxScroll > 0 ? scrollLeft / maxScroll : 0;
+      const totalSlides = Math.ceil(loanProducts.length / 4);
+      const idx = Math.round(progress * (totalSlides - 1));
+      setCurrentIndex(idx);
+    };
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // ===== EMI Calculation =====
+  const monthlyRate = interestRate / 12 / 100;
+  const months = tenure * 12;
+  const emi =
+    (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, months)) /
+    (Math.pow(1 + monthlyRate, months) - 1);
+  const totalPayment = emi * months;
+  const totalInterest = totalPayment - loanAmount;
+
+  // ===== Address change handler =====
   const handleAddressChange = (data: { city: string; state: string; pincode: string }) => {
     setFormData((prev) => ({
       ...prev,
@@ -49,16 +104,7 @@ export default function Home() {
     }));
   };
 
-  // ✅ EMI Calculation
-  const monthlyRate = interestRate / 12 / 100;
-  const months = tenure * 12;
-  const emi =
-    (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, months)) /
-    (Math.pow(1 + monthlyRate, months) - 1);
-  const totalPayment = emi * months;
-  const totalInterest = totalPayment - loanAmount;
-
-  // ✅ Handle Form Submit
+  // ===== Handle Form Submit =====
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -101,7 +147,7 @@ export default function Home() {
     }
   };
 
-  // ✅ Lead Form
+  // ===== Lead Form =====
   const loanForm = (
     <form
       onSubmit={handleSubmit}
@@ -137,7 +183,6 @@ export default function Home() {
           required
         />
 
-        {/* ✅ AddressInput - Auto-fill City/State/Pincode */}
         <div className="md:col-span-2">
           <AddressInput
             value={{
@@ -266,7 +311,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== LOAN CATEGORIES SECTION ===== */}
+        {/* ===== LOAN PRODUCTS SLIDER ===== */}
         <section className="max-w-7xl mx-auto px-6 py-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
@@ -276,68 +321,74 @@ export default function Home() {
               Find the right loan for your financial needs.
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                icon: "💳",
-                title: "Personal Loan",
-                desc: "Instant approval with attractive rates.",
-                features: ["✔ Starting from 10.5% p.a.", "✔ Instant Approval"],
-                color: "from-blue-500 to-blue-600",
-              },
-              {
-                icon: "🏠",
-                title: "Home Loan",
-                desc: "Low interest and long tenure options.",
-                features: ["✔ Low Interest Rates", "✔ Up to 30 Years Tenure"],
-                color: "from-emerald-500 to-emerald-600",
-              },
-              {
-                icon: "🏢",
-                title: "Business Loan",
-                desc: "Fast funding for business growth.",
-                features: ["✔ Fast Funding", "✔ Flexible Repayment"],
-                color: "from-purple-500 to-purple-600",
-              },
-              {
-                icon: "🚗",
-                title: "Car Loan",
-                desc: "Finance your dream car easily.",
-                features: ["✔ Quick Processing", "✔ High Approval Rate"],
-                color: "from-rose-500 to-rose-600",
-              },
-            ].map((category, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition hover:-translate-y-2 border border-slate-100"
-              >
-                <div className="text-5xl mb-4">{category.icon}</div>
-                <h3 className="text-2xl font-bold text-slate-800">
-                  {category.title}
-                </h3>
-                <p className="mt-2 text-slate-500 text-sm">{category.desc}</p>
-                <ul className="mt-4 text-sm space-y-2 text-slate-600">
-                  {category.features.map((f, i) => (
-                    <li key={i}>{f}</li>
-                  ))}
-                </ul>
-                <button
-                  onClick={() => {
-                    setFormData((prev) => ({ ...prev, loanType: category.title }));
-                    document.getElementById("loanForm")?.scrollIntoView({
-                      behavior: "smooth",
-                    });
-                  }}
-                  className={`mt-6 w-full bg-gradient-to-r ${category.color} text-white py-2.5 rounded-xl hover:shadow-lg transition font-medium`}
+
+          {/* Slider Container */}
+          <div className="relative">
+            {/* Left Arrow */}
+            <button
+              onClick={() => goToSlide(currentIndex - 1)}
+              disabled={currentIndex === 0}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg disabled:opacity-30 disabled:cursor-not-allowed transition"
+            >
+              <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+
+            {/* Slider Track */}
+            <div
+              ref={sliderRef}
+              className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 hide-scrollbar"
+              style={{ scrollbarWidth: 'none' }}
+            >
+              {loanProducts.map((product) => (
+                <Link
+                  key={product.id}
+                  href={product.link}
+                  className="flex-shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] snap-start group"
                 >
-                  Apply Now
-                </button>
-              </div>
+                  <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition hover:-translate-y-2 border border-slate-100 h-full flex flex-col">
+                    <div className="text-5xl mb-4">{product.icon}</div>
+                    <h3 className="text-2xl font-bold text-slate-800 group-hover:text-indigo-600 transition">
+                      {product.title}
+                    </h3>
+                    <p className="mt-2 text-slate-500 text-sm flex-1">{product.desc}</p>
+                    <span className="mt-4 text-indigo-600 font-medium text-sm inline-flex items-center gap-1 group-hover:gap-2 transition">
+                      Apply Now →
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* Right Arrow */}
+            <button
+              onClick={() => goToSlide(currentIndex + 1)}
+              disabled={currentIndex >= Math.ceil(loanProducts.length / 4) - 1}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg disabled:opacity-30 disabled:cursor-not-allowed transition"
+            >
+              <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Dots */}
+          <div className="flex justify-center gap-2 mt-6">
+            {Array.from({ length: Math.ceil(loanProducts.length / 4) }).map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => goToSlide(idx)}
+                className={`w-2.5 h-2.5 rounded-full transition-all ${
+                  idx === currentIndex ? "bg-indigo-600 w-8" : "bg-slate-300"
+                }`}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
             ))}
           </div>
         </section>
 
-        {/* ===== TOP LENDERS SECTION WITH LOGOS ===== */}
+        {/* ===== TOP LENDERS SECTION ===== */}
         <section className="max-w-7xl mx-auto px-6 py-20 bg-slate-50 rounded-3xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
