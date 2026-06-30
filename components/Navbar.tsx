@@ -10,6 +10,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
+  // ✅ Products & Offers - सगळे Loans
   const productItems = [
     { name: "Personal Loan", href: "/loans/personal-loan" },
     { name: "Home Loan", href: "/loans/home-loan" },
@@ -23,6 +24,7 @@ export default function Navbar() {
     { name: "Gold Loan", href: "/#loanForm" },
   ];
 
+  // ✅ Tools & Calculators - सगळे Calculators
   const toolsItems = [
     { name: "Personal Loan EMI Calculator", href: "/#emi-calculator" },
     { name: "Home Loan EMI Calculator", href: "/#emi-calculator" },
@@ -39,6 +41,7 @@ export default function Navbar() {
     { name: "Education Loan EMI Calculator", href: "/#emi-calculator" },
   ];
 
+  // ✅ Credit Cards - सगळे Cards
   const creditCardItems = [
     { name: "HDFC Credit Card", href: "/#credit-cards" },
     { name: "ICICI Credit Card", href: "/#credit-cards" },
@@ -50,6 +53,13 @@ export default function Navbar() {
     { name: "AU Small Finance Credit Card", href: "/#credit-cards" },
     { name: "IndusInd Bank Credit Card", href: "/#credit-cards" },
     { name: "Bank of Baroda Credit Card", href: "/#credit-cards" },
+  ];
+
+  // ✅ CIBIL Score Dropdown
+  const cibilItems = [
+    { name: "CIBIL Score", href: "/#cibil-score" },
+    { name: "Credit Score", href: "/#credit-score" },
+    { name: "Check Free CIBIL Score", href: "/#free-cibil-check" },
   ];
 
   const toggleDropdown = (name: string) => {
@@ -103,7 +113,7 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop Menu – वाढवलेले अंतर */}
+          {/* Desktop Menu – Spaced & Clean */}
           <div className="hidden md:flex items-center gap-8">
             {/* Home */}
             <Link href="/" className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm">
@@ -151,6 +161,31 @@ export default function Navbar() {
                       key={item.name}
                       href={item.href}
                       className="px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition text-slate-700 dark:text-slate-300 text-sm"
+                      onClick={() => setOpenDropdown(null)}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* CIBIL Score Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => toggleDropdown("cibil")}
+                className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm flex items-center gap-1"
+              >
+                CIBIL Score
+                <span className="text-xs">▼</span>
+              </button>
+              {openDropdown === "cibil" && (
+                <div className="absolute top-8 left-0 mt-2 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[220px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-1.5">
+                  {cibilItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition text-slate-700 dark:text-slate-300 text-sm font-medium"
                       onClick={() => setOpenDropdown(null)}
                     >
                       {item.name}
@@ -209,7 +244,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu – unchanged */}
+      {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 p-4 space-y-3">
           <Link
@@ -220,6 +255,7 @@ export default function Navbar() {
             Home
           </Link>
 
+          {/* Products & Offers */}
           <div className="space-y-1 pl-3 border-l-2 border-indigo-200 dark:border-indigo-800">
             <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
               Products & Offers
@@ -236,6 +272,7 @@ export default function Navbar() {
             ))}
           </div>
 
+          {/* Tools & Calculators */}
           <div className="space-y-1 pl-3 border-l-2 border-indigo-200 dark:border-indigo-800">
             <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
               Tools & Calculators
@@ -252,6 +289,24 @@ export default function Navbar() {
             ))}
           </div>
 
+          {/* CIBIL Score */}
+          <div className="space-y-1 pl-3 border-l-2 border-indigo-200 dark:border-indigo-800">
+            <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+              CIBIL Score
+            </p>
+            {cibilItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="block py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition"
+                onClick={() => setIsOpen(false)}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* Credit Cards */}
           <div className="space-y-1 pl-3 border-l-2 border-indigo-200 dark:border-indigo-800">
             <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
               Credit Cards
