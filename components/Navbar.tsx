@@ -10,7 +10,6 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  // ✅ Products & Offers - सगळे Loans
   const productItems = [
     { name: "Personal Loan", href: "/loans/personal-loan" },
     { name: "Home Loan", href: "/loans/home-loan" },
@@ -24,7 +23,6 @@ export default function Navbar() {
     { name: "Gold Loan", href: "/#loanForm" },
   ];
 
-  // ✅ Tools & Calculators - सगळे Calculators
   const toolsItems = [
     { name: "Personal Loan EMI Calculator", href: "/#emi-calculator" },
     { name: "Home Loan EMI Calculator", href: "/#emi-calculator" },
@@ -41,7 +39,6 @@ export default function Navbar() {
     { name: "Education Loan EMI Calculator", href: "/#emi-calculator" },
   ];
 
-  // ✅ Credit Cards - सगळे Cards
   const creditCardItems = [
     { name: "HDFC Credit Card", href: "/#credit-cards" },
     { name: "ICICI Credit Card", href: "/#credit-cards" },
@@ -106,8 +103,8 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Desktop Menu – वाढवलेले अंतर */}
+          <div className="hidden md:flex items-center gap-8">
             {/* Home */}
             <Link href="/" className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm">
               Home
@@ -123,7 +120,7 @@ export default function Navbar() {
                 <span className="text-xs">▼</span>
               </button>
               {openDropdown === "products" && (
-                <div className="absolute top-8 left-0 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[220px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-0.5 max-h-80 overflow-y-auto">
+                <div className="absolute top-8 left-0 mt-2 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[240px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-1.5 max-h-80 overflow-y-auto">
                   {productItems.map((item) => (
                     <Link
                       key={item.name}
@@ -148,7 +145,7 @@ export default function Navbar() {
                 <span className="text-xs">▼</span>
               </button>
               {openDropdown === "tools" && (
-                <div className="absolute top-8 left-0 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[240px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-0.5 max-h-80 overflow-y-auto">
+                <div className="absolute top-8 left-0 mt-2 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[260px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-1.5 max-h-80 overflow-y-auto">
                   {toolsItems.map((item) => (
                     <Link
                       key={item.name}
@@ -173,7 +170,7 @@ export default function Navbar() {
                 <span className="text-xs">▼</span>
               </button>
               {openDropdown === "creditcards" && (
-                <div className="absolute top-8 left-0 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[220px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-0.5 max-h-80 overflow-y-auto">
+                <div className="absolute top-8 left-0 mt-2 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[240px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-1.5 max-h-80 overflow-y-auto">
                   {creditCardItems.map((item) => (
                     <Link
                       key={item.name}
@@ -212,7 +209,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu – unchanged */}
       {isOpen && (
         <div className="md:hidden bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 p-4 space-y-3">
           <Link
@@ -223,7 +220,6 @@ export default function Navbar() {
             Home
           </Link>
 
-          {/* Products & Offers */}
           <div className="space-y-1 pl-3 border-l-2 border-indigo-200 dark:border-indigo-800">
             <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
               Products & Offers
@@ -240,7 +236,6 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Tools & Calculators */}
           <div className="space-y-1 pl-3 border-l-2 border-indigo-200 dark:border-indigo-800">
             <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
               Tools & Calculators
@@ -257,7 +252,6 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Credit Cards */}
           <div className="space-y-1 pl-3 border-l-2 border-indigo-200 dark:border-indigo-800">
             <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
               Credit Cards
