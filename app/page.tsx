@@ -431,46 +431,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== TOP LENDERS SECTION ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-20 bg-slate-50 rounded-3xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Top Lending Partners
-            </h2>
-            <p className="mt-4 text-gray-600">
-              Compare loan offers from India&apos;s leading banks and NBFCs.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {[
-              "HDFC Bank",
-              "ICICI Bank",
-              "Axis Bank",
-              "SBI",
-              "Kotak Mahindra",
-              "Bajaj Finserv",
-              "Tata Capital",
-              "IDFC First Bank",
-            ].map((bank) => {
-              const logo = bankLogos[bank] || { initial: bank.charAt(0), color: "from-slate-500 to-slate-700" };
-              return (
-                <div
-                  key={bank}
-                  className="bg-white rounded-2xl shadow p-6 text-center hover:shadow-lg transition hover:-translate-y-1 border border-slate-100"
-                >
-                  <div className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-br ${logo.color} flex items-center justify-center text-white text-2xl font-bold shadow-md`}>
-                    {logo.initial}
-                  </div>
-                  <p className="font-semibold text-slate-800 mt-3">{bank}</p>
-                  <div className="mt-2 text-yellow-400 text-sm">★★★★★</div>
-                  <p className="mt-1 text-xs text-slate-400">10.50% p.a.</p>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* ===== ❌ "Find Your Best Loan Offer" REMOVED ===== */}
+        {/* ===== ❌ TOP LENDING PARTNERS REMOVED ===== */}
         {/* हा संपूर्ण section काढला आहे */}
 
         {/* ===== EMI CALCULATOR ===== */}
@@ -577,9 +538,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        {/* ===== ❌ "Compare Loan Offers" REMOVED ===== */}
-        {/* हा संपूर्ण section काढला आहे */}
 
         {/* ===== WHY CHOOSE US ===== */}
         <section className="max-w-7xl mx-auto px-6 py-20">
