@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+turbopack: {}, // ✅ ही line add करा
 };
 
 export default nextConfig;

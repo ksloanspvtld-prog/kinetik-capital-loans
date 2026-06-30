@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import Navbar from "../../../components/Navbar";
-import Footer from "../../../components/Footer";
-import WhatsAppButton from "../../../components/WhatsAppButton";
-import LoanCalculator from "../../../components/LoanCalculator";
-import AddressInput from "../../../components/AddressInput"; // ✅ Import
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import WhatsAppButton from "./WhatsAppButton";
+import LoanCalculator from "./LoanCalculator";
+import AddressInput from "./AddressInput"; // ✅ Import
 
 const COMPANY_NAME = "Kinetik Capital";
 const LOAN_TYPE = "Home Loan";
