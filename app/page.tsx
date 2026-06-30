@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react";
 import Navbar from "../components/Navbar";
 import WhatsAppButton from "../components/WhatsAppButton";
+import AddressInput from "../components/AddressInput"; // ✅ Import AddressInput
 
 // ✅ Company Name - येथे बदला
 const COMPANY_NAME = "Kinetik Capital";
@@ -29,6 +30,7 @@ export default function Home() {
     state: "",
     loanType: "",
     monthlyIncome: "",
+    pincode: "", // ✅ Add pincode field
   });
 
   const [loading, setLoading] = useState(false);
@@ -36,6 +38,16 @@ export default function Home() {
   const [interestRate, setInterestRate] = useState(10);
   const [tenure, setTenure] = useState(5);
   const [sortOrder, setSortOrder] = useState("low");
+
+  // ✅ Address change handler
+  const handleAddressChange = (data: { city: string; state: string; pincode: string }) => {
+    setFormData((prev) => ({
+      ...prev,
+      city: data.city,
+      state: data.state,
+      pincode: data.pincode,
+    }));
+  };
 
   // ✅ EMI Calculation
   const monthlyRate = interestRate / 12 / 100;
@@ -79,6 +91,7 @@ export default function Home() {
         state: "",
         loanType: "",
         monthlyIncome: "",
+        pincode: "",
       });
     } catch (error) {
       console.error(error);
@@ -124,25 +137,18 @@ export default function Home() {
           required
         />
 
-        <input
-          type="text"
-          placeholder="City"
-          value={formData.city}
-          onChange={(e) =>
-            setFormData({ ...formData, city: e.target.value })
-          }
-          className="border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition"
-        />
-
-        <input
-          type="text"
-          placeholder="State"
-          value={formData.state}
-          onChange={(e) =>
-            setFormData({ ...formData, state: e.target.value })
-          }
-          className="border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition"
-        />
+        {/* ✅ AddressInput - Auto-fill City/State/Pincode */}
+        <div className="md:col-span-2">
+          <AddressInput
+            value={{
+              city: formData.city,
+              state: formData.state,
+              pincode: formData.pincode,
+            }}
+            onChange={handleAddressChange}
+            required
+          />
+        </div>
 
         <select
           value={formData.loanType}

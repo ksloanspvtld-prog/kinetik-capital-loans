@@ -23,7 +23,7 @@ export default function AddressInput({ value, onChange, required = false }: Addr
   useEffect(() => {
     const loadStates = async () => {
       const { State } = await import("country-state-city");
-      const indianStates = State.getStatesOfCountry("IN").map((s: { name: string; isoCode: string }) => ({
+      const indianStates = State.getStatesOfCountry("IN").map((s: any) => ({
         name: s.name,
         isoCode: s.isoCode,
       }));
