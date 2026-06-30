@@ -10,34 +10,49 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  // Dropdown items
+  // ✅ Products & Offers - सगळे Loans
   const productItems = [
     { name: "Personal Loan", href: "/loans/personal-loan" },
     { name: "Home Loan", href: "/loans/home-loan" },
     { name: "Business Loan", href: "/loans/business-loan" },
+    { name: "Loan Against Property", href: "/#loanForm" },
     { name: "Car Loan", href: "/loans/car-loan" },
+    { name: "Used Car Loan", href: "/#loanForm" },
+    { name: "Two Wheeler Loan", href: "/#loanForm" },
+    { name: "Commercial Vehicle Loan", href: "/#loanForm" },
     { name: "Education Loan", href: "/#loanForm" },
     { name: "Gold Loan", href: "/#loanForm" },
-    { name: "Loan Against Property", href: "/#loanForm" },
   ];
 
+  // ✅ Tools & Calculators - सगळे Calculators
   const toolsItems = [
-    { name: "EMI Calculator", href: "/#emi-calculator" },
-    { name: "Eligibility Calculator", href: "/#eligibility-calculator" },
-    { name: "Prepayment Calculator", href: "/#prepayment-calculator" },
-    { name: "FD Calculator", href: "/#fd-calculator" },
+    { name: "Personal Loan EMI Calculator", href: "/#emi-calculator" },
+    { name: "Home Loan EMI Calculator", href: "/#emi-calculator" },
+    { name: "Personal Loan Eligibility Calculator", href: "/#eligibility-calculator" },
+    { name: "Home Loan Eligibility Calculator", href: "/#eligibility-calculator" },
+    { name: "Personal Loan Pre Payment Calculator", href: "/#prepayment-calculator" },
+    { name: "Home Loan Pre Payment Calculator", href: "/#prepayment-calculator" },
+    { name: "Personal Loan Balance Transfer Calculator", href: "/#balance-transfer" },
+    { name: "Home Loan Balance Transfer Calculator", href: "/#balance-transfer" },
+    { name: "Home Loan Tax Benefit Calculator", href: "/#tax-benefit" },
+    { name: "Bike Loan EMI Calculator", href: "/#emi-calculator" },
+    { name: "Car Loan EMI Calculator", href: "/#emi-calculator" },
+    { name: "Used Car Loan EMI Calculator", href: "/#emi-calculator" },
+    { name: "Education Loan EMI Calculator", href: "/#emi-calculator" },
   ];
 
-  const cibilItems = [
-    { name: "Free CIBIL Check", href: "/#cibil-check" },
-    { name: "CIBIL Report", href: "/#cibil-report" },
-    { name: "Improve CIBIL Score", href: "/#improve-cibil" },
-  ];
-
+  // ✅ Credit Cards - सगळे Cards
   const creditCardItems = [
-    { name: "Best Credit Cards", href: "/#credit-cards" },
-    { name: "Apply for Credit Card", href: "/#credit-card-apply" },
-    { name: "Credit Card Comparison", href: "/#credit-card-compare" },
+    { name: "HDFC Credit Card", href: "/#credit-cards" },
+    { name: "ICICI Credit Card", href: "/#credit-cards" },
+    { name: "Yes Pop-Club Credit Card", href: "/#credit-cards" },
+    { name: "Axis Credit Card", href: "/#credit-cards" },
+    { name: "IDFC Credit Card", href: "/#credit-cards" },
+    { name: "HSBC Credit Card", href: "/#credit-cards" },
+    { name: "SBI Credit Card", href: "/#credit-cards" },
+    { name: "AU Small Finance Credit Card", href: "/#credit-cards" },
+    { name: "IndusInd Bank Credit Card", href: "/#credit-cards" },
+    { name: "Bank of Baroda Credit Card", href: "/#credit-cards" },
   ];
 
   const toggleDropdown = (name: string) => {
@@ -92,7 +107,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-5">
+          <div className="hidden md:flex items-center gap-4">
             {/* Home */}
             <Link href="/" className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm">
               Home
@@ -108,7 +123,7 @@ export default function Navbar() {
                 <span className="text-xs">▼</span>
               </button>
               {openDropdown === "products" && (
-                <div className="absolute top-8 left-0 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[200px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-1">
+                <div className="absolute top-8 left-0 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[220px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-0.5 max-h-80 overflow-y-auto">
                   {productItems.map((item) => (
                     <Link
                       key={item.name}
@@ -133,33 +148,8 @@ export default function Navbar() {
                 <span className="text-xs">▼</span>
               </button>
               {openDropdown === "tools" && (
-                <div className="absolute top-8 left-0 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[200px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-1">
+                <div className="absolute top-8 left-0 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[240px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-0.5 max-h-80 overflow-y-auto">
                   {toolsItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className="px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition text-slate-700 dark:text-slate-300 text-sm"
-                      onClick={() => setOpenDropdown(null)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* CIBIL Score */}
-            <div className="relative">
-              <button
-                onClick={() => toggleDropdown("cibil")}
-                className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm flex items-center gap-1"
-              >
-                CIBIL Score
-                <span className="text-xs">▼</span>
-              </button>
-              {openDropdown === "cibil" && (
-                <div className="absolute top-8 left-0 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[200px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-1">
-                  {cibilItems.map((item) => (
                     <Link
                       key={item.name}
                       href={item.href}
@@ -183,7 +173,7 @@ export default function Navbar() {
                 <span className="text-xs">▼</span>
               </button>
               {openDropdown === "creditcards" && (
-                <div className="absolute top-8 left-0 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[200px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-1">
+                <div className="absolute top-8 left-0 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[220px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-0.5 max-h-80 overflow-y-auto">
                   {creditCardItems.map((item) => (
                     <Link
                       key={item.name}
@@ -206,24 +196,7 @@ export default function Navbar() {
               Become a Partner
             </Link>
 
-            <Link href="/about" className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm">
-              About
-            </Link>
-            <Link href="/blog" className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm">
-              Blog
-            </Link>
-            <Link href="/contact" className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm">
-              Contact
-            </Link>
-
             <DarkModeToggle />
-
-            <Link
-              href="/#loanForm"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl transition font-medium text-sm"
-            >
-              Apply Now
-            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -284,23 +257,6 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* CIBIL Score */}
-          <div className="space-y-1 pl-3 border-l-2 border-indigo-200 dark:border-indigo-800">
-            <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
-              CIBIL Score
-            </p>
-            {cibilItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="block py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition"
-                onClick={() => setIsOpen(false)}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-
           {/* Credit Cards */}
           <div className="space-y-1 pl-3 border-l-2 border-indigo-200 dark:border-indigo-800">
             <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
@@ -324,36 +280,6 @@ export default function Navbar() {
             onClick={() => setIsOpen(false)}
           >
             Become a Partner
-          </Link>
-
-          <Link
-            href="/about"
-            className="block py-2 text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition font-medium"
-            onClick={() => setIsOpen(false)}
-          >
-            About
-          </Link>
-          <Link
-            href="/blog"
-            className="block py-2 text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition font-medium"
-            onClick={() => setIsOpen(false)}
-          >
-            Blog
-          </Link>
-          <Link
-            href="/contact"
-            className="block py-2 text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition font-medium"
-            onClick={() => setIsOpen(false)}
-          >
-            Contact
-          </Link>
-
-          <Link
-            href="/#loanForm"
-            className="block py-2 text-indigo-600 font-medium hover:text-indigo-700 transition"
-            onClick={() => setIsOpen(false)}
-          >
-            Apply Now
           </Link>
         </div>
       )}
