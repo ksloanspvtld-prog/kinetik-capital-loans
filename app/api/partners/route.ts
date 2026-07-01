@@ -1,16 +1,7 @@
+// app/api/partners/route.ts
 import { NextResponse } from "next/server";
-import { connectDB } from "../../../lib/mongodb";   // ✅ relative path
-import Partner from "../../../models/Partner";     // ✅ relative path
-
-export async function POST(request: Request) {
-  try {
-    await connectDB();
-    const body = await request.json();
-    // ... rest of code
-  } catch (error) {
-    // ...
-  }
-}
+import { connectDB } from "../../../lib/mongodb";
+import Partner from "../../../models/Partner";
 
 export async function POST(request: Request) {
   try {
