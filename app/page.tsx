@@ -23,7 +23,7 @@ const bankLogos: Record<string, { initial: string; color: string }> = {
   "Bank of Baroda": { initial: "B", color: "from-amber-500 to-amber-700" },
 };
 
-// ===== LOAN CATEGORIES WITH IMAGES (NEW) =====
+// ===== ALL LOAN CATEGORIES WITH IMAGES =====
 const loanCategories = [
   {
     id: "personal",
@@ -79,10 +79,55 @@ const loanCategories = [
     features: ["✔ Loan against gold", "✔ Instant processing", "✔ Low interest", "✔ Flexible repayment"],
     link: "/#loanForm",
   },
+  {
+    id: "property",
+    title: "Loan Against Property",
+    icon: "🏘️",
+    image: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=600&h=400&fit=crop",
+    description: "Unlock your property's value. Get large loans at competitive rates.",
+    features: ["✔ Loan up to ₹10 Crore", "✔ Long tenure", "✔ Competitive interest", "✔ Quick processing"],
+    link: "/#loanForm",
+  },
+  {
+    id: "creditcard",
+    title: "Credit Cards",
+    icon: "💳",
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop",
+    description: "Rewarding credit cards with premium benefits and offers.",
+    features: ["✔ Reward points", "✔ Travel benefits", "✔ Fuel surcharge waiver", "✔ Complimentary lounge access"],
+    link: "/#loanForm",
+  },
+  {
+    id: "usedcar",
+    title: "Used Car Loan",
+    icon: "🚘",
+    image: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=600&h=400&fit=crop",
+    description: "Finance your pre-owned car with ease. Quick approval and flexible tenure.",
+    features: ["✔ Up to 90% financing", "✔ Interest from 12% p.a.", "✔ Quick disbursal", "✔ Flexible tenure"],
+    link: "/#loanForm",
+  },
+  {
+    id: "twowheeler",
+    title: "Two Wheeler Loan",
+    icon: "🏍️",
+    image: "https://images.unsplash.com/photo-1596971078795-38b18e9d5baa?w=600&h=400&fit=crop",
+    description: "Own your dream bike with easy two-wheeler loans at best rates.",
+    features: ["✔ Up to 100% financing", "✔ Interest from 10% p.a.", "✔ Quick processing", "✔ Flexible EMIs"],
+    link: "/#loanForm",
+  },
+  {
+    id: "commercial",
+    title: "Commercial Vehicle Loan",
+    icon: "🚛",
+    image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&h=400&fit=crop",
+    description: "Buy commercial vehicles for your business with easy financing options.",
+    features: ["✔ Loan up to ₹5 Crore", "✔ Interest from 11% p.a.", "✔ Tenure up to 7 years", "✔ Quick approval"],
+    link: "/#loanForm",
+  },
 ];
 
 export default function Home() {
-  // ---- All existing state and functions ----
+  // ---- State ----
   const [formData, setFormData] = useState({
     fullName: "",
     mobile: "",
@@ -108,8 +153,17 @@ export default function Home() {
   });
   const [partnerLoading, setPartnerLoading] = useState(false);
 
-  // Tabs state for loan categories
-  const [activeTab, setActiveTab] = useState("personal");
+  // Modal state for loan popup
+  const [selectedLoan, setSelectedLoan] = useState<typeof loanCategories[0] | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalFormData, setModalFormData] = useState({
+    fullName: "",
+    mobile: "",
+    city: "",
+    state: "",
+    monthlyIncome: "",
+  });
+  const [modalLoading, setModalLoading] = useState(false);
 
   // ---- EMI Calculation ----
   const monthlyRate = interestRate / 12 / 100;
@@ -204,6 +258,48 @@ export default function Home() {
     }
   };
 
+  // ---- Modal Form Submit ----
+  const handleModalSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!selectedLoan) return;
+    if (modalFormData.mobile.length !== 10) {
+      alert("Please enter a valid 10-digit mobile number");
+      return;
+    }
+    setModalLoading(true);
+    try {
+      const payload = {
+        ...modalFormData,
+        loanType: selectedLoan.title,
+      };
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        alert(data.message || "Something went wrong");
+        return;
+      }
+      alert(`✅ Application for ${selectedLoan.title} submitted successfully!`);
+      setModalOpen(false);
+      setSelectedLoan(null);
+      setModalFormData({
+        fullName: "",
+        mobile: "",
+        city: "",
+        state: "",
+        monthlyIncome: "",
+      });
+    } catch (error) {
+      console.error(error);
+      alert("❌ Failed to submit. Please try again.");
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
   // ---- Lead Form JSX ----
   const loanForm = (
     <form
@@ -287,6 +383,127 @@ export default function Home() {
     </form>
   );
 
+  // ---- Modal component (inline) ----
+  const LoanModal = () => {
+    if (!selectedLoan) return null;
+    return (
+      <div
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+        onClick={() => {
+          setModalOpen(false);
+          setSelectedLoan(null);
+        }}
+      >
+        <div
+          className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                {selectedLoan.icon} {selectedLoan.title}
+              </h2>
+              <p className="text-sm text-slate-500">{selectedLoan.description}</p>
+            </div>
+            <button
+              onClick={() => {
+                setModalOpen(false);
+                setSelectedLoan(null);
+              }}
+              className="text-slate-400 hover:text-slate-600 text-2xl"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="mb-6">
+            <img
+              src={selectedLoan.image}
+              alt={selectedLoan.title}
+              className="w-full h-48 object-cover rounded-xl"
+            />
+          </div>
+
+          <ul className="space-y-2 mb-6">
+            {selectedLoan.features.map((f, i) => (
+              <li key={i} className="text-sm text-slate-600 flex items-start gap-2">
+                <span className="text-indigo-500 text-lg mt-0.5">✓</span>
+                {f}
+              </li>
+            ))}
+          </ul>
+
+          <div className="border-t border-slate-200 pt-4">
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">
+              Quick Apply for {selectedLoan.title}
+            </h3>
+            <form onSubmit={handleModalSubmit} className="space-y-3">
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={modalFormData.fullName}
+                onChange={(e) =>
+                  setModalFormData({ ...modalFormData, fullName: e.target.value })
+                }
+                className="w-full border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+                required
+              />
+              <input
+                type="tel"
+                maxLength={10}
+                placeholder="Mobile Number"
+                value={modalFormData.mobile}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "");
+                  if (val.length <= 10)
+                    setModalFormData({ ...modalFormData, mobile: val });
+                }}
+                className="w-full border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+                required
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="text"
+                  placeholder="City"
+                  value={modalFormData.city}
+                  onChange={(e) =>
+                    setModalFormData({ ...modalFormData, city: e.target.value })
+                  }
+                  className="border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+                />
+                <input
+                  type="text"
+                  placeholder="State"
+                  value={modalFormData.state}
+                  onChange={(e) =>
+                    setModalFormData({ ...modalFormData, state: e.target.value })
+                  }
+                  className="border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+                />
+              </div>
+              <input
+                type="number"
+                placeholder="Monthly Income"
+                value={modalFormData.monthlyIncome}
+                onChange={(e) =>
+                  setModalFormData({ ...modalFormData, monthlyIncome: e.target.value })
+                }
+                className="w-full border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+              />
+              <button
+                type="submit"
+                disabled={modalLoading}
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl hover:shadow-lg transition font-medium disabled:opacity-50"
+              >
+                {modalLoading ? "Submitting..." : "Apply Now"}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // ---- Main Render ----
   return (
     <>
@@ -369,74 +586,71 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== LOAN CATEGORIES – TABS WITH IMAGES ===== */}
+        {/* ===== LOAN CATEGORIES – SLIDER WITH POPUP ===== */}
         <section className="max-w-7xl mx-auto px-6 py-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Explore Loan Categories
+              Explore All Loan Categories
             </h2>
             <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
-              Find the right loan for your financial needs.
+              Choose from a wide range of financial products tailored to your needs.
             </p>
           </div>
 
-          {/* Tabs */}
-          <div className="flex flex-wrap justify-center gap-2 mb-10">
-            {loanCategories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveTab(cat.id)}
-                className={`px-5 py-3 rounded-xl transition-all flex items-center gap-2 text-sm font-medium ${
-                  activeTab === cat.id
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 scale-105"
-                    : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
-                }`}
-              >
-                <span className="text-lg">{cat.icon}</span>
-                {cat.title}
-              </button>
-            ))}
+          {/* Slider */}
+          <div className="relative">
+            <div
+              className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 hide-scrollbar"
+              style={{ scrollbarWidth: "none" }}
+            >
+              {loanCategories.map((loan) => (
+                <div
+                  key={loan.id}
+                  className="flex-shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] snap-start group cursor-pointer"
+                  onClick={() => {
+                    setSelectedLoan(loan);
+                    setModalOpen(true);
+                  }}
+                >
+                  <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition hover:-translate-y-2 border border-slate-100 h-full flex flex-col">
+                    <div className="h-48 overflow-hidden">
+                      <img
+                        src={loan.image}
+                        alt={loan.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      />
+                    </div>
+                    <div className="p-5 flex flex-col flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-2xl">{loan.icon}</span>
+                        <h3 className="text-xl font-bold text-slate-800 group-hover:text-indigo-600 transition">
+                          {loan.title}
+                        </h3>
+                      </div>
+                      <p className="text-sm text-slate-500 flex-1">{loan.description}</p>
+                      <button
+                        className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl transition font-medium text-sm w-full"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedLoan(loan);
+                          setModalOpen(true);
+                        }}
+                      >
+                        View Details & Apply
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Tab Content – Card with Image & Details */}
-          {loanCategories.map((cat) => (
-            <div
-              key={cat.id}
-              className={`transition-all duration-300 ${
-                activeTab === cat.id ? "block animate-fadeIn" : "hidden"
-              }`}
-            >
-              <div className="grid md:grid-cols-2 gap-8 bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
-                <div className="h-64 md:h-auto relative">
-                  <img
-                    src={cat.image}
-                    alt={cat.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="p-6 md:p-8 flex flex-col justify-center">
-                  <div className="text-4xl mb-2">{cat.icon}</div>
-                  <h3 className="text-2xl font-bold text-slate-800">{cat.title}</h3>
-                  <p className="mt-2 text-slate-600 text-sm">{cat.description}</p>
-                  <ul className="mt-4 space-y-2 text-sm text-slate-600">
-                    {cat.features.map((f, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <span className="text-indigo-500 text-lg mt-0.5">✓</span>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link
-                    href={cat.link}
-                    className="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl text-center transition font-medium w-full md:w-auto"
-                  >
-                    Apply Now →
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
+          {/* Scroll hint - optional */}
+          <div className="flex justify-center gap-2 mt-6">
+            <span className="text-sm text-slate-400 animate-pulse">
+              ← Scroll to explore more →
+            </span>
+          </div>
         </section>
 
         {/* ===== EMI CALCULATOR (unchanged) ===== */}
@@ -687,7 +901,7 @@ export default function Home() {
                   Become a <span className="text-indigo-600">Partner</span>
                 </h2>
                 <p className="mt-4 text-slate-600 max-w-2xl mx-auto">
-                  Unlock a world of opportunities with India&apos;s most trusted loan distribution platform. 
+                  Unlock a world of opportunities with India's most trusted loan distribution platform. 
                   <br className="hidden sm:block" />
                   Start your journey towards financial independence today.
                 </p>
@@ -788,7 +1002,7 @@ export default function Home() {
               Our Lending Partners
             </h2>
             <p className="mt-4 text-gray-600">
-              Trusted by India&apos;s leading banks and NBFCs.
+              Trusted by India's leading banks and NBFCs.
             </p>
           </div>
           <div className="relative">
@@ -839,7 +1053,7 @@ export default function Home() {
               <div>
                 <h3 className="text-2xl font-bold mb-4">{COMPANY_NAME}</h3>
                 <p className="text-gray-400">
-                  Compare and apply for Personal, Home, Business and Car Loans from India&apos;s top banks and NBFCs.
+                  Compare and apply for Personal, Home, Business and Car Loans from India's top banks and NBFCs.
                 </p>
               </div>
               <div>
@@ -883,7 +1097,10 @@ export default function Home() {
         </footer>
       </main>
 
-      {/* ✅ Chatbot */}
+      {/* Modal */}
+      <LoanModal />
+
+      {/* Chatbot */}
       <Chatbot />
     </>
   );
