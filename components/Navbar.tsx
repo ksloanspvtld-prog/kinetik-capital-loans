@@ -218,15 +218,15 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Become a Partner */}
+            {/* ✅ Become a Partner - नवीन /become-partner ला link */}
             <Link
-              href="/#become-partner"
+              href="/become-partner"
               className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition font-medium text-sm"
             >
               Become a Partner
             </Link>
 
-            {/* ✅ Login Button (DarkModeToggle removed) */}
+            {/* Login */}
             <Link
               href="/login"
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl transition font-medium text-sm shadow-md hover:shadow-lg"
@@ -322,15 +322,16 @@ export default function Navbar() {
             ))}
           </div>
 
+          {/* ✅ Mobile Menu मध्ये पण /become-partner ला link */}
           <Link
-            href="/#become-partner"
+            href="/become-partner"
             className="block py-2 text-emerald-600 dark:text-emerald-400 font-medium hover:text-emerald-700 transition"
             onClick={() => setIsOpen(false)}
           >
             Become a Partner
           </Link>
 
-          {/* ✅ Login in Mobile Menu */}
+          {/* Login in Mobile Menu */}
           <Link
             href="/login"
             className="block py-2 bg-indigo-600 text-white text-center rounded-xl font-medium hover:bg-indigo-700 transition"
