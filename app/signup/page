@@ -1,0 +1,355 @@
+
+"use client";
+
+import {x
+"use client";
+
+import { useState } from " useState } from "react";
+import Link from "react";
+import Link from "next/link";
+import {next/link";
+import { useRouter } from useRouter } from "next/navigation";
+import Navbar "next/navigation";
+import Navbar from "../components/N from "../components/Navbar";
+import WhatsAppButton from "../avbar";
+import WhatsAppButton from "../components/WhatsAppcomponents/WhatsAppButton";
+
+export default function SignButton";
+
+export default function SignupPage()upPage() {
+  const [fullName, set {
+  const [fullName, setFullName] = useState("");
+  const [email, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobileEmail] = useState("");
+  const] = useState [mobile, setMobile] = useState("");
+  const [password, setPassword]("");
+  const [password, setPassword] = useState("");
+  = useState("");
+  const [loading, setLoading] = const [loading, setLoading] = useState(false);
+  useState(false);
+  const [error, setError] = const [error, setError] = useState("");
+  const useState("");
+  const [success, setSuccess] = useState [success, setSuccess] = useState("");
+  const router("");
+  const router = useRouter();
+
+  const handleSign = useRouter();
+
+  const handleSignup = async (up = async (e: React.FormEvent) =>e: React.FormEvent) => {
+    e.preventDefault {
+    e.preventDefault();
+    setLoading(true);
+    setError();
+    setLoading(true);
+    setError("");
+    setSuccess("");
+    setSuccess("");
+
+    if (!fullName ||("");
+
+    if (!fullName || !email || ! !email || !mobile || !password) {
+      setmobile || !password) {
+      setError("All fieldsError("All fields are required");
+      are required");
+      setLoading(false);
+      return;
+    }
+
+    if (password.length setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at < 6) {
+      setError("Password must be at least least 6 characters");
+      setLoading(false);
+      return 6 characters");
+      setLoading(false);
+      return;
+    }
+
+    if;
+    }
+
+    if (mobile.length !== 10) {
+      setError(" (mobile.length !== 10) {
+      setError("Mobile number must be 10 digitsMobile number must be 10 digits");
+      setLoading(false");
+      setLoading(false);
+      return;
+   );
+      return;
+    }
+
+    try {
+      const res }
+
+    try {
+      const res = await fetch("/ = await fetch("/api/auth/signup", {
+       api/auth/signup", {
+        method: "POST method: "POST",
+        headers: { "Content-Type",
+        headers: { "Content-Type": "application/json": "application/json" },
+        body: JSON.stringify({" },
+        body: JSON.stringify({ fullName, email fullName, email, mobile, password, mobile, password }),
+      });
+
+      const data = await res.json();
+
+      }),
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        set if (!data.success) {
+        setError(data.message ||Error(data.message || "Signup failed");
+        setLoading(false);
+        return "Signup failed");
+        setLoading(false);
+        return;
+      }
+
+      setSuccess("Account;
+      }
+
+      setSuccess("Account created! created! Please check your email for verification.");
+      setTimeout Please check your email for verification.");
+      setTimeout(() => {
+        router.push("/login(() => {
+        router.push("/login");
+");
+      }, 3000);
+    } catch (      }, 3000);
+    } catch (errorerror) {
+      console) {
+      console.error(error);
+      setError("Something.error(error);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      went wrong. Please try again.");
+    } finally {
+      setLoading(false setLoading(false);
+    }
+  };
+
+  return (
+   );
+    }
+  };
+
+  return (
+    <>
+      <Nav <>
+      <Navbar />
+      <WhatsAppButtonbar />
+      <WhatsAppButton />
+      <main className="min-h-screen bg-slate />
+      <main className="min-h-screen bg-s-50 dark:bg-slate-900 ptlate-50 dark:bg-slate-900 pt-20 flex items-center justify-20 flex items-center justify-center p-4">
+        <div-center p-4">
+        <div className="bg-white className="bg-white dark:bg-slate-800 rounded-3xl shadow dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-md-2xl w-full max-w-md p-8 p-8">
+          <h1 className="text-">
+          <h1 className="text-2xl font-bold2xl font-bold text-slate-800 dark:text-white text-slate-800 dark:text-white text-center">
+            Create Account
+          </h1 text-center">
+            Create Account
+          </h1>
+          <p className>
+          <p className="text-sm text-slate-500="text-sm text-slate-500 dark:text-slate dark:text-slate-400 text-center-400 text-center mb-6">
+            Join K mb-6">
+            Join Kinetik Capital today
+          </p>
+
+          {inetik Capital today
+          </p>
+
+          {error && (
+           error && (
+            <div className="bg-rose- <div className="bg-rose-50 dark:bg50 dark:bg-rose-900/20 border border-rose-900/20 border border-rose-200-rose-200 dark:border-rose-800 rounded dark:border-rose-800 rounded-xl p-3-xl p-3 mb-4">
+              <p mb-4">
+              <p className="text-rose className="text-rose-600 dark:text-600 dark:text-rose-400 text-sm text-center-rose-400 text-sm text-center">{error}</p">{error}</p>
+            </div>
+          )>
+            </div>
+          )}
+
+          {success && (
+            <div className="bg-em}
+
+          {success && (
+            <div className="bg-emerald-50 darkerald-50 dark:bg-emerald-900/20:bg-emerald-900/20 border border-emerald-200 dark: border border-emerald-200 dark:borderborder-emerald-800 rounded-xl p-3 mb-4">
+              <p className="text-emerald-600 dark:text-emerald-400 text-sm text-center">{success}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSignup} className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1">
+                Full Name
+              </label>
+              <input
+                type="text"
+                placeholder="Enter your full name"
+                value={fullName}
+                onChange={(e)-emerald-800 rounded-xl p-3 mb-4">
+              <p className="text-emerald-600 dark:text-emerald-400 text-sm text-center">{success}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSignup} className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1">
+                Full Name
+              </label>
+              <input
+                type="text"
+                placeholder="Enter your full name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="w-full border-2 border-slate-200 dark:border-slate-700 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition dark:bg-slate-900 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 dark => setFullName(e.target.value)}
+                className="w-full border-2 border-slate-200 dark:border-slate-700 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition dark:bg-slate-900 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1">
+                Email Address
+              </label:text-slate-300 block mb-1">
+                Email Address
+              </label>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChangeemail}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full border={(e) => setEmail(e.target.value)}
+                className="w-full border-2 border-slate-200 dark:border-slate-700 p--2 border-slate-200 dark:border-slate-700 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-5003 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition dark:bg-slate-900 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <label className="text transition dark:bg-slate-900 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1">
+                Mobile Number
+-sm font-medium text-slate-700 dark:text-slate-300 block mb-1">
+                Mobile Number
+              </label>
+                           </label>
+              <input
+                <input
+                type="tel type="tel"
+                maxLength={"
+                maxLength={10}
+                placeholder="Enter 10}
+                placeholder="Enter 10 digit mobile number10 digit mobile number"
+                value={mobile}
+                onChange"
+                value={mobile}
+                onChange={(e) =>={(e) => setMobile(e.target.value.replace( setMobile(e.target.value.replace(/\D/g,/\D/g, ""))}
+                className="w-full border-2 border ""))}
+                className="w-full border-2 border-slate-200 dark:border-s-slate-200late-700 p-3 rounded-xl focus:outline-none focus:ring dark:border-slate-700 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition dark:-2 focus:ring-indigo-500 transition dark:bg-slate-900 dark:text-white"
+              />
+           bg-slate-900 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <label className=" </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1">
+                Password
+             ">
+                Password
+              </label>
+              </label>
+              <input
+                type="password <input
+                type="password"
+                placeholder="Create"
+                placeholder="Create a password (min 6 characters)"
+                value={password}
+                onChange={(e) => a password (min 6 characters)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full border-2 border-s setPassword(e.target.value)}
+                className="w-full border-2 border-slate-200 dark:border-slate-700 p-late-200 dark:border-slate-700 p-3 rounded-xl focus:outline-none3 rounded-xl focus:outline-none focus:ring- focus:ring-2 focus:ring-indigo-5002 focus:ring-indigo-500 transition dark:bg transition dark:bg-slate-900 dark:text-white-slate-900 dark:text-white"
+              />
+            </"
+              />
+            </div>
+
+            <button
+              typediv>
+
+            <button
+              type="submit"
+             ="submit"
+              disabled={loading}
+              className="w disabled={loading}
+              className="w-full bg-indigo-600 hover:bg-indigo-full bg-indigo-600 hover:bg-indigo-700 text-white-700 text-white py-3 rounded-xl transition font-medium py-3 rounded-xl transition font-medium disabled:opacity disabled:opacity-50 flex items-center justify-center gap-50 flex items-center justify-center gap-2"
+           -2"
+            >
+              {loading ? (
+                <>
+                  <svg className >
+              {loading ? (
+                <>
+                  <svg className="animate-spin="animate-spin h-5 w-5 text-white h-5 w-5 text-white" xmlns="http" xmlns="http://www.w3.org/2000://www.w3.org/2000/svg" fill/svg" fill="none" viewBox="0 ="none" viewBox="00 24 24">
+                    <circle className="op 0 24 24">
+                    <circle className="opacity-25"acity-25" cx="12" cy="12" cx="12" cy="12" r="10" r="10" stroke="currentColor stroke="currentColor" strokeWidth="4"></circle" strokeWidth="4"></circle>
+                    <path className>
+                    <path className="opacity-75" fill="="opacity-75" fill="currentColor" dcurrentColor" d="M4 12a8 ="M4 12a8 8 0 8 0 018-8V0C5.018-8V0C5.373 0 0 5.373 0 373 0 0 5.373 0 12h4zm12h4zm2 5.291A7.2 5.291A7.962 7.962 7.962 0 962 0 014 12H0c0 014 12H0c0 3.042 3.042 1.135 5.824 1.135 5.824 3 7.3 7.938l3-2.647z938l3-2.647z"></path>
+                 "></path>
+                  </svg>
+                  Creating Account...
+                </svg>
+                  Creating Account...
+                </>
+              ) : </>
+              ) : (
+                "Create Account →"
+              (
+                "Create Account →"
+              )}
+            </button )}
+            </button>
+          </form>
+
+          <p>
+          </form>
+
+          <p className="text-center text-xs text-slate-400 mt className="text-center text-xs text-slate-400 mt-6">
+           -6">
+            Already have an account?{" " Already have an account?{" "}
+            <Link href}
+            <Link href="/login" className="text-indigo="/login" className="text-indigo-600 hover:text-600 hover:text-indigo-700 font-medium">
+             -indigo-700 font-medium">
+              Login
+            </ Login
+            </Link>
+          </p>
+        </div>
+      </Link>
+          </p>
+        </div>
+      </main>
+   main>
+    </>
+  );
+}

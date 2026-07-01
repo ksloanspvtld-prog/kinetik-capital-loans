@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
-import Lead from "@/models/Lead";
+import User from "@/models/User";
 import { verifyToken } from "@/lib/jwt";
 
 export async function GET(req: Request) {
@@ -16,20 +16,13 @@ export async function GET(req: Request) {
       return NextResponse.json({ success: false, message: "Forbidden" }, { status: 403 });
     }
 
-    const url = new URL(req.url);
-    const status = url.searchParams.get("status") || "all";
-    const limit = parseInt(url.searchParams.get("limit") || "100");
-
     await connectDB();
 
-    const query = status === "all" ? {} : { status };
-    const leads = await Lead.find(query)
-      .sort({ createdAt: -1 })
-      .limit(limit);
+    const users = await User.find({}).select("-password -verificationToken").sort({ createdAt: -1 });
 
-    return NextResponse.json({ success: true, leads });
+    return NextResponse.json({ success: true, users });
   } catch (error) {
-    console.error("Leads Error:", error);
+    console.error("Users Error:", error);
     return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
   }
 }
