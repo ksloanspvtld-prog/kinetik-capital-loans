@@ -11,8 +11,19 @@ export default function Navbar() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const [isMobile, setIsMobile] = useState(false);
 
-  // ✅ Products & Offers - सगळे Loans
+  // Check if mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Products & Offers - सगळे Loans
   const productItems = [
     { name: "Personal Loan", href: "/loans/personal-loan" },
     { name: "Home Loan", href: "/loans/home-loan" },
@@ -26,7 +37,7 @@ export default function Navbar() {
     { name: "Gold Loan", href: "/#loanForm" },
   ];
 
-  // ✅ Tools & Calculators
+  // Tools & Calculators
   const toolsItems = [
     { name: "Personal Loan EMI Calculator", href: "/#emi-calculator" },
     { name: "Home Loan EMI Calculator", href: "/#emi-calculator" },
@@ -43,7 +54,7 @@ export default function Navbar() {
     { name: "Education Loan EMI Calculator", href: "/#emi-calculator" },
   ];
 
-  // ✅ Credit Cards
+  // Credit Cards
   const creditCardItems = [
     { name: "HDFC Credit Card", href: "/#credit-cards" },
     { name: "ICICI Credit Card", href: "/#credit-cards" },
@@ -57,7 +68,7 @@ export default function Navbar() {
     { name: "Bank of Baroda Credit Card", href: "/#credit-cards" },
   ];
 
-  // ✅ CIBIL Score
+  // CIBIL Score
   const cibilItems = [
     { name: "CIBIL Score", href: "/#cibil-score" },
     { name: "Credit Score", href: "/#credit-score" },
@@ -65,10 +76,24 @@ export default function Navbar() {
   ];
 
   const toggleDropdown = (name: string) => {
-    setOpenDropdown(openDropdown === name ? null : name);
+    if (isMobile) {
+      setOpenDropdown(openDropdown === name ? null : name);
+    }
   };
 
-  // ✅ Close dropdown when clicking outside
+  const handleMouseEnter = (name: string) => {
+    if (!isMobile) {
+      setOpenDropdown(name);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!isMobile) {
+      setOpenDropdown(null);
+    }
+  };
+
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -82,12 +107,12 @@ export default function Navbar() {
     };
   }, []);
 
-  // ✅ Close dropdown on route change (navigation)
+  // Close dropdown on route change
   useEffect(() => {
     setOpenDropdown(null);
   }, [pathname]);
 
-  // ✅ Close dropdown on Escape key
+  // Close dropdown on Escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -147,14 +172,18 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop Menu - wrap dropdowns with ref */}
+          {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8" ref={dropdownRef}>
             <Link href="/" className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm">
               Home
             </Link>
 
             {/* Products & Offers */}
-            <div className="relative">
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("products")}
+              onMouseLeave={handleMouseLeave}
+            >
               <button
                 onClick={() => toggleDropdown("products")}
                 className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm flex items-center gap-1"
@@ -179,7 +208,11 @@ export default function Navbar() {
             </div>
 
             {/* Tools & Calculators */}
-            <div className="relative">
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("tools")}
+              onMouseLeave={handleMouseLeave}
+            >
               <button
                 onClick={() => toggleDropdown("tools")}
                 className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm flex items-center gap-1"
@@ -204,7 +237,11 @@ export default function Navbar() {
             </div>
 
             {/* CIBIL Score */}
-            <div className="relative">
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("cibil")}
+              onMouseLeave={handleMouseLeave}
+            >
               <button
                 onClick={() => toggleDropdown("cibil")}
                 className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm flex items-center gap-1"
@@ -229,7 +266,11 @@ export default function Navbar() {
             </div>
 
             {/* Credit Cards */}
-            <div className="relative">
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("creditcards")}
+              onMouseLeave={handleMouseLeave}
+            >
               <button
                 onClick={() => toggleDropdown("creditcards")}
                 className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm flex items-center gap-1"
