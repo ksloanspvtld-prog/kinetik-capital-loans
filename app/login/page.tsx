@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import WhatsAppButton from "../../components/WhatsAppButton";
 
@@ -14,7 +13,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,20 +46,18 @@ export default function LoginPage() {
         return;
       }
 
-      // ✅ Save token
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // ✅ Redirect based on role
+      // ✅ Redirect using window.location
       if (data.user.role === "admin") {
-        router.push("/admin");
+        window.location.href = "/admin";
       } else {
-        router.push("/dashboard");
+        window.location.href = "/dashboard";
       }
     } catch (error) {
       console.error(error);
       setError("Something went wrong. Please try again.");
-    } finally {
       setLoading(false);
     }
   };
@@ -72,12 +68,8 @@ export default function LoginPage() {
       <WhatsAppButton />
       <main className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-20 flex items-center justify-center p-4">
         <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-md p-8">
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-white text-center">
-            Log in
-          </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 text-center mb-6">
-            to access your Account
-          </p>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white text-center">Log in</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 text-center mb-6">to access your Account</p>
 
           {error && (
             <div className="bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-xl p-3 mb-4">
@@ -86,38 +78,47 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
+            {/* Email */}
             <div>
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1">
-                Email or Mobile Number
-              </label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1">Email Address</label>
               <input
-                type="text"
-                placeholder="Enter your email or mobile"
-                value={email || mobile}
-                onChange={(e) => {
-                  const val = e.target.value.trim();
-                  if (val.includes("@")) {
-                    setEmail(val);
-                    setMobile("");
-                  } else {
-                    setMobile(val.replace(/\D/g, ""));
-                    setEmail("");
-                  }
-                }}
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full border-2 border-slate-200 dark:border-slate-700 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition dark:bg-slate-900 dark:text-white"
               />
             </div>
 
+            <div className="relative flex items-center">
+              <div className="flex-grow border-t border-slate-300 dark:border-slate-600"></div>
+              <span className="flex-shrink mx-4 text-sm text-slate-500 dark:text-slate-400">OR</span>
+              <div className="flex-grow border-t border-slate-300 dark:border-slate-600"></div>
+            </div>
+
+            {/* Mobile */}
             <div>
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1">
-                Password
-              </label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1">Mobile Number</label>
+              <input
+                type="tel"
+                maxLength={10}
+                placeholder="Enter 10-digit mobile number"
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))}
+                className="w-full border-2 border-slate-200 dark:border-slate-700 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition dark:bg-slate-900 dark:text-white"
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1">Password</label>
               <input
                 type="password"
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full border-2 border-slate-200 dark:border-slate-700 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition dark:bg-slate-900 dark:text-white"
+                required
               />
             </div>
 
