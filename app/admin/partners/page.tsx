@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
+// ✅ Define Partner type
 type Partner = {
   _id: string;
   fullName: string;
@@ -12,7 +13,8 @@ type Partner = {
   mobile: string;
   city?: string | null;
   partnerType?: string;
-  status?: string;
+  status: "Pending" | "Approved" | "Rejected";  // ← exact enum
+  createdAt: string;
 };
 
 export default function ManagePartners() {
@@ -45,7 +47,7 @@ export default function ManagePartners() {
     fetchPartners();
   }, [filter, router]);
 
-  const updateStatus = async (id: string, status: string) => {
+  const updateStatus = async (id: string, status: Partner["status"]) => {
     const token = localStorage.getItem("token");
     try {
       const res = await fetch(`/api/admin/partners/${id}`, {
@@ -58,7 +60,10 @@ export default function ManagePartners() {
       });
       const data = await res.json();
       if (data.success) {
-        setPartners(partners.map((p: any) => p._id === id ? { ...p, status } : p));
+        // ✅ Functional update – avoids stale closure
+        setPartners((prev) =>
+          prev.map((p) => (p._id === id ? { ...p, status } : p))
+        );
         alert(`✅ Partner ${status} successfully!`);
       }
     } catch (error) {
@@ -89,38 +94,25 @@ export default function ManagePartners() {
 
           {/* Filter */}
           <div className="bg-white rounded-2xl shadow-md p-4 mb-6 flex flex-wrap gap-3">
-            <button
-              onClick={() => setFilter("all")}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
-                filter === "all" ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setFilter("pending")}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
-                filter === "pending" ? "bg-yellow-600 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              Pending
-            </button>
-            <button
-              onClick={() => setFilter("approved")}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
-                filter === "approved" ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              Approved
-            </button>
-            <button
-              onClick={() => setFilter("rejected")}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
-                filter === "rejected" ? "bg-rose-600 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              Rejected
-            </button>
+            {["all", "pending", "approved", "rejected"].map((status) => (
+              <button
+                key={status}
+                onClick={() => setFilter(status)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
+                  filter === status
+                    ? status === "all"
+                      ? "bg-indigo-600 text-white"
+                      : status === "pending"
+                      ? "bg-yellow-600 text-white"
+                      : status === "approved"
+                      ? "bg-emerald-600 text-white"
+                      : "bg-rose-600 text-white"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                {status.charAt(0).toUpperCase() + status.slice(1)}
+              </button>
+            ))}
           </div>
 
           {/* Partners Table */}
@@ -144,7 +136,7 @@ export default function ManagePartners() {
                       <td colSpan={7} className="p-6 text-center text-slate-400">No partners found</td>
                     </tr>
                   ) : (
-                    partners.map((partner: any) => (
+                    partners.map((partner) => (
                       <tr key={partner._id} className="hover:bg-slate-50 transition">
                         <td className="p-4 text-sm text-slate-700 font-medium">{partner.fullName}</td>
                         <td className="p-4 text-sm text-slate-700">{partner.email}</td>
@@ -153,8 +145,8 @@ export default function ManagePartners() {
                         <td className="p-4 text-sm text-slate-700 capitalize">{partner.partnerType || "individual"}</td>
                         <td className="p-4">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            partner.status === "approved" ? "bg-emerald-100 text-emerald-700" :
-                            partner.status === "rejected" ? "bg-rose-100 text-rose-700" :
+                            partner.status === "Approved" ? "bg-emerald-100 text-emerald-700" :
+                            partner.status === "Rejected" ? "bg-rose-100 text-rose-700" :
                             "bg-yellow-100 text-yellow-700"
                           }`}>
                             {partner.status || "Pending"}
@@ -162,17 +154,17 @@ export default function ManagePartners() {
                         </td>
                         <td className="p-4">
                           <div className="flex flex-wrap gap-2">
-                            {partner.status !== "approved" && (
+                            {partner.status !== "Approved" && (
                               <button
-                                onClick={() => updateStatus(partner._id, "approved")}
+                                onClick={() => updateStatus(partner._id, "Approved")}
                                 className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-lg transition"
                               >
                                 Approve
                               </button>
                             )}
-                            {partner.status !== "rejected" && (
+                            {partner.status !== "Rejected" && (
                               <button
-                                onClick={() => updateStatus(partner._id, "rejected")}
+                                onClick={() => updateStatus(partner._id, "Rejected")}
                                 className="bg-rose-600 hover:bg-rose-700 text-white text-xs px-3 py-1.5 rounded-lg transition"
                               >
                                 Reject

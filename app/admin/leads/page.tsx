@@ -5,8 +5,19 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
+// ✅ Define Lead type
+type Lead = {
+  _id: string;
+  fullName: string;
+  mobile: string;
+  loanType: string;
+  monthlyIncome?: string;
+  status: "pending" | "processing" | "approved" | "rejected";
+  createdAt: string;
+};
+
 export default function ManageLeads() {
-  const [leads, setLeads] = useState([]);
+  const [leads, setLeads] = useState<Lead[]>([]);  // ← type added
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const router = useRouter();
@@ -35,7 +46,7 @@ export default function ManageLeads() {
     fetchLeads();
   }, [filter, router]);
 
-  const updateStatus = async (id: string, status: string) => {
+  const updateStatus = async (id: string, status: Lead["status"]) => {
     const token = localStorage.getItem("token");
     try {
       const res = await fetch(`/api/admin/leads/${id}`, {
@@ -48,7 +59,12 @@ export default function ManageLeads() {
       });
       const data = await res.json();
       if (data.success) {
-        setLeads(leads.map((l: any) => l._id === id ? { ...l, status } : l));
+        // ✅ Use functional update to avoid stale closure
+        setLeads((prev) =>
+          prev.map((lead) =>
+            lead._id === id ? { ...lead, status } : lead
+          )
+        );
         alert(`✅ Lead ${status} successfully!`);
       }
     } catch (error) {
@@ -79,46 +95,27 @@ export default function ManageLeads() {
 
           {/* Filter */}
           <div className="bg-white rounded-2xl shadow-md p-4 mb-6 flex flex-wrap gap-3">
-            <button
-              onClick={() => setFilter("all")}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
-                filter === "all" ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setFilter("pending")}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
-                filter === "pending" ? "bg-yellow-600 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              Pending
-            </button>
-            <button
-              onClick={() => setFilter("processing")}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
-                filter === "processing" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              Processing
-            </button>
-            <button
-              onClick={() => setFilter("approved")}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
-                filter === "approved" ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              Approved
-            </button>
-            <button
-              onClick={() => setFilter("rejected")}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
-                filter === "rejected" ? "bg-rose-600 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              Rejected
-            </button>
+            {["all", "pending", "processing", "approved", "rejected"].map((status) => (
+              <button
+                key={status}
+                onClick={() => setFilter(status)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
+                  filter === status
+                    ? status === "all"
+                      ? "bg-indigo-600 text-white"
+                      : status === "pending"
+                      ? "bg-yellow-600 text-white"
+                      : status === "processing"
+                      ? "bg-blue-600 text-white"
+                      : status === "approved"
+                      ? "bg-emerald-600 text-white"
+                      : "bg-rose-600 text-white"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                {status.charAt(0).toUpperCase() + status.slice(1)}
+              </button>
+            ))}
           </div>
 
           {/* Leads Table */}
@@ -142,7 +139,7 @@ export default function ManageLeads() {
                       <td colSpan={7} className="p-6 text-center text-slate-400">No leads found</td>
                     </tr>
                   ) : (
-                    leads.map((lead: any) => (
+                    leads.map((lead) => (
                       <tr key={lead._id} className="hover:bg-slate-50 transition">
                         <td className="p-4 text-sm text-slate-700 font-medium">{lead.fullName}</td>
                         <td className="p-4 text-sm text-slate-700">{lead.mobile}</td>

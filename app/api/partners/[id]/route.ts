@@ -6,10 +6,10 @@ import { verifyToken } from "@/lib/jwt";
 // ✅ PATCH - Update partner status
 export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }  // ← Promise type
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-        const authHeader = req.headers.get("authorization");
+    const authHeader = req.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
@@ -26,7 +26,6 @@ export async function PATCH(
       );
     }
 
-    // ✅ Await params
     const { id } = await params;
 
     const { status } = await req.json();

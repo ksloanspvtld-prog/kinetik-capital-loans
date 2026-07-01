@@ -5,8 +5,19 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
+// ✅ Define User type
+type User = {
+  _id: string;
+  fullName: string;
+  email: string;
+  mobile: string;
+  role: "customer" | "agent" | "admin";
+  isVerified: boolean;
+  createdAt: string;
+};
+
 export default function ManageUsers() {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);  // ← type added
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -73,7 +84,7 @@ export default function ManageUsers() {
                       <td colSpan={6} className="p-6 text-center text-slate-400">No users found</td>
                     </tr>
                   ) : (
-                    users.map((user: any) => (
+                    users.map((user) => (
                       <tr key={user._id} className="hover:bg-slate-50 transition">
                         <td className="p-4 text-sm text-slate-700 font-medium">{user.fullName}</td>
                         <td className="p-4 text-sm text-slate-700">{user.email}</td>
