@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
-import { sendWelcomeEmail } from "@/lib/email";
 
 export async function GET(req: Request) {
   try {
@@ -17,7 +16,6 @@ export async function GET(req: Request) {
 
     await connectDB();
 
-    // ✅ Find user with verification token
     const user = await User.findOne({ verificationToken: token });
 
     if (!user) {
@@ -32,15 +30,12 @@ export async function GET(req: Request) {
     user.verificationToken = undefined;
     await user.save();
 
-    // ✅ Send welcome email
-    await sendWelcomeEmail(user.email, user.fullName);
-
     // ✅ Redirect to login page with success message
     return NextResponse.redirect(
       `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/login?verified=true`
     );
   } catch (error) {
-    console.error("❌ Verification Error:", error);
+    console.error("Verification Error:", error);
     return NextResponse.json(
       { success: false, message: "Something went wrong" },
       { status: 500 }
