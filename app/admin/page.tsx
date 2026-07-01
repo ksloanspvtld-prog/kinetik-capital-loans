@@ -63,99 +63,30 @@ export default function AdminPage() {
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
-
-  // ===== NOTIFICATIONS (derived, not state) =====
-  const notifications = useMemo<Notification[]>(() => {
-    const newNotifs: Notification[] = [];
-    const today = new Date().toISOString().split("T")[0];
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    // Today's follow-ups
-    const todayFollows = leads.filter(
-      (l) => l.followUpDate && l.followUpDate.split("T")[0] === today
-    );
-    if (todayFollows.length > 0) {
-      newNotifs.push({
-        id: `followup_${Date.now()}`,
-        type: "follow_up",
-        message: `📅 ${todayFollows.length} follow-up${todayFollows.length > 1 ? "s" : ""} due today`,
-        time: "Today",
-        read: false,
-      });
-    }
-
-    // Overdue
-    const overdue = leads.filter(
-      (l) => l.followUpDate && new Date(l.followUpDate).getTime() < todayStart.getTime()
-    );
-    if (overdue.length > 0) {
-      newNotifs.push({
-        id: `overdue_${Date.now()}`,
-        type: "overdue",
-        message: `🚨 ${overdue.length} lead${overdue.length > 1 ? "s" : ""} overdue for follow-up`,
-        time: "Today",
-        read: false,
-      });
-    }
-
-    // New leads (last 24h)
-    const newLeads = leads.filter(
-      (l) => l.createdAt && new Date(l.createdAt) > yesterday
-    );
-    if (newLeads.length > 0) {
-      newNotifs.push({
-        id: `new_${Date.now()}`,
-        type: "new_lead",
-        message: `🆕 ${newLeads.length} new lead${newLeads.length > 1 ? "s" : ""} added in last 24 hours`,
-        time: "Today",
-        read: false,
-      });
-    }
-
-    // Recent status changes
-    const recentApproved = leads.filter(
-      (l) =>
-        l.status === "Approved" &&
-        l.updatedAt &&
-        new Date(l.updatedAt) > yesterday
-    );
-    if (recentApproved.length > 0) {
-      newNotifs.push({
-        id: `status_${Date.now()}`,
-        type: "status_change",
-        message: `✅ ${recentApproved.length} lead${recentApproved.length > 1 ? "s" : ""} approved recently`,
-        time: "Today",
-        read: false,
-      });
-    }
-
-    const recentRejected = leads.filter(
-      (l) =>
-        l.status === "Rejected" &&
-        l.updatedAt &&
-        new Date(l.updatedAt) > yesterday
-    );
-    if (recentRejected.length > 0) {
-      newNotifs.push({
-        id: `status_rejected_${Date.now()}`,
-        type: "status_change",
-        message: `❌ ${recentRejected.length} lead${recentRejected.length > 1 ? "s" : ""} rejected recently`,
-        time: "Today",
-        read: false,
-      });
-    }
-
-    return newNotifs;
-  }, [leads]);
-
-  const unreadCount = useMemo(() => {
-    return notifications.filter((n) => !n.read).length;
-  }, [notifications]);
-
   const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  // ===== AUTH CHECK =====
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+    // Optionally verify token with backend
+    fetch("/api/auth/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.success) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          router.push("/login");
+        }
+      })
+      .catch(() => router.push("/login"));
+  }, [router]);
 
   // ===== DATA =====
   const filteredLeads = useMemo(() => {
@@ -232,9 +163,16 @@ export default function AdminPage() {
   const fetchLeads = useCallback(async (showRefresh = false) => {
     try {
       if (showRefresh) setIsRefreshing(true);
-      const res = await fetch("/api/leads/all");
+      const token = localStorage.getItem("token");
+      const res = await fetch("/api/admin/leads", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
-      setLeads(data.leads || []);
+      if (data.success) {
+        setLeads(data.leads || []);
+        // Generate notifications
+        generateNotifications(data.leads || []);
+      }
       if (showRefresh) {
         const toast = document.createElement("div");
         toast.className =
@@ -244,7 +182,7 @@ export default function AdminPage() {
         setTimeout(() => toast.remove(), 3000);
       }
     } catch (error) {
-      console.log(error);
+      console.error("Fetch leads error:", error);
       if (!showRefresh) alert("Failed to fetch leads");
     } finally {
       setIsLoading(false);
@@ -252,17 +190,60 @@ export default function AdminPage() {
     }
   }, []);
 
+  const generateNotifications = useCallback((leadsData: Lead[]) => {
+    const newNotifs: Notification[] = [];
+    const today = new Date().toISOString().split("T")[0];
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const todayFollows = leadsData.filter(
+      (l) => l.followUpDate && l.followUpDate.split("T")[0] === today
+    );
+    if (todayFollows.length > 0) {
+      newNotifs.push({
+        id: `followup_${Date.now()}`,
+        type: "follow_up",
+        message: `📅 ${todayFollows.length} follow-up${todayFollows.length > 1 ? "s" : ""} due today`,
+        time: "Today",
+        read: false,
+      });
+    }
+
+    const overdue = leadsData.filter(
+      (l) => l.followUpDate && new Date(l.followUpDate).getTime() < todayStart.getTime()
+    );
+    if (overdue.length > 0) {
+      newNotifs.push({
+        id: `overdue_${Date.now()}`,
+        type: "overdue",
+        message: `🚨 ${overdue.length} lead${overdue.length > 1 ? "s" : ""} overdue for follow-up`,
+        time: "Today",
+        read: false,
+      });
+    }
+
+    const newLeads = leadsData.filter(
+      (l) => l.createdAt && new Date(l.createdAt) > yesterday
+    );
+    if (newLeads.length > 0) {
+      newNotifs.push({
+        id: `new_${Date.now()}`,
+        type: "new_lead",
+        message: `🆕 ${newLeads.length} new lead${newLeads.length > 1 ? "s" : ""} added`,
+        time: "Today",
+        read: false,
+      });
+    }
+
+    setNotifications(newNotifs);
+  }, []);
+
   // ===== EFFECTS =====
   useEffect(() => {
-    const admin = localStorage.getItem("admin");
-    if (!admin) {
-      router.push("/login");
-    }
-  }, [router]);
-
-  useEffect(() => {
-    const admin = localStorage.getItem("admin");
-    if (admin) {
+    const token = localStorage.getItem("token");
+    if (token) {
       fetchLeads();
     }
   }, [fetchLeads]);
@@ -270,9 +251,13 @@ export default function AdminPage() {
   // ===== HANDLERS =====
   const updateStatus = async (id: string, status: string) => {
     try {
-      const res = await fetch(`/api/leads/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+      const token = localStorage.getItem("token");
+      const res = await fetch(`/api/admin/leads/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ status }),
       });
       const data = await res.json();
@@ -280,77 +265,38 @@ export default function AdminPage() {
         fetchLeads();
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   const deleteLead = async (id: string) => {
     if (!confirm("Are you sure?")) return;
     try {
-      const res = await fetch(`/api/leads/${id}`, { method: "DELETE" });
+      const token = localStorage.getItem("token");
+      const res = await fetch(`/api/admin/leads/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
       if (data.success) {
         fetchLeads();
         if (selectedLead?._id === id) setSelectedLead(null);
       }
     } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const deleteNote = async (noteId: string) => {
-    if (!selectedLead) return;
-    try {
-      const res = await fetch("/api/leads/note", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ leadId: selectedLead._id, noteId }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        await fetchLeads();
-        const refreshRes = await fetch("/api/leads/all");
-        const refreshData = await refreshRes.json();
-        const updatedLead = refreshData.leads.find(
-          (l: Lead) => l._id === selectedLead._id
-        );
-        setSelectedLead(updatedLead || null);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const deleteFollowUp = async (historyId: string) => {
-    if (!selectedLead) return;
-    try {
-      const res = await fetch("/api/leads/followup", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ leadId: selectedLead._id, historyId }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        await fetchLeads();
-        const refreshRes = await fetch("/api/leads/all");
-        const refreshData = await refreshRes.json();
-        const updatedLead = refreshData.leads.find(
-          (l: Lead) => l._id === selectedLead._id
-        );
-        setSelectedLead(updatedLead || null);
-        alert("Follow up deleted successfully");
-      }
-    } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   const saveNotes = async () => {
     if (!selectedLead) return;
     try {
-      const res = await fetch(`/api/leads/${selectedLead._id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+      const token = localStorage.getItem("token");
+      const res = await fetch(`/api/admin/leads/${selectedLead._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           notes: selectedLead.notes,
           followUpDate: selectedLead.followUpDate,
@@ -359,16 +305,18 @@ export default function AdminPage() {
       const data = await res.json();
       if (data.success) {
         await fetchLeads();
-        const refreshRes = await fetch("/api/leads/all");
+        const refreshRes = await fetch("/api/admin/leads", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         const refreshData = await refreshRes.json();
         const updatedLead = refreshData.leads.find(
           (l: Lead) => l._id === selectedLead._id
         );
         setSelectedLead(updatedLead || null);
-        alert("Saved Successfully");
+        alert("✅ Saved Successfully");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -394,6 +342,7 @@ export default function AdminPage() {
       prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
     );
   };
+
   const toggleSelectAll = () => {
     if (selectedLeads.length === filteredLeads.length) {
       setSelectedLeads([]);
@@ -426,7 +375,11 @@ export default function AdminPage() {
     if (selectedLeads.length === 0) return;
     if (!confirm(`Delete ${selectedLeads.length} leads?`)) return;
     for (const id of selectedLeads) {
-      await fetch(`/api/leads/${id}`, { method: "DELETE" });
+      const token = localStorage.getItem("token");
+      await fetch(`/api/admin/leads/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
     }
     await fetchLeads();
     setSelectedLeads([]);
@@ -450,11 +403,10 @@ export default function AdminPage() {
     await fetchLeads(true);
   };
 
-  // ===== MARK NOTIFICATIONS READ =====
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
   const markAllAsRead = () => {
-    // since notifications are derived, we can just ignore
-    // but to simulate, we could store read status in state.
-    // For simplicity, we'll just close the dropdown.
+    setNotifications(notifications.map((n) => ({ ...n, read: true })));
     setShowNotifications(false);
   };
 
@@ -472,7 +424,7 @@ export default function AdminPage() {
 
   return (
     <div className="p-4 md:p-10 bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
-      {/* Header with Refresh & Notification */}
+      {/* Header */}
       <div className="flex flex-wrap justify-between items-center mb-6 gap-4 bg-white/80 backdrop-blur-md p-4 md:p-6 rounded-2xl shadow-xl border border-white/50">
         <div className="flex items-center gap-3">
           <button
@@ -553,7 +505,8 @@ export default function AdminPage() {
           </button>
           <button
             onClick={() => {
-              localStorage.removeItem("admin");
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
               router.push("/login");
             }}
             className="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 md:px-6 py-2 md:py-3 rounded-xl text-sm"
@@ -919,7 +872,7 @@ export default function AdminPage() {
                   selectedLead.notesHistory.slice().reverse().map((item) => (
                     <div key={item._id} className="bg-slate-50 border rounded-xl p-3 flex justify-between items-center">
                       <div><p className="font-medium">{item.note}</p><small className="text-slate-400 text-xs">{new Date(item.createdAt).toLocaleString()}</small></div>
-                      <button onClick={() => deleteNote(item._id)} className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1.5 rounded-lg text-sm transition">🗑 Delete</button>
+                      <button className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1.5 rounded-lg text-sm transition">🗑 Delete</button>
                     </div>
                   ))
                 ) : <p className="text-sm text-slate-400">No notes</p>}
@@ -934,7 +887,7 @@ export default function AdminPage() {
                   selectedLead.followUpHistory.slice().reverse().map((item) => (
                     <div key={item._id} className="bg-green-50 border border-green-200 rounded-xl p-3 flex justify-between items-center">
                       <div><p className="font-semibold text-green-700">📅 {item.date}</p><small className="text-slate-400 text-xs">{new Date(item.createdAt).toLocaleString()}</small></div>
-                      <button onClick={() => deleteFollowUp(item._id)} className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1.5 rounded-lg text-sm transition">🗑 Delete</button>
+                      <button className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1.5 rounded-lg text-sm transition">🗑 Delete</button>
                     </div>
                   ))
                 ) : <p className="text-sm text-slate-400">No follow-ups</p>}
