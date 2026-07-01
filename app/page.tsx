@@ -9,6 +9,143 @@ import Chatbot from "../components/Chatbot";
 
 const COMPANY_NAME = "Kinetik Capital";
 
+// ---- Modal component (extracted) ----
+const LoanModal = ({
+  selectedLoan,
+  setModalOpen,
+  setSelectedLoan,
+  modalFormData,
+  setModalFormData,
+  modalLoading,
+  handleModalSubmit,
+}: {
+  selectedLoan: any;
+  setModalOpen: (val: boolean) => void;
+  setSelectedLoan: (val: any) => void;
+  modalFormData: any;
+  setModalFormData: (val: any) => void;
+  modalLoading: boolean;
+  handleModalSubmit: (e: FormEvent) => void;
+}) => {
+  if (!selectedLoan) return null;
+  return (
+    <div
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onClick={() => {
+        setModalOpen(false);
+        setSelectedLoan(null);
+      }}
+    >
+      <div
+        className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+              {selectedLoan.icon} {selectedLoan.title}
+            </h2>
+            <p className="text-sm text-slate-500">{selectedLoan.description}</p>
+          </div>
+          <button
+            onClick={() => {
+              setModalOpen(false);
+              setSelectedLoan(null);
+            }}
+            className="text-slate-400 hover:text-slate-600 text-2xl"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="mb-6">
+          <img
+            src={selectedLoan.image}
+            alt={selectedLoan.title}
+            className="w-full h-48 object-cover rounded-xl"
+          />
+        </div>
+
+        <ul className="space-y-2 mb-6">
+          {selectedLoan.features.map((f: string, i: number) => (
+            <li key={i} className="text-sm text-slate-600 flex items-start gap-2">
+              <span className="text-indigo-500 text-lg mt-0.5">✓</span>
+              {f}
+            </li>
+          ))}
+        </ul>
+
+        <div className="border-t border-slate-200 pt-4">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4">
+            Quick Apply for {selectedLoan.title}
+          </h3>
+          <form onSubmit={handleModalSubmit} className="space-y-3">
+            <input
+              type="text"
+              placeholder="Full Name"
+              value={modalFormData.fullName}
+              onChange={(e) =>
+                setModalFormData({ ...modalFormData, fullName: e.target.value })
+              }
+              className="w-full border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+              required
+            />
+            <input
+              type="tel"
+              maxLength={10}
+              placeholder="Mobile Number"
+              value={modalFormData.mobile}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "");
+                if (val.length <= 10)
+                  setModalFormData({ ...modalFormData, mobile: val });
+              }}
+              className="w-full border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+              required
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <input
+                type="text"
+                placeholder="City"
+                value={modalFormData.city}
+                onChange={(e) =>
+                  setModalFormData({ ...modalFormData, city: e.target.value })
+                }
+                className="border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+              />
+              <input
+                type="text"
+                placeholder="State"
+                value={modalFormData.state}
+                onChange={(e) =>
+                  setModalFormData({ ...modalFormData, state: e.target.value })
+                }
+                className="border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+              />
+            </div>
+            <input
+              type="number"
+              placeholder="Monthly Income"
+              value={modalFormData.monthlyIncome}
+              onChange={(e) =>
+                setModalFormData({ ...modalFormData, monthlyIncome: e.target.value })
+              }
+              className="w-full border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+            />
+            <button
+              type="submit"
+              disabled={modalLoading}
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl hover:shadow-lg transition font-medium disabled:opacity-50"
+            >
+              {modalLoading ? "Submitting..." : "Apply Now"}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Bank Logos Data (initial + color)
 const bankLogos: Record<string, { initial: string; color: string }> = {
   "HDFC Bank": { initial: "H", color: "from-blue-500 to-blue-700" },
@@ -125,6 +262,159 @@ const loanCategories = [
     link: "/#loanForm",
   },
 ];
+
+interface LoanModalProps {
+  selectedLoan: typeof loanCategories[0] | null;
+  setModalOpen: Dispatch<SetStateAction<boolean>>;
+  setSelectedLoan: Dispatch<SetStateAction<typeof loanCategories[0] | null>>;
+  modalFormData: {
+    fullName: string;
+    mobile: string;
+    city: string;
+    state: string;
+    monthlyIncome: string;
+  };
+  setModalFormData: Dispatch<
+    SetStateAction<{
+      fullName: string;
+      mobile: string;
+      city: string;
+      state: string;
+      monthlyIncome: string;
+    }>
+  >;
+  modalLoading: boolean;
+  handleModalSubmit: (e: FormEvent<HTMLFormElement>) => void;
+}
+
+const LoanModal = ({
+  selectedLoan,
+  setModalOpen,
+  setSelectedLoan,
+  modalFormData,
+  setModalFormData,
+  modalLoading,
+  handleModalSubmit,
+}: LoanModalProps) => {
+  if (!selectedLoan) return null;
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onClick={() => {
+        setModalOpen(false);
+        setSelectedLoan(null);
+      }}
+    >
+      <div
+        className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+              {selectedLoan.icon} {selectedLoan.title}
+            </h2>
+            <p className="text-sm text-slate-500">{selectedLoan.description}</p>
+          </div>
+          <button
+            onClick={() => {
+              setModalOpen(false);
+              setSelectedLoan(null);
+            }}
+            className="text-slate-400 hover:text-slate-600 text-2xl"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="mb-6">
+          <img
+            src={selectedLoan.image}
+            alt={selectedLoan.title}
+            className="w-full h-48 object-cover rounded-xl"
+          />
+        </div>
+
+        <ul className="space-y-2 mb-6">
+          {selectedLoan.features.map((f, i) => (
+            <li key={i} className="text-sm text-slate-600 flex items-start gap-2">
+              <span className="text-indigo-500 text-lg mt-0.5">✓</span>
+              {f}
+            </li>
+          ))}
+        </ul>
+
+        <div className="border-t border-slate-200 pt-4">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4">
+            Quick Apply for {selectedLoan.title}
+          </h3>
+          <form onSubmit={handleModalSubmit} className="space-y-3">
+            <input
+              type="text"
+              placeholder="Full Name"
+              value={modalFormData.fullName}
+              onChange={(e) =>
+                setModalFormData({ ...modalFormData, fullName: e.target.value })
+              }
+              className="w-full border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+              required
+            />
+            <input
+              type="tel"
+              maxLength={10}
+              placeholder="Mobile Number"
+              value={modalFormData.mobile}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "");
+                if (val.length <= 10)
+                  setModalFormData({ ...modalFormData, mobile: val });
+              }}
+              className="w-full border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+              required
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <input
+                type="text"
+                placeholder="City"
+                value={modalFormData.city}
+                onChange={(e) =>
+                  setModalFormData({ ...modalFormData, city: e.target.value })
+                }
+                className="border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+              />
+              <input
+                type="text"
+                placeholder="State"
+                value={modalFormData.state}
+                onChange={(e) =>
+                  setModalFormData({ ...modalFormData, state: e.target.value })
+                }
+                className="border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+              />
+            </div>
+            <input
+              type="number"
+              placeholder="Monthly Income"
+              value={modalFormData.monthlyIncome}
+              onChange={(e) =>
+                setModalFormData({ ...modalFormData, monthlyIncome: e.target.value })
+              }
+              className="w-full border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+            />
+            <button
+              type="submit"
+              disabled={modalLoading}
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl hover:shadow-lg transition font-medium disabled:opacity-50"
+            >
+              {modalLoading ? "Submitting..." : "Apply Now"}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function Home() {
   // ---- State ----
