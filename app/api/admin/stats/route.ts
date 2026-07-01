@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Lead from "@/models/Lead";
+import Partner from "@/models/Partner";
+import User from "@/models/User";
 import { verifyToken } from "@/lib/jwt";
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: Request) {
   try {
     const authHeader = req.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -19,27 +18,28 @@ export async function PATCH(
       return NextResponse.json({ success: false, message: "Forbidden" }, { status: 403 });
     }
 
-    const { status } = await req.json();
-    const validStatuses = ["pending", "processing", "approved", "rejected"];
-    if (!validStatuses.includes(status)) {
-      return NextResponse.json({ success: false, message: "Invalid status" }, { status: 400 });
-    }
-
     await connectDB();
 
-    const lead = await Lead.findByIdAndUpdate(
-      params.id,
-      { status },
-      { new: true }
-    );
+    const [totalLeads, pendingLeads, totalPartners, pendingPartners, totalUsers] = await Promise.all([
+      Lead.countDocuments(),
+      Lead.countDocuments({ status: "pending" }),
+      Partner.countDocuments(),
+      Partner.countDocuments({ status: "Pending" }),
+      User.countDocuments(),
+    ]);
 
-    if (!lead) {
-      return NextResponse.json({ success: false, message: "Lead not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ success: true, lead });
+    return NextResponse.json({
+      success: true,
+      stats: {
+        totalLeads,
+        pendingLeads,
+        totalPartners,
+        pendingPartners,
+        totalUsers,
+      },
+    });
   } catch (error) {
-    console.error("Update Lead Error:", error);
+    console.error("Stats API Error:", error);
     return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
   }
 }

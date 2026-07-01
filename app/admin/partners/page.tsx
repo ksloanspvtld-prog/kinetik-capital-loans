@@ -5,8 +5,18 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
+type Partner = {
+  _id: string;
+  fullName: string;
+  email: string;
+  mobile: string;
+  city?: string | null;
+  partnerType?: string;
+  status?: string;
+};
+
 export default function ManagePartners() {
-  const [partners, setPartners] = useState([]);
+  const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const router = useRouter();

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
-import Lead from "@/models/Lead";
+import Partner from "@/models/Partner";
 import { verifyToken } from "@/lib/jwt";
 
 export async function PATCH(
@@ -20,26 +20,26 @@ export async function PATCH(
     }
 
     const { status } = await req.json();
-    const validStatuses = ["pending", "processing", "approved", "rejected"];
+    const validStatuses = ["pending", "approved", "rejected"];
     if (!validStatuses.includes(status)) {
       return NextResponse.json({ success: false, message: "Invalid status" }, { status: 400 });
     }
 
     await connectDB();
 
-    const lead = await Lead.findByIdAndUpdate(
+    const partner = await Partner.findByIdAndUpdate(
       params.id,
       { status },
       { new: true }
     );
 
-    if (!lead) {
-      return NextResponse.json({ success: false, message: "Lead not found" }, { status: 404 });
+    if (!partner) {
+      return NextResponse.json({ success: false, message: "Partner not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, lead });
+    return NextResponse.json({ success: true, partner });
   } catch (error) {
-    console.error("Update Lead Error:", error);
+    console.error("Update Partner Error:", error);
     return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
   }
 }

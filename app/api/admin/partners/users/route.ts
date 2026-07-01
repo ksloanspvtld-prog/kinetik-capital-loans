@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
-import Lead from "@/models/Lead";
+import User from "@/models/User";
 import { verifyToken } from "@/lib/jwt";
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: Request) {
   try {
     const authHeader = req.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -19,27 +16,14 @@ export async function PATCH(
       return NextResponse.json({ success: false, message: "Forbidden" }, { status: 403 });
     }
 
-    const { status } = await req.json();
-    const validStatuses = ["pending", "processing", "approved", "rejected"];
-    if (!validStatuses.includes(status)) {
-      return NextResponse.json({ success: false, message: "Invalid status" }, { status: 400 });
-    }
-
     await connectDB();
+    const users = await User.find({})
+      .select("-password -verificationToken")
+      .sort({ createdAt: -1 });
 
-    const lead = await Lead.findByIdAndUpdate(
-      params.id,
-      { status },
-      { new: true }
-    );
-
-    if (!lead) {
-      return NextResponse.json({ success: false, message: "Lead not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ success: true, lead });
+    return NextResponse.json({ success: true, users });
   } catch (error) {
-    console.error("Update Lead Error:", error);
+    console.error("Users API Error:", error);
     return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
   }
 }
