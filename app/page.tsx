@@ -943,7 +943,7 @@ export default function Home() {
                   Become a <span className="text-indigo-600">Partner</span>
                 </h2>
                 <p className="mt-4 text-slate-600 max-w-2xl mx-auto">
-                  Unlock a world of opportunities with India's most trusted loan distribution platform. 
+                  Unlock a world of opportunities with India&apos;s most trusted loan distribution platform. 
                   <br className="hidden sm:block" />
                   Start your journey towards financial independence today.
                 </p>

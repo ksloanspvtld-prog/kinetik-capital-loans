@@ -74,7 +74,7 @@ export default function LoginPage() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-yellow-400 text-xl mt-0.5">✓</span>
-                <span className="text-sm">View assigned agent's profile &amp; request for change if required</span>
+                <span className="text-sm">View assigned agent&apos;s profile &amp; request for change if required</span>
               </li>
             </ul>
 
