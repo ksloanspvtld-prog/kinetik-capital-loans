@@ -9,7 +9,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  // ✅ Products & Offers
+  // ✅ Products & Offers - सगळे Loans
   const productItems = [
     { name: "Personal Loan", href: "/loans/personal-loan" },
     { name: "Home Loan", href: "/loans/home-loan" },
@@ -80,7 +80,19 @@ export default function Navbar() {
               className="flex-shrink-0 transition-transform duration-300 group-hover:scale-105"
             >
               <rect width="40" height="40" rx="10" fill="url(#logoGrad)" />
-              <text x="20" y="27" textAnchor="middle" fontFamily="Arial, sans-serif" fontSize="22" fontWeight="900" fill="white" letterSpacing="1" className="drop-shadow-sm">K</text>
+              <text
+                x="20"
+                y="27"
+                textAnchor="middle"
+                fontFamily="Arial, sans-serif"
+                fontSize="22"
+                fontWeight="900"
+                fill="white"
+                letterSpacing="1"
+                className="drop-shadow-sm"
+              >
+                K
+              </text>
               <rect x="11" y="32" width="18" height="2" rx="1" fill="rgba(255,255,255,0.5)" />
               <defs>
                 <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
@@ -108,13 +120,22 @@ export default function Navbar() {
 
             {/* Products & Offers */}
             <div className="relative">
-              <button onClick={() => toggleDropdown("products")} className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm flex items-center gap-1">
-                Products & Offers <span className="text-xs">▼</span>
+              <button
+                onClick={() => toggleDropdown("products")}
+                className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm flex items-center gap-1"
+              >
+                Products & Offers
+                <span className="text-xs">▼</span>
               </button>
               {openDropdown === "products" && (
                 <div className="absolute top-8 left-0 mt-2 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[240px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-1.5 max-h-80 overflow-y-auto">
                   {productItems.map((item) => (
-                    <Link key={item.name} href={item.href} className="px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition text-slate-700 dark:text-slate-300 text-sm" onClick={() => setOpenDropdown(null)}>
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition text-slate-700 dark:text-slate-300 text-sm"
+                      onClick={() => setOpenDropdown(null)}
+                    >
                       {item.name}
                     </Link>
                   ))}
@@ -124,13 +145,22 @@ export default function Navbar() {
 
             {/* Tools & Calculators */}
             <div className="relative">
-              <button onClick={() => toggleDropdown("tools")} className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm flex items-center gap-1">
-                Tools & Calculators <span className="text-xs">▼</span>
+              <button
+                onClick={() => toggleDropdown("tools")}
+                className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm flex items-center gap-1"
+              >
+                Tools & Calculators
+                <span className="text-xs">▼</span>
               </button>
               {openDropdown === "tools" && (
                 <div className="absolute top-8 left-0 mt-2 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[260px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-1.5 max-h-80 overflow-y-auto">
                   {toolsItems.map((item) => (
-                    <Link key={item.name} href={item.href} className="px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition text-slate-700 dark:text-slate-300 text-sm" onClick={() => setOpenDropdown(null)}>
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition text-slate-700 dark:text-slate-300 text-sm"
+                      onClick={() => setOpenDropdown(null)}
+                    >
                       {item.name}
                     </Link>
                   ))}
@@ -140,13 +170,22 @@ export default function Navbar() {
 
             {/* CIBIL Score */}
             <div className="relative">
-              <button onClick={() => toggleDropdown("cibil")} className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm flex items-center gap-1">
-                CIBIL Score <span className="text-xs">▼</span>
+              <button
+                onClick={() => toggleDropdown("cibil")}
+                className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm flex items-center gap-1"
+              >
+                CIBIL Score
+                <span className="text-xs">▼</span>
               </button>
               {openDropdown === "cibil" && (
                 <div className="absolute top-8 left-0 mt-2 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[220px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-1.5">
                   {cibilItems.map((item) => (
-                    <Link key={item.name} href={item.href} className="px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition text-slate-700 dark:text-slate-300 text-sm font-medium" onClick={() => setOpenDropdown(null)}>
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition text-slate-700 dark:text-slate-300 text-sm font-medium"
+                      onClick={() => setOpenDropdown(null)}
+                    >
                       {item.name}
                     </Link>
                   ))}
@@ -156,13 +195,22 @@ export default function Navbar() {
 
             {/* Credit Cards */}
             <div className="relative">
-              <button onClick={() => toggleDropdown("creditcards")} className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm flex items-center gap-1">
-                Credit Cards <span className="text-xs">▼</span>
+              <button
+                onClick={() => toggleDropdown("creditcards")}
+                className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm flex items-center gap-1"
+              >
+                Credit Cards
+                <span className="text-xs">▼</span>
               </button>
               {openDropdown === "creditcards" && (
                 <div className="absolute top-8 left-0 mt-2 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-3 min-w-[240px] border border-slate-100 dark:border-slate-700 grid grid-cols-1 gap-1.5 max-h-80 overflow-y-auto">
                   {creditCardItems.map((item) => (
-                    <Link key={item.name} href={item.href} className="px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition text-slate-700 dark:text-slate-300 text-sm" onClick={() => setOpenDropdown(null)}>
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition text-slate-700 dark:text-slate-300 text-sm"
+                      onClick={() => setOpenDropdown(null)}
+                    >
                       {item.name}
                     </Link>
                   ))}
@@ -170,12 +218,15 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* ✅ Become a Partner */}
-            <Link href="/#become-partner" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition font-medium text-sm">
+            {/* Become a Partner */}
+            <Link
+              href="/#become-partner"
+              className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition font-medium text-sm"
+            >
               Become a Partner
             </Link>
 
-            {/* ✅ Login Button (Dark Mode Toggle removed) */}
+            {/* ✅ Login Button (DarkModeToggle removed) */}
             <Link
               href="/login"
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl transition font-medium text-sm shadow-md hover:shadow-lg"
@@ -199,56 +250,92 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 p-4 space-y-3">
-          <Link href="/" className="block py-2 text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition font-medium" onClick={() => setIsOpen(false)}>
+          <Link
+            href="/"
+            className="block py-2 text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition font-medium"
+            onClick={() => setIsOpen(false)}
+          >
             Home
           </Link>
 
-          {/* Products & Offers */}
           <div className="space-y-1 pl-3 border-l-2 border-indigo-200 dark:border-indigo-800">
-            <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Products & Offers</p>
+            <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+              Products & Offers
+            </p>
             {productItems.map((item) => (
-              <Link key={item.name} href={item.href} className="block py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition" onClick={() => setIsOpen(false)}>
+              <Link
+                key={item.name}
+                href={item.href}
+                className="block py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition"
+                onClick={() => setIsOpen(false)}
+              >
                 {item.name}
               </Link>
             ))}
           </div>
 
-          {/* Tools & Calculators */}
           <div className="space-y-1 pl-3 border-l-2 border-indigo-200 dark:border-indigo-800">
-            <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Tools & Calculators</p>
+            <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+              Tools & Calculators
+            </p>
             {toolsItems.map((item) => (
-              <Link key={item.name} href={item.href} className="block py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition" onClick={() => setIsOpen(false)}>
+              <Link
+                key={item.name}
+                href={item.href}
+                className="block py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition"
+                onClick={() => setIsOpen(false)}
+              >
                 {item.name}
               </Link>
             ))}
           </div>
 
-          {/* CIBIL Score */}
           <div className="space-y-1 pl-3 border-l-2 border-indigo-200 dark:border-indigo-800">
-            <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">CIBIL Score</p>
+            <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+              CIBIL Score
+            </p>
             {cibilItems.map((item) => (
-              <Link key={item.name} href={item.href} className="block py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition" onClick={() => setIsOpen(false)}>
+              <Link
+                key={item.name}
+                href={item.href}
+                className="block py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition"
+                onClick={() => setIsOpen(false)}
+              >
                 {item.name}
               </Link>
             ))}
           </div>
 
-          {/* Credit Cards */}
           <div className="space-y-1 pl-3 border-l-2 border-indigo-200 dark:border-indigo-800">
-            <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Credit Cards</p>
+            <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+              Credit Cards
+            </p>
             {creditCardItems.map((item) => (
-              <Link key={item.name} href={item.href} className="block py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition" onClick={() => setIsOpen(false)}>
+              <Link
+                key={item.name}
+                href={item.href}
+                className="block py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition"
+                onClick={() => setIsOpen(false)}
+              >
                 {item.name}
               </Link>
             ))}
           </div>
 
-          <Link href="/#become-partner" className="block py-2 text-emerald-600 dark:text-emerald-400 font-medium hover:text-emerald-700 transition" onClick={() => setIsOpen(false)}>
+          <Link
+            href="/#become-partner"
+            className="block py-2 text-emerald-600 dark:text-emerald-400 font-medium hover:text-emerald-700 transition"
+            onClick={() => setIsOpen(false)}
+          >
             Become a Partner
           </Link>
 
           {/* ✅ Login in Mobile Menu */}
-          <Link href="/login" className="block py-2 bg-indigo-600 text-white text-center rounded-xl font-medium hover:bg-indigo-700 transition" onClick={() => setIsOpen(false)}>
+          <Link
+            href="/login"
+            className="block py-2 bg-indigo-600 text-white text-center rounded-xl font-medium hover:bg-indigo-700 transition"
+            onClick={() => setIsOpen(false)}
+          >
             Login
           </Link>
         </div>
