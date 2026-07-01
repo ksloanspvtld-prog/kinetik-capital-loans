@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 const COMPANY_NAME = "Kinetik Capital";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   // ✅ Products & Offers - सगळे Loans
   const productItems = [
@@ -65,6 +68,38 @@ export default function Navbar() {
     setOpenDropdown(openDropdown === name ? null : name);
   };
 
+  // ✅ Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // ✅ Close dropdown on route change (navigation)
+  useEffect(() => {
+    setOpenDropdown(null);
+  }, [pathname]);
+
+  // ✅ Close dropdown on Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpenDropdown(null);
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
   return (
     <nav className="bg-white dark:bg-slate-800 shadow-md fixed top-0 left-0 right-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -112,8 +147,8 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
+          {/* Desktop Menu - wrap dropdowns with ref */}
+          <div className="hidden md:flex items-center gap-8" ref={dropdownRef}>
             <Link href="/" className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium text-sm">
               Home
             </Link>
@@ -218,7 +253,7 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* ✅ Become a Partner - नवीन /become-partner ला link */}
+            {/* Become a Partner */}
             <Link
               href="/become-partner"
               className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition font-medium text-sm"
@@ -322,7 +357,6 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* ✅ Mobile Menu मध्ये पण /become-partner ला link */}
           <Link
             href="/become-partner"
             className="block py-2 text-emerald-600 dark:text-emerald-400 font-medium hover:text-emerald-700 transition"
@@ -331,7 +365,6 @@ export default function Navbar() {
             Become a Partner
           </Link>
 
-          {/* Login in Mobile Menu */}
           <Link
             href="/login"
             className="block py-2 bg-indigo-600 text-white text-center rounded-xl font-medium hover:bg-indigo-700 transition"
