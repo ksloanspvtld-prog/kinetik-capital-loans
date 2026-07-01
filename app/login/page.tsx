@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Navbar from "../components/Navbar";
-import WhatsAppButton from "../components/WhatsAppButton";
+import Navbar from "../../components/Navbar";
+import WhatsAppButton from "../../components/WhatsAppButton";
 
 const COMPANY_NAME = "Kinetik Capital";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent, useRef, useEffect } from "react";
+import { useState, FormEvent, useRef, useEffect, Dispatch, SetStateAction } from "react";
 import Link from "next/link";
 import Navbar from "../components/Navbar";
 import WhatsAppButton from "../components/WhatsAppButton";
@@ -597,16 +597,34 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Slider */}
+          {/* Slider Container */}
           <div className="relative">
+            {/* Left Arrow */}
+            <button
+              onClick={() => {
+                const container = document.getElementById('loanSlider');
+                if (container) {
+                  container.scrollBy({ left: -350, behavior: 'smooth' });
+                }
+              }}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-3 shadow-lg transition-all duration-300 hover:scale-110 hidden md:block"
+              aria-label="Scroll left"
+            >
+              <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+
+            {/* Slider Track */}
             <div
-              className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 hide-scrollbar"
-              style={{ scrollbarWidth: "none" }}
+              id="loanSlider"
+              className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-6 hide-scrollbar"
+              style={{ scrollbarWidth: 'none' }}
             >
               {loanCategories.map((loan) => (
                 <div
                   key={loan.id}
-                  className="flex-shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] snap-start group cursor-pointer"
+                  className="flex-shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)] xl:w-[calc(25%-18px)] snap-start group cursor-pointer"
                   onClick={() => {
                     setSelectedLoan(loan);
                     setModalOpen(true);
@@ -618,6 +636,7 @@ export default function Home() {
                         src={loan.image}
                         alt={loan.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                        loading="lazy"
                       />
                     </div>
                     <div className="p-5 flex flex-col flex-1">
@@ -627,7 +646,7 @@ export default function Home() {
                           {loan.title}
                         </h3>
                       </div>
-                      <p className="text-sm text-slate-500 flex-1">{loan.description}</p>
+                      <p className="text-sm text-slate-500 flex-1 line-clamp-2">{loan.description}</p>
                       <button
                         className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl transition font-medium text-sm w-full"
                         onClick={(e) => {
@@ -643,12 +662,35 @@ export default function Home() {
                 </div>
               ))}
             </div>
+
+            {/* Right Arrow */}
+            <button
+              onClick={() => {
+                const container = document.getElementById('loanSlider');
+                if (container) {
+                  container.scrollBy({ left: 350, behavior: 'smooth' });
+                }
+              }}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-3 shadow-lg transition-all duration-300 hover:scale-110 hidden md:block"
+              aria-label="Scroll right"
+            >
+              <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
 
-          {/* Scroll hint - optional */}
+          {/* Scroll Hint - स्पष्ट दिसेल */}
           <div className="flex justify-center gap-2 mt-6">
-            <span className="text-sm text-slate-400 animate-pulse">
-              ← Scroll to explore more →
+            <span className="text-sm text-indigo-500 font-medium bg-indigo-50 px-6 py-2 rounded-full shadow-sm border border-indigo-100 animate-pulse">
+              ← Scroll → Explore More Loan Options
+            </span>
+          </div>
+
+          {/* Indicators */}
+          <div className="flex justify-center gap-2 mt-4">
+            <span className="text-xs text-slate-400">
+              {loanCategories.length} loan products available
             </span>
           </div>
         </section>
