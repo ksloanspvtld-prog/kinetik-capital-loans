@@ -6,6 +6,7 @@ import Navbar from "../components/Navbar";
 import WhatsAppButton from "../components/WhatsAppButton";
 import AddressInput from "../components/AddressInput";
 import Chatbot from "../components/Chatbot";
+import FloatingEMICalculator from "../components/FloatingEMICalculator";
 
 const COMPANY_NAME = "Kinetik Capital";
 
@@ -928,101 +929,94 @@ export default function Home() {
           </div>
         </section>
 
-{/* ============================================================
-    🆕 EASY. CONVENIENT. QUICK. – UrbanMoney Style
-    ============================================================ */}
-<section className="max-w-7xl mx-auto px-6 py-20">
-  <div className="text-center mb-14">
-    <span className="inline-block px-4 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-semibold tracking-wider uppercase mb-4">
-      How It Works
-    </span>
-    <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
-      Easy. Convenient. <span className="text-indigo-600">Quick.</span>
-    </h2>
-    <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-      The simple &amp; quick steps to your loan.
-    </p>
-  </div>
+        {/* ===== EASY. CONVENIENT. QUICK. – UrbanMoney Style ===== */}
+        <section className="max-w-7xl mx-auto px-6 py-20">
+          <div className="text-center mb-14">
+            <span className="inline-block px-4 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-semibold tracking-wider uppercase mb-4">
+              How It Works
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900">
+              Easy. Convenient. <span className="text-indigo-600">Quick.</span>
+            </h2>
+            <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+              The simple &amp; quick steps to your loan.
+            </p>
+          </div>
 
-  <div className="grid md:grid-cols-4 gap-6 relative">
-    {/* Connecting Line - Desktop only */}
-    <div className="hidden md:block absolute top-24 left-[12.5%] right-[12.5%] h-0.5 bg-indigo-200/50"></div>
+          <div className="grid md:grid-cols-4 gap-6 relative">
+            {/* Connecting Line - Desktop only */}
+            <div className="hidden md:block absolute top-24 left-[12.5%] right-[12.5%] h-0.5 bg-indigo-200/50"></div>
 
-    {/* Step 1 */}
-    <div className="relative group">
-      <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100 p-6 text-center relative z-10">
-        <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition">
-          01
-        </div>
-        <div className="text-4xl mb-3">📋</div>
-        <h3 className="text-lg font-bold text-slate-800">Share Your Need</h3>
-        <p className="text-sm text-slate-500 mt-2 leading-relaxed">
-          Tell us your requirement in just 2 minutes
-        </p>
-      </div>
-    </div>
+            {/* Step 1 */}
+            <div className="relative group">
+              <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100 p-6 text-center relative z-10">
+                <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition">
+                  01
+                </div>
+                <div className="text-4xl mb-3">📋</div>
+                <h3 className="text-lg font-bold text-slate-800">Share Your Need</h3>
+                <p className="text-sm text-slate-500 mt-2 leading-relaxed">
+                  Tell us your requirement in just 2 minutes
+                </p>
+              </div>
+            </div>
 
-    {/* Step 2 */}
-    <div className="relative group">
-      <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100 p-6 text-center relative z-10">
-        <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition">
-          02
-        </div>
-        <div className="text-4xl mb-3">🤖</div>
-        <h3 className="text-lg font-bold text-slate-800">Smart Comparison</h3>
-        <p className="text-sm text-slate-500 mt-2 leading-relaxed">
-          AI matches you with 90+ criteria for 90% success
-        </p>
-      </div>
-    </div>
+            {/* Step 2 */}
+            <div className="relative group">
+              <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100 p-6 text-center relative z-10">
+                <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition">
+                  02
+                </div>
+                <div className="text-4xl mb-3">🤖</div>
+                <h3 className="text-lg font-bold text-slate-800">Smart Comparison</h3>
+                <p className="text-sm text-slate-500 mt-2 leading-relaxed">
+                  AI matches you with 90+ criteria for 90% success
+                </p>
+              </div>
+            </div>
 
-    {/* Step 3 */}
-    <div className="relative group">
-      <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100 p-6 text-center relative z-10">
-        <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition">
-          03
-        </div>
-        <div className="text-4xl mb-3">📱</div>
-        <h3 className="text-lg font-bold text-slate-800">Digital Apply</h3>
-        <p className="text-sm text-slate-500 mt-2 leading-relaxed">
-          Complete your application 100% online
-        </p>
-      </div>
-    </div>
+            {/* Step 3 */}
+            <div className="relative group">
+              <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100 p-6 text-center relative z-10">
+                <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition">
+                  03
+                </div>
+                <div className="text-4xl mb-3">📱</div>
+                <h3 className="text-lg font-bold text-slate-800">Digital Apply</h3>
+                <p className="text-sm text-slate-500 mt-2 leading-relaxed">
+                  Complete your application 100% online
+                </p>
+              </div>
+            </div>
 
-    {/* Step 4 */}
-    <div className="relative group">
-      <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100 p-6 text-center relative z-10">
-        <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition">
-          04
-        </div>
-        <div className="text-4xl mb-3">💸</div>
-        <h3 className="text-lg font-bold text-slate-800">Quick Disbursal</h3>
-        <p className="text-sm text-slate-500 mt-2 leading-relaxed">
-          Get sanction in minutes, not weeks
-        </p>
-      </div>
-    </div>
-  </div>
+            {/* Step 4 */}
+            <div className="relative group">
+              <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100 p-6 text-center relative z-10">
+                <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition">
+                  04
+                </div>
+                <div className="text-4xl mb-3">💸</div>
+                <h3 className="text-lg font-bold text-slate-800">Quick Disbursal</h3>
+                <p className="text-sm text-slate-500 mt-2 leading-relaxed">
+                  Get sanction in minutes, not weeks
+                </p>
+              </div>
+            </div>
+          </div>
 
-  {/* CTA Button */}
-  <div className="text-center mt-12">
-    <Link
-      href="#loanForm"
-      className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold px-8 py-3.5 rounded-xl transition-all duration-300 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-600/40 hover:scale-105"
-    >
-      Get Started
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-      </svg>
-    </Link>
-  </div>
-</section>
-        {/* ===== END: Easy. Convenient. Quick. ===== */}
-
-        {/* ============================================================
-            ❌ REMOVED: "Join the Network / Become a Partner" Section
-            ============================================================ */}
+          {/* CTA Button */}
+          <div className="text-center mt-12">
+            <Link
+              href="#loanForm"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold px-8 py-3.5 rounded-xl transition-all duration-300 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-600/40 hover:scale-105"
+            >
+              Get Started
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+          </div>
+        </section>
 
         {/* ===== OUR LENDING PARTNERS (MARQUEE) ===== */}
         <section className="py-20 overflow-hidden bg-white">
@@ -1131,6 +1125,9 @@ export default function Home() {
 
       {/* Chatbot */}
       <Chatbot />
+
+      {/* ✅ Floating EMI Calculator - Ruloans style */}
+      <FloatingEMICalculator />
     </>
   );
 }
