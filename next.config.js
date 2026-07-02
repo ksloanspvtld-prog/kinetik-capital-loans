@@ -1,8 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ✅ 이미지 최적화
+  // ✅ images.remotePatterns (replaces deprecated domains)
   images: {
-    domains: ["images.unsplash.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "**",
+      },
+    ],
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60,
   },
@@ -10,16 +16,13 @@ const nextConfig = {
   // ✅ Compress responses
   compress: true,
 
-  // ✅ 보안 – X-Powered-By header 제거
+  // ✅ Security – remove X-Powered-By header
   poweredByHeader: false,
 
   // ✅ React Strict Mode
   reactStrictMode: true,
 
-  // ✅ SWC Minify
-  swcMinify: true,
-
-  // ✅ Production에서 console.log 제거
+  // ✅ Remove console logs in production
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
@@ -29,7 +32,10 @@ const nextConfig = {
     optimizeCss: true,
   },
 
-  // ✅ Webpack fallbacks (서버사이드 모듈 방지)
+  // ✅ Empty turbopack config to silence the error
+  turbopack: {},
+
+  // ✅ Webpack fallbacks (this will only be used when --webpack flag is passed)
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
