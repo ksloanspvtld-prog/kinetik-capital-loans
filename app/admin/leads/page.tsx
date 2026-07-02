@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
-// ✅ Lead Type
+// ✅ Lead Type (with follow-up fields)
 type Lead = {
   _id: string;
   fullName: string;
@@ -14,6 +14,8 @@ type Lead = {
   monthlyIncome?: string;
   status: "New" | "Contacted" | "Processing" | "Approved" | "Rejected";
   assignedAgent?: string | { _id: string; fullName: string } | null;
+  followUpDate?: string;
+  reminderSent?: boolean;
   createdAt: string;
 };
 
@@ -194,7 +196,7 @@ export default function ManageLeads() {
           {/* Leads Table */}
           <div className="bg-white rounded-3xl shadow-md overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[1100px]">
+              <table className="w-full min-w-[1300px]">
                 <thead className="bg-slate-50">
                   <tr>
                     <th className="p-4 text-left text-xs font-medium text-slate-500 uppercase">Name</th>
@@ -203,13 +205,15 @@ export default function ManageLeads() {
                     <th className="p-4 text-left text-xs font-medium text-slate-500 uppercase">Income</th>
                     <th className="p-4 text-left text-xs font-medium text-slate-500 uppercase">Status</th>
                     <th className="p-4 text-left text-xs font-medium text-slate-500 uppercase">Agent</th>
+                    <th className="p-4 text-left text-xs font-medium text-slate-500 uppercase">Follow Up</th>
+                    <th className="p-4 text-left text-xs font-medium text-slate-500 uppercase">Reminder</th>
                     <th className="p-4 text-left text-xs font-medium text-slate-500 uppercase">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {leads.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="p-6 text-center text-slate-400">No leads found</td>
+                      <td colSpan={9} className="p-6 text-center text-slate-400">No leads found</td>
                     </tr>
                   ) : (
                     leads.map((lead) => (
@@ -241,6 +245,16 @@ export default function ManageLeads() {
                               {getAgentName(lead)}
                             </span>
                           </div>
+                        </td>
+                        <td className="p-4 text-sm text-slate-600">
+                          {lead.followUpDate || "-"}
+                        </td>
+                        <td className="p-4">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            lead.reminderSent ? "bg-emerald-100 text-emerald-700" : "bg-yellow-100 text-yellow-700"
+                          }`}>
+                            {lead.reminderSent ? "✅ Sent" : "⏳ Pending"}
+                          </span>
                         </td>
                         <td className="p-4">
                           <div className="flex flex-wrap gap-2">

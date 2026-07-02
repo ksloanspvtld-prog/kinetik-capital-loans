@@ -52,6 +52,10 @@ const LeadSchema = new Schema(
       type: String,
       default: "",
     },
+
+    reminderSent: { 
+        type: Boolean, default: false }, // ✅ नवीन field
+
     notesHistory: [
       {
         note: String,

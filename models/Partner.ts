@@ -1,6 +1,6 @@
 import mongoose, { Schema, models } from "mongoose";
 
-const UserSchema = new Schema(
+const PartnerSchema = new Schema(
   {
     fullName: {
       type: String,
@@ -10,33 +10,42 @@ const UserSchema = new Schema(
     email: {
       type: String,
       required: [true, "Email is required"],
-      unique: true,
-      lowercase: true,
       trim: true,
+      lowercase: true,
     },
     mobile: {
       type: String,
       required: [true, "Mobile number is required"],
-      unique: true,
       trim: true,
       match: [/^[0-9]{10}$/, "Please enter a valid 10-digit mobile number"],
+      unique: true,
     },
-    password: {
+    city: {
       type: String,
-      required: [true, "Password is required"],
-      minlength: 6,
+      required: [true, "City is required"],
+      trim: true,
     },
-    role: {
+    partnerType: {
       type: String,
-      enum: ["customer", "agent", "admin"],
-      default: "customer",
+      enum: ["individual", "firm", "corporate"],
+      default: "individual",
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
-    verificationToken: {
+    experience: {
       type: String,
+      default: "",
+    },
+    status: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending",
+    },
+    commission: {
+      type: Number,
+      default: 0,
+    },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
   },
   {
@@ -44,4 +53,4 @@ const UserSchema = new Schema(
   }
 );
 
-export default models.User || mongoose.model("User", UserSchema);
+export default models.Partner || mongoose.model("Partner", PartnerSchema);

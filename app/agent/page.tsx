@@ -16,6 +16,7 @@ type Lead = {
   state?: string;
   notes?: string;
   followUpDate?: string;
+  reminderSent?: boolean;
   createdAt: string;
   assignedAgent?: string;
 };
@@ -190,7 +191,7 @@ export default function AgentDashboard() {
           {/* Leads Table */}
           <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[800px]">
+              <table className="w-full min-w-[1000px]">
                 <thead className="bg-gradient-to-r from-slate-800 to-slate-900 text-white">
                   <tr>
                     <th className="p-4 text-left text-xs font-medium uppercase tracking-wider">Name</th>
@@ -198,13 +199,15 @@ export default function AgentDashboard() {
                     <th className="p-4 text-left text-xs font-medium uppercase tracking-wider hidden md:table-cell">Loan Type</th>
                     <th className="p-4 text-left text-xs font-medium uppercase tracking-wider hidden lg:table-cell">Income</th>
                     <th className="p-4 text-left text-xs font-medium uppercase tracking-wider">Status</th>
+                    <th className="p-4 text-left text-xs font-medium uppercase tracking-wider hidden md:table-cell">Follow Up</th>
+                    <th className="p-4 text-left text-xs font-medium uppercase tracking-wider hidden md:table-cell">Reminder</th>
                     <th className="p-4 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {leads.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="p-6 text-center text-slate-400">
+                      <td colSpan={8} className="p-6 text-center text-slate-400">
                         No leads assigned to you yet.
                       </td>
                     </tr>
@@ -218,6 +221,16 @@ export default function AgentDashboard() {
                         <td className="p-4">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(lead.status)}`}>
                             {lead.status || "New"}
+                          </span>
+                        </td>
+                        <td className="p-4 text-sm text-slate-300 hidden md:table-cell">
+                          {lead.followUpDate || "-"}
+                        </td>
+                        <td className="p-4 hidden md:table-cell">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            lead.reminderSent ? "bg-emerald-900/50 text-emerald-300" : "bg-yellow-900/50 text-yellow-300"
+                          }`}>
+                            {lead.reminderSent ? "✅ Sent" : "⏳ Pending"}
                           </span>
                         </td>
                         <td className="p-4">
