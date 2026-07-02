@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import {
@@ -648,7 +649,7 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* Tabs - Leads / Partners */}
+      {/* ✅ Tabs - Leads / Partners / Reports */}
       <div className="flex flex-wrap gap-2 mb-6">
         <button
           onClick={() => setActiveTab("leads")}
@@ -670,11 +671,17 @@ export default function AdminPage() {
         >
           🤝 Partners ({partners.length})
         </button>
+        <Link
+          href="/admin/reports"
+          className="px-6 py-3 rounded-xl font-medium transition bg-purple-600 text-white shadow-lg hover:bg-purple-700"
+        >
+          📊 Reports
+        </Link>
       </div>
 
       {activeTab === "leads" ? (
         // ============================================================
-        // LEAD TAB CONTENT (existing)
+        // LEAD TAB CONTENT
         // ============================================================
         <>
           {/* Export & Total */}
