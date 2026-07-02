@@ -34,6 +34,10 @@ const PartnerSchema = new Schema(
       type: String,
       default: "",
     },
+    notes: {
+      type: String,
+      default: "",
+    },
     status: {
       type: String,
       enum: ["Pending", "Approved", "Rejected"],
@@ -43,16 +47,11 @@ const PartnerSchema = new Schema(
       type: Number,
       default: 0,
     },
+    // ✅ userId – फक्त एकदा
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-
-userId: {
-  type: Schema.Types.ObjectId,
-  ref: "User",
-},
-
   },
   {
     timestamps: true,
