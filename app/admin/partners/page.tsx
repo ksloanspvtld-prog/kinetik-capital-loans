@@ -36,7 +36,9 @@ export default function ManagePartners() {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
-        if (data.success) setPartners(data.partners);
+        if (data.success) {
+          setPartners(data.partners);
+        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -94,7 +96,7 @@ export default function ManagePartners() {
             </Link>
           </div>
 
-          {/* Filters */}
+          {/* Filter */}
           <div className="bg-white rounded-2xl shadow-md p-4 mb-6 flex flex-wrap gap-3">
             {["all", "Pending", "Approved", "Rejected"].map((status) => (
               <button

@@ -3,7 +3,10 @@ import { connectDB } from "@/lib/mongodb";
 import Partner from "@/models/Partner";
 import { verifyToken } from "@/lib/jwt";
 
-export async function GET(req: Request) {
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const authHeader = req.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -22,17 +25,31 @@ export async function GET(req: Request) {
       );
     }
 
-    const url = new URL(req.url);
-    const status = url.searchParams.get("status") || "all";
+    const { id } = await params;
+    const { status } = await req.json();
+
+    const validStatuses = ["Pending", "Approved", "Rejected"];
+    if (!validStatuses.includes(status)) {
+      return NextResponse.json(
+        { success: false, message: "Invalid status" },
+        { status: 400 }
+      );
+    }
 
     await connectDB();
 
-    const query = status === "all" ? {} : { status };
-    const partners = await Partner.find(query).sort({ createdAt: -1 });
+    const partner = await Partner.findByIdAndUpdate(id, { status }, { new: true });
 
-    return NextResponse.json({ success: true, partners });
+    if (!partner) {
+      return NextResponse.json(
+        { success: false, message: "Partner not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true, partner });
   } catch (error) {
-    console.error("Partners error:", error);
+    console.error("Update partner error:", error);
     return NextResponse.json(
       { success: false, message: "Server error" },
       { status: 500 }
