@@ -1,78 +1,65 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import Navbar from "../../../components/Navbar";
-import Footer from "../../../components/Footer";
-import WhatsAppButton from "../../../components/WhatsAppButton";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import Chatbot from "@/components/Chatbot";
 
-const blogPosts: Record<string, { title: string; date: string; readTime: string; category: string; image: string; content: string }> = {
-  "how-to-get-personal-loan": {
-    title: "How to Get a Personal Loan in 2026?",
-    date: "January 15, 2026",
-    readTime: "5 min read",
+// ✅ Blog posts data (तुमच्या actual data ने replace करा)
+const blogPosts = [
+  {
+    slug: "how-to-get-personal-loan",
+    title: "How to Get a Personal Loan in 2024",
+    date: "July 1, 2024",
+    author: "Kinetik Capital",
     category: "Personal Loan",
-    image: "💳",
     content: `
-Getting a personal loan in 2026 is easier than ever. Here's everything you need to know:
-
-## Step 1: Check Your Eligibility
-Most banks require a minimum monthly income of ₹25,000 and a good credit score.
-
-## Step 2: Compare Interest Rates
-Different banks offer different interest rates. Use our compare tool to find the best deal.
-
-## Step 3: Apply Online
-Fill out the application form online and submit the required documents.
-
-## Step 4: Get Disbursed
-Once approved, the loan amount will be credited to your bank account within 24 hours.
+      <p>Getting a personal loan is easier than ever. Here are the steps you need to follow...</p>
+      <h2>1. Check Your Eligibility</h2>
+      <p>Before applying, make sure you meet the eligibility criteria...</p>
+      <h2>2. Compare Interest Rates</h2>
+      <p>Compare rates from different banks and NBFCs...</p>
     `,
   },
-  "home-loan-interest-rates": {
-    title: "Home Loan Interest Rates 2026 - Complete Guide",
-    date: "January 12, 2026",
-    readTime: "7 min read",
+  {
+    slug: "home-loan-tips",
+    title: "10 Tips for Getting a Home Loan",
+    date: "June 25, 2024",
+    author: "Kinetik Capital",
     category: "Home Loan",
-    image: "🏠",
     content: `
-Home loan interest rates in 2026 are competitive. Here's a complete guide:
-
-## Top Banks with Best Rates
-SBI: 8.50% p.a.
-HDFC: 8.65% p.a.
-ICICI: 8.75% p.a.
-
-## Factors Affecting Interest Rates
-- Credit Score
-- Loan Amount
-- Tenure
-- Income Level
+      <p>Buying a home is a big decision. Here are some tips to help you get the best home loan...</p>
+      <h2>1. Improve Your Credit Score</h2>
+      <p>A good credit score can help you get better interest rates...</p>
     `,
   },
-  "business-loan-eligibility": {
-    title: "Business Loan Eligibility - Everything You Need to Know",
-    date: "January 10, 2026",
-    readTime: "6 min read",
+  {
+    slug: "business-loan-guide",
+    title: "Complete Guide to Business Loans",
+    date: "June 20, 2024",
+    author: "Kinetik Capital",
     category: "Business Loan",
-    image: "🏢",
     content: `
-Check your business loan eligibility with this complete guide:
-
-## Eligibility Criteria
-- Minimum annual turnover: ₹10 Lakhs
-- Business vintage: 2+ years
-- Good credit score
-
-## Required Documents
-- Business registration proof
-- ITR for last 2 years
-- Bank statements
-- KYC documents
+      <p>Business loans can help you grow your business. Here's everything you need to know...</p>
     `,
   },
-};
+];
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = blogPosts[params.slug];
+// ✅ Generate static params
+export async function generateStaticParams() {
+  return blogPosts.map((post) => ({
+    slug: post.slug,
+  }));
+}
+
+// ✅ Page component with async params
+export default async function BlogPostPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+
+  const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) {
     notFound();
@@ -82,42 +69,62 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
     <>
       <Navbar />
       <WhatsAppButton />
-      <main className="pt-20 min-h-screen bg-slate-50 dark:bg-slate-900">
-        <div className="max-w-4xl mx-auto px-6 py-20">
-          <Link href="/blog" className="text-indigo-600 hover:text-indigo-700 transition flex items-center gap-2 mb-6">
-            ← Back to Blog
-          </Link>
-
-          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-8 md:p-12">
-            <div className="text-6xl mb-4">{post.image}</div>
-            <div className="flex items-center gap-2 text-sm text-indigo-600 dark:text-indigo-400 font-medium mb-4">
-              <span>{post.category}</span>
-              <span>•</span>
-              <span>{post.readTime}</span>
-              <span>•</span>
-              <span>{post.date}</span>
+      <main className="pt-24 min-h-screen bg-slate-50">
+        <div className="max-w-4xl mx-auto px-6 py-10">
+          <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-slate-100">
+            {/* Category */}
+            <div className="mb-4">
+              <span className="inline-block px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">
+                {post.category}
+              </span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-6">
+
+            {/* Title */}
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
               {post.title}
             </h1>
-            <div className="prose prose-lg dark:prose-invert max-w-none">
-              {post.content.split("\n").map((line, i) => {
-                if (line.startsWith("## ")) {
-                  return <h2 key={i} className="text-2xl font-bold mt-8 mb-4">{line.replace("## ", "")}</h2>;
-                }
-                if (line.startsWith("- ")) {
-                  return <li key={i} className="ml-4">{line.replace("- ", "")}</li>;
-                }
-                if (line.trim() === "") {
-                  return <br key={i} />;
-                }
-                return <p key={i} className="text-slate-700 dark:text-slate-300 leading-relaxed">{line}</p>;
-              })}
+
+            {/* Meta */}
+            <div className="flex items-center gap-4 text-sm text-slate-500 mb-8 pb-8 border-b border-slate-200">
+              <span>📅 {post.date}</span>
+              <span>✍️ {post.author}</span>
+            </div>
+
+            {/* Content */}
+            <div
+              className="prose prose-indigo max-w-none prose-headings:text-slate-900 prose-p:text-slate-600 prose-li:text-slate-600"
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
+
+            {/* Back to Blog */}
+            <div className="mt-10 pt-8 border-t border-slate-200">
+              <a
+                href="/blog"
+                className="text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-2"
+              >
+                ← Back to Blog
+              </a>
             </div>
           </div>
         </div>
       </main>
       <Footer />
+      <Chatbot />
     </>
   );
+}
+
+// ✅ Metadata
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const post = blogPosts.find((p) => p.slug === slug);
+
+  return {
+    title: post?.title || "Blog Post",
+    description: post?.content?.replace(/<[^>]*>/g, "").slice(0, 160) || "",
+  };
 }
