@@ -213,7 +213,7 @@ export async function sendStatusUpdateEmail(
 }
 
 // ============================================================
-// 5. Send Follow-up Reminder Email (नवीन)
+// 5. Send Follow-up Reminder Email
 // ============================================================
 export async function sendFollowUpReminderEmail(
   email: string,
@@ -255,6 +255,74 @@ export async function sendFollowUpReminderEmail(
           </div>
           <p style="color: #999; font-size: 12px; margin-top: 20px; border-top: 1px solid #e0e0e0; padding-top: 20px;">
             Application ID: <strong>#${leadId.slice(-8)}</strong>
+          </p>
+        </div>
+        <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 0 0 10px 10px; color: #666; font-size: 12px;">
+          &copy; ${new Date().getFullYear()} Kinetik Capital. All Rights Reserved.
+        </div>
+      </div>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+
+// ============================================================
+// 6. Send DSA Approval Email with Credentials (नवीन)
+// ============================================================
+export async function sendDSAAprovalEmail(
+  email: string,
+  name: string,
+  password: string,
+  dashboardLink: string
+) {
+  const mailOptions = {
+    from: `"Kinetik Capital" <${EMAIL_USER}>`,
+    to: email,
+    subject: "🎉 Congratulations! Your DSA Partner Account is Approved",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+        <div style="text-align: center; padding: 20px 0; background: linear-gradient(135deg, #4F46E5, #7C3AED); border-radius: 10px 10px 0 0;">
+          <h1 style="color: white; margin: 0;">Kinetik Capital</h1>
+        </div>
+        <div style="padding: 30px;">
+          <h2>Hello ${name},</h2>
+          <p style="color: #333; font-size: 16px; line-height: 1.6;">
+            We are pleased to inform you that your <strong>DSA Partner</strong> application has been <strong>approved</strong>! 🎉
+          </p>
+          <p style="color: #333; font-size: 16px; line-height: 1.6;">
+            You can now access your DSA Panel using the credentials below:
+          </p>
+          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 15px; margin: 20px 0;">
+            <p style="font-size: 16px; font-weight: bold; color: #15803d; margin: 0;">
+              🔗 Dashboard Link:
+            </p>
+            <p style="color: #333; margin-top: 5px; word-break: break-all;">
+              <a href="${dashboardLink}" style="color: #4F46E5;">${dashboardLink}</a>
+            </p>
+            <p style="font-size: 16px; font-weight: bold; color: #15803d; margin: 10px 0 0 0;">
+              👤 User ID:
+            </p>
+            <p style="color: #333; margin-top: 5px;">
+              <strong>${email}</strong>
+            </p>
+            <p style="font-size: 16px; font-weight: bold; color: #15803d; margin: 10px 0 0 0;">
+              🔑 Password:
+            </p>
+            <p style="color: #333; margin-top: 5px;">
+              <strong>${password}</strong>
+            </p>
+          </div>
+          <p style="color: #666; font-size: 14px; line-height: 1.6;">
+            Please <strong>change your password</strong> after your first login for security purposes.
+          </p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${dashboardLink}" style="background: linear-gradient(135deg, #4F46E5, #7C3AED); color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+              Go to DSA Panel →
+            </a>
+          </div>
+          <p style="color: #999; font-size: 12px; margin-top: 20px; border-top: 1px solid #e0e0e0; padding-top: 20px;">
+            This is an automated email. Please do not reply.
           </p>
         </div>
         <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 0 0 10px 10px; color: #666; font-size: 12px;">

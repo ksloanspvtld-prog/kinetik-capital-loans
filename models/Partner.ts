@@ -47,6 +47,12 @@ const PartnerSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
     },
+
+userId: {
+  type: Schema.Types.ObjectId,
+  ref: "User",
+},
+
   },
   {
     timestamps: true,

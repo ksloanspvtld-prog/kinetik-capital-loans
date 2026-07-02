@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Partner from "@/models/Partner";
+import User from "@/models/User";
 import { verifyToken } from "@/lib/jwt";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
+import { sendDSAAprovalEmail } from "@/lib/email";
 
 export async function PATCH(
   req: Request,
@@ -26,10 +30,10 @@ export async function PATCH(
     }
 
     const { id } = await params;
-    const { status } = await req.json();
+    const { status, notes } = await req.json();
 
     const validStatuses = ["Pending", "Approved", "Rejected"];
-    if (!validStatuses.includes(status)) {
+    if (status && !validStatuses.includes(status)) {
       return NextResponse.json(
         { success: false, message: "Invalid status" },
         { status: 400 }
@@ -38,8 +42,8 @@ export async function PATCH(
 
     await connectDB();
 
-    const partner = await Partner.findByIdAndUpdate(id, { status }, { new: true });
-
+    // ✅ Get partner first
+    const partner = await Partner.findById(id);
     if (!partner) {
       return NextResponse.json(
         { success: false, message: "Partner not found" },
@@ -47,7 +51,74 @@ export async function PATCH(
       );
     }
 
-    return NextResponse.json({ success: true, partner });
+    // ✅ Prepare update data
+    const updateData: any = {};
+    if (status) updateData.status = status;
+    if (notes !== undefined) updateData.notes = notes;
+
+    // ✅ If status is "Approved" and user not yet created, create user account
+    let generatedPassword = "";
+    let user = null;
+
+    if (status === "Approved") {
+      // Check if user already exists
+      user = await User.findOne({ email: partner.email });
+
+      if (!user) {
+        // ✅ Generate random password (8 characters)
+        generatedPassword = crypto.randomBytes(8).toString("hex").slice(0, 8);
+        const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
+        // ✅ Create user with role "agent"
+        user = await User.create({
+          fullName: partner.fullName,
+          email: partner.email,
+          mobile: partner.mobile,
+          password: hashedPassword,
+          role: "agent",
+          isVerified: true, // Auto-verified since admin approved
+        });
+
+        // ✅ Link user to partner
+        updateData.userId = user._id;
+
+        // ✅ Send approval email with credentials
+        const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+        const cleanBaseUrl = baseUrl.replace(/\/+$/, "");
+        const dashboardLink = `${cleanBaseUrl}/agent`;
+
+        try {
+          await sendDSAAprovalEmail(
+            partner.email,
+            partner.fullName,
+            generatedPassword,
+            dashboardLink
+          );
+          console.log(`✅ DSA approval email sent to ${partner.email}`);
+        } catch (emailError) {
+          console.error("❌ Email send error:", emailError);
+          // Don't fail the request, but log the error
+        }
+      } else {
+        // ✅ User already exists, update role to agent if not already
+        if (user.role !== "agent") {
+          user.role = "agent";
+          await user.save();
+        }
+        // Link user to partner
+        updateData.userId = user._id;
+
+        // ✅ If user already exists, we can send a notification
+        // For now, we don't send email with password (user already has one)
+        // You could optionally send a "You've been approved as DSA" email
+        console.log(`✅ Partner ${partner.email} already has a user account`);
+      }
+    }
+
+    // ✅ Update partner with all changes
+    const updatedPartner = await Partner.findByIdAndUpdate(id, updateData, { new: true });
+
+    return NextResponse.json({ success: true, partner: updatedPartner });
   } catch (error) {
     console.error("Update partner error:", error);
     return NextResponse.json(
