@@ -6,8 +6,9 @@ export async function GET() {
   try {
     await connectDB();
 
-    const leads = await Lead.find({})
-      .sort({ createdAt: -1 });
+    const leads = await Lead.find({}).sort({
+      createdAt: -1,
+    });
 
     return NextResponse.json({
       success: true,
@@ -21,9 +22,7 @@ export async function GET() {
         success: false,
         message: "Server error",
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }
