@@ -3,64 +3,23 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import Chatbot from "@/components/Chatbot";
+import { getBlogPost, getAllBlogPosts } from "@/lib/blog";
 import type { Metadata } from "next";
 
-// ✅ Blog posts data (Replace with your actual data source)
-const blogPosts = [
-  {
-    slug: "how-to-get-personal-loan",
-    title: "How to Get a Personal Loan in 2024",
-    date: "July 1, 2024",
-    author: "Kinetik Capital",
-    category: "Personal Loan",
-    content: `
-      <p>Getting a personal loan is easier than ever. Here are the steps you need to follow...</p>
-      <h2>1. Check Your Eligibility</h2>
-      <p>Before applying, make sure you meet the eligibility criteria...</p>
-      <h2>2. Compare Interest Rates</h2>
-      <p>Compare rates from different banks and NBFCs...</p>
-    `,
-  },
-  {
-    slug: "home-loan-tips",
-    title: "10 Tips for Getting a Home Loan",
-    date: "June 25, 2024",
-    author: "Kinetik Capital",
-    category: "Home Loan",
-    content: `
-      <p>Buying a home is a big decision. Here are some tips to help you get the best home loan...</p>
-      <h2>1. Improve Your Credit Score</h2>
-      <p>A good credit score can help you get better interest rates...</p>
-    `,
-  },
-  {
-    slug: "business-loan-guide",
-    title: "Complete Guide to Business Loans",
-    date: "June 20, 2024",
-    author: "Kinetik Capital",
-    category: "Business Loan",
-    content: `
-      <p>Business loans can help you grow your business. Here's everything you need to know...</p>
-    `,
-  },
-];
-
-// ✅ Generate static params (for static site generation)
 export async function generateStaticParams() {
-  return blogPosts.map((post) => ({
+  const posts = getAllBlogPosts();
+  return posts.map((post) => ({
     slug: post.slug,
   }));
 }
 
-// ✅ Page component with correct Promise type for params
 export default async function BlogPostPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-
-  const post = blogPosts.find((p) => p.slug === slug);
+  const post = getBlogPost(slug);
 
   if (!post) {
     notFound();
@@ -72,23 +31,45 @@ export default async function BlogPostPage({
       <WhatsAppButton />
       <main className="pt-24 min-h-screen bg-slate-50">
         <div className="max-w-4xl mx-auto px-6 py-10">
-          <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-slate-100">
-            <div className="mb-4">
-              <span className="inline-block px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">
+          <article className="bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-slate-100">
+            {/* Category */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">
                 {post.category}
               </span>
+              {post.tags?.map((tag: string) => (
+                <span key={tag} className="px-2 py-1 bg-slate-100 text-slate-600 rounded-full text-xs">
+                  #{tag}
+                </span>
+              ))}
             </div>
+
+            {/* Title */}
             <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
               {post.title}
             </h1>
-            <div className="flex items-center gap-4 text-sm text-slate-500 mb-8 pb-8 border-b border-slate-200">
+
+            {/* Meta */}
+            <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500 mb-8 pb-8 border-b border-slate-200">
               <span>📅 {post.date}</span>
-              <span>✍️ {post.author}</span>
+              <span>✍️ {post.author || "Kinetik Capital"}</span>
+              <span>⏱️ {post.readTime || "5 min read"}</span>
             </div>
+
+            {/* Featured Image */}
+            {post.image && (
+              <div className="mb-8 rounded-xl overflow-hidden">
+                <img src={post.image} alt={post.title} className="w-full h-64 md:h-80 object-cover" />
+              </div>
+            )}
+
+            {/* Content */}
             <div
-              className="prose prose-indigo max-w-none prose-headings:text-slate-900 prose-p:text-slate-600 prose-li:text-slate-600"
+              className="prose prose-indigo max-w-none prose-headings:text-slate-900 prose-p:text-slate-600 prose-li:text-slate-600 prose-strong:text-slate-800"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
+
+            {/* Back to Blog */}
             <div className="mt-10 pt-8 border-t border-slate-200">
               <a
                 href="/blog"
@@ -97,7 +78,7 @@ export default async function BlogPostPage({
                 ← Back to Blog
               </a>
             </div>
-          </div>
+          </article>
         </div>
       </main>
       <Footer />
@@ -106,17 +87,31 @@ export default async function BlogPostPage({
   );
 }
 
-// ✅ generateMetadata with correct Promise type
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = blogPosts.find((p) => p.slug === slug);
+  const post = getBlogPost(slug);
+
+  if (!post) {
+    return {
+      title: "Blog Post Not Found",
+    };
+  }
 
   return {
-    title: post?.title || "Blog Post",
-    description: post?.content?.replace(/<[^>]*>/g, "").slice(0, 160) || "",
+    title: `${post.title} | Kinetik Capital Blog`,
+    description: post.excerpt || post.content.replace(/<[^>]*>/g, "").slice(0, 160),
+    keywords: post.tags?.join(", ") || "",
+    openGraph: {
+      title: post.title,
+      description: post.excerpt || post.content.replace(/<[^>]*>/g, "").slice(0, 160),
+      type: "article",
+      publishedTime: post.date,
+      authors: [post.author || "Kinetik Capital"],
+      images: post.image ? [{ url: post.image }] : [],
+    },
   };
 }
