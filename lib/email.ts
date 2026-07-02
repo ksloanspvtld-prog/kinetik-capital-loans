@@ -211,3 +211,58 @@ export async function sendStatusUpdateEmail(
 
   await transporter.sendMail(mailOptions);
 }
+
+// ============================================================
+// 5. Send Follow-up Reminder Email (नवीन)
+// ============================================================
+export async function sendFollowUpReminderEmail(
+  email: string,
+  name: string,
+  loanType: string,
+  followUpDate: string,
+  leadId: string
+) {
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const cleanBaseUrl = baseUrl.replace(/\/+$/, "");
+  const dashboardUrl = `${cleanBaseUrl}/dashboard`;
+
+  const mailOptions = {
+    from: `"Kinetik Capital" <${EMAIL_USER}>`,
+    to: email,
+    subject: "🔔 Follow-up Reminder – Kinetik Capital",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+        <div style="text-align: center; padding: 20px 0; background: linear-gradient(135deg, #4F46E5, #7C3AED); border-radius: 10px 10px 0 0;">
+          <h1 style="color: white; margin: 0;">Kinetik Capital</h1>
+        </div>
+        <div style="padding: 30px;">
+          <h2>Hello ${name},</h2>
+          <p style="color: #333; font-size: 16px; line-height: 1.6;">
+            This is a friendly reminder regarding your <strong>${loanType}</strong> application.
+          </p>
+          <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 15px; margin: 20px 0;">
+            <p style="font-size: 16px; font-weight: bold; color: #92400e; margin: 0;">
+              📅 Follow-up Date: <strong>${followUpDate}</strong>
+            </p>
+            <p style="color: #333; margin-top: 10px;">
+              Please keep your documents ready and be available for the follow-up.
+            </p>
+          </div>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${dashboardUrl}" style="background: linear-gradient(135deg, #4F46E5, #7C3AED); color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+              View Details →
+            </a>
+          </div>
+          <p style="color: #999; font-size: 12px; margin-top: 20px; border-top: 1px solid #e0e0e0; padding-top: 20px;">
+            Application ID: <strong>#${leadId.slice(-8)}</strong>
+          </p>
+        </div>
+        <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 0 0 10px 10px; color: #666; font-size: 12px;">
+          &copy; ${new Date().getFullYear()} Kinetik Capital. All Rights Reserved.
+        </div>
+      </div>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
+}
