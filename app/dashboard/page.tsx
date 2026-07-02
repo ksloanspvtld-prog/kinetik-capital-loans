@@ -11,16 +11,28 @@ type Lead = {
   mobile: string;
   loanType: string;
   monthlyIncome: string;
-  status: "New" | "Contacted" | "Approved" | "Rejected";
+  status: "New" | "Contacted" | "Processing" | "Approved" | "Rejected";
   city?: string;
   state?: string;
   createdAt: string;
+  kycStatus?: string;
+  paymentStatus?: string;
+};
+
+type ReferralStats = {
+  totalReferrals: number;
+  approved: number;
+  pending: number;
+  totalCommission: number;
+  referralCode?: string;
 };
 
 export default function DashboardPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [user, setUser] = useState<{ fullName: string; email: string; role: string } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [referralStats, setReferralStats] = useState<ReferralStats | null>(null);
+  const [referralLink, setReferralLink] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -34,38 +46,66 @@ export default function DashboardPage() {
 
     if (userData) {
       try {
-        setUser(JSON.parse(userData));
+        const parsed = JSON.parse(userData);
+        setUser(parsed);
       } catch (e) {}
     }
 
-    // Fetch user's leads
-    const fetchLeads = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch("/api/leads/my", {
+        // Fetch leads
+        const leadsRes = await fetch("/api/leads/my", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const data = await res.json();
-        if (data.success) {
-          setLeads(data.leads || []);
+        const leadsData = await leadsRes.json();
+        if (leadsData.success) {
+          setLeads(leadsData.leads || []);
+        }
+
+        // Fetch referral stats (if user has referral code)
+        const refRes = await fetch("/api/referral/stats", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const refData = await refRes.json();
+        if (refData.success) {
+          setReferralStats(refData.stats);
+          if (refData.stats.referralCode) {
+            setReferralLink(`${window.location.origin}?ref=${refData.stats.referralCode}`);
+          }
         }
       } catch (error) {
-        console.error("Error fetching leads:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchLeads();
+    fetchData();
   }, [router]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "New": return "bg-yellow-100 text-yellow-700";
       case "Contacted": return "bg-orange-100 text-orange-700";
+      case "Processing": return "bg-blue-100 text-blue-700";
       case "Approved": return "bg-emerald-100 text-emerald-700";
       case "Rejected": return "bg-rose-100 text-rose-700";
       default: return "bg-slate-100 text-slate-700";
     }
+  };
+
+  const getKycStatusColor = (status: string) => {
+    switch (status) {
+      case "Verified": return "bg-emerald-100 text-emerald-700";
+      case "Submitted": return "bg-yellow-100 text-yellow-700";
+      case "Rejected": return "bg-rose-100 text-rose-700";
+      default: return "bg-slate-100 text-slate-700";
+    }
+  };
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(referralLink);
+    alert("📋 Referral link copied to clipboard!");
   };
 
   if (loading) {
@@ -84,8 +124,12 @@ export default function DashboardPage() {
 
   const totalLeads = leads.length;
   const approvedLeads = leads.filter(l => l.status === "Approved").length;
-  const pendingLeads = leads.filter(l => l.status === "New" || l.status === "Contacted").length;
+  const pendingLeads = leads.filter(l => l.status === "New" || l.status === "Contacted" || l.status === "Processing").length;
   const rejectedLeads = leads.filter(l => l.status === "Rejected").length;
+
+  // Check if any lead has KYC data
+  const hasKyc = leads.some(l => l.kycStatus && l.kycStatus !== "Pending");
+  const kycStatus = leads.find(l => l.kycStatus)?.kycStatus || "Pending";
 
   return (
     <>
@@ -103,7 +147,7 @@ export default function DashboardPage() {
                   Welcome back, <span className="text-indigo-600">{user?.fullName}</span> 👋
                 </h1>
                 <p className="text-slate-500 mt-1">
-                  Track your loan applications and manage your profile.
+                  Track your loan applications, referrals, and more.
                 </p>
               </div>
             </div>
@@ -150,6 +194,114 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* Referral & KYC Row */}
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            {/* Referral Section */}
+            <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-100">
+              <h3 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
+                🔗 Refer & Earn
+              </h3>
+              {referralStats?.referralCode ? (
+                <>
+                  <p className="text-sm text-slate-500 mb-3">
+                    Share your referral link and earn commission on every approved lead!
+                  </p>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={referralLink}
+                      readOnly
+                      className="flex-1 border-2 border-slate-200 rounded-xl p-2.5 bg-slate-50 text-sm text-slate-600"
+                    />
+                    <button
+                      onClick={copyLink}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3 mt-4 text-center">
+                    <div>
+                      <p className="text-2xl font-bold text-indigo-600">{referralStats.totalReferrals}</p>
+                      <p className="text-xs text-slate-500">Total Referrals</p>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-emerald-600">{referralStats.approved}</p>
+                      <p className="text-xs text-slate-500">Approved</p>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-purple-600">₹{referralStats.totalCommission}</p>
+                      <p className="text-xs text-slate-500">Commission</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-slate-500">You don't have a referral code yet.</p>
+                  <button
+                    onClick={async () => {
+                      const token = localStorage.getItem("token");
+                      const res = await fetch("/api/referral/generate", {
+                        method: "POST",
+                        headers: { Authorization: `Bearer ${token}` },
+                      });
+                      const data = await res.json();
+                      if (data.success) {
+                        alert("✅ Referral code generated! Refresh the page.");
+                        window.location.reload();
+                      } else {
+                        alert("❌ Failed to generate code. Try again.");
+                      }
+                    }}
+                    className="mt-3 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition"
+                  >
+                    Generate Referral Code
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* KYC Status */}
+            <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-100">
+              <h3 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
+                ✅ KYC Status
+              </h3>
+              {hasKyc ? (
+                <>
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${getKycStatusColor(kycStatus)}`}>
+                      {kycStatus}
+                    </span>
+                  </div>
+                  <p className="text-sm text-slate-500">
+                    {kycStatus === "Verified" && "Your KYC is complete. You can proceed with loan applications."}
+                    {kycStatus === "Submitted" && "Your KYC documents are under review. We'll notify you soon."}
+                    {kycStatus === "Rejected" && "Your KYC was rejected. Please upload valid documents."}
+                    {kycStatus === "Pending" && "Please submit your KYC documents to continue."}
+                  </p>
+                  {kycStatus !== "Verified" && (
+                    <Link
+                      href="/dashboard/kyc"
+                      className="mt-3 inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition"
+                    >
+                      {kycStatus === "Pending" ? "Upload KYC" : "Update KYC"}
+                    </Link>
+                  )}
+                </>
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-slate-500">No KYC submitted yet.</p>
+                  <Link
+                    href="/dashboard/kyc"
+                    className="mt-3 inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition"
+                  >
+                    Upload KYC
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Applications Table */}
           <div className="bg-white rounded-3xl shadow-xl p-6 md:p-8 border border-slate-100">
             <div className="flex justify-between items-center mb-6">
@@ -172,12 +324,14 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[600px]">
+                <table className="w-full min-w-[700px]">
                   <thead className="bg-slate-50 rounded-xl">
                     <tr>
                       <th className="p-3 text-left text-xs font-medium text-slate-500 uppercase">Loan Type</th>
                       <th className="p-3 text-left text-xs font-medium text-slate-500 uppercase">Amount</th>
                       <th className="p-3 text-left text-xs font-medium text-slate-500 uppercase">Status</th>
+                      <th className="p-3 text-left text-xs font-medium text-slate-500 uppercase">KYC</th>
+                      <th className="p-3 text-left text-xs font-medium text-slate-500 uppercase">Payment</th>
                       <th className="p-3 text-left text-xs font-medium text-slate-500 uppercase">Date</th>
                     </tr>
                   </thead>
@@ -189,6 +343,20 @@ export default function DashboardPage() {
                         <td className="p-3">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(lead.status)}`}>
                             {lead.status || "New"}
+                          </span>
+                        </td>
+                        <td className="p-3">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getKycStatusColor(lead.kycStatus || "Pending")}`}>
+                            {lead.kycStatus || "Pending"}
+                          </span>
+                        </td>
+                        <td className="p-3">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            lead.paymentStatus === "Paid" ? "bg-emerald-100 text-emerald-700" :
+                            lead.paymentStatus === "Failed" ? "bg-rose-100 text-rose-700" :
+                            "bg-slate-100 text-slate-700"
+                          }`}>
+                            {lead.paymentStatus || "Pending"}
                           </span>
                         </td>
                         <td className="p-3 text-sm text-slate-500">
