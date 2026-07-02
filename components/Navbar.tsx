@@ -399,6 +399,7 @@ export default function Navbar() {
             ))}
           </div>
 
+          {/* ✅ Become a Partner in Mobile Menu */}
           <Link href="/become-partner" className="block py-2 text-emerald-600 dark:text-emerald-400 font-medium hover:text-emerald-700 transition" onClick={() => setIsOpen(false)}>
             Become a Partner
           </Link>
