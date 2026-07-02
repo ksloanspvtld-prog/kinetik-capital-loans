@@ -128,7 +128,7 @@ const loanCategories = [
 ];
 
 // ============================================================
-// ✅ LoanModal - Home च्या बाहेर काढला (Focus Fix)
+// ✅ LoanModal - Home च्या बाहेर
 // ============================================================
 const LoanModal = ({
   selectedLoan,
@@ -281,6 +281,7 @@ export default function Home() {
   const [formData, setFormData] = useState({
     fullName: "",
     mobile: "",
+    email: "",        // ✅ Email field added
     city: "",
     state: "",
     loanType: "",
@@ -347,7 +348,16 @@ export default function Home() {
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          mobile: formData.mobile,
+          email: formData.email,       // ✅ Include email
+          city: formData.city,
+          state: formData.state,
+          pincode: formData.pincode,
+          loanType: formData.loanType,
+          monthlyIncome: formData.monthlyIncome,
+        }),
       });
       const data = await res.json();
       if (!data.success) {
@@ -358,6 +368,7 @@ export default function Home() {
       setFormData({
         fullName: "",
         mobile: "",
+        email: "",
         city: "",
         state: "",
         loanType: "",
@@ -486,6 +497,17 @@ export default function Home() {
           required
         />
 
+        {/* ✅ Email Input - नवीन */}
+        <input
+          type="email"
+          placeholder="Email Address (optional)"
+          value={formData.email}
+          onChange={(e) =>
+            setFormData({ ...formData, email: e.target.value })
+          }
+          className="border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition"
+        />
+
         <div className="md:col-span-2">
           <AddressInput
             value={{
@@ -539,7 +561,7 @@ export default function Home() {
       <Navbar />
       <WhatsAppButton />
       <main className="pt-20">
-        {/* ===== HERO SECTION ===== */}
+        {/* HERO SECTION */}
         <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white">
           <div className="absolute inset-0 opacity-20">
             <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
@@ -592,7 +614,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== STATISTICS ===== */}
+        {/* STATISTICS */}
         <section className="max-w-7xl mx-auto px-6 -mt-10 relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             <div className="bg-white rounded-2xl shadow-xl p-6 text-center hover:shadow-2xl transition hover:-translate-y-1">
@@ -614,7 +636,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== LOAN CATEGORIES – SLIDER WITH POPUP ===== */}
+        {/* LOAN CATEGORIES – SLIDER WITH POPUP */}
         <section className="max-w-7xl mx-auto px-6 py-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
@@ -717,7 +739,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== EMI CALCULATOR ===== */}
+        {/* EMI CALCULATOR */}
         <section className="max-w-7xl mx-auto px-6 py-20">
           <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10">
             <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-10">
@@ -822,7 +844,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== WHY CHOOSE US ===== */}
+        {/* WHY CHOOSE US */}
         <section className="max-w-7xl mx-auto px-6 py-20">
           <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
@@ -879,12 +901,12 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== LEAD GENERATION FORM ===== */}
+        {/* LEAD GENERATION FORM */}
         <section id="loanForm" className="max-w-7xl mx-auto px-6 py-20">
           {loanForm}
         </section>
 
-        {/* ===== TESTIMONIALS ===== */}
+        {/* TESTIMONIALS */}
         <section className="max-w-7xl mx-auto px-6 py-20 bg-slate-50 rounded-3xl">
           <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
@@ -950,7 +972,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== EASY. CONVENIENT. QUICK. – UrbanMoney Style ===== */}
+        {/* EASY. CONVENIENT. QUICK. */}
         <section className="max-w-7xl mx-auto px-6 py-20">
           <div className="text-center mb-14">
             <span className="inline-block px-4 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-semibold tracking-wider uppercase mb-4">
@@ -1033,7 +1055,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== OUR LENDING PARTNERS (MARQUEE) ===== */}
+        {/* OUR LENDING PARTNERS (MARQUEE) */}
         <section className="py-20 overflow-hidden bg-white">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
@@ -1084,7 +1106,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== FOOTER ===== */}
+        {/* FOOTER */}
         <footer className="bg-slate-900 text-white mt-20">
           <div className="max-w-7xl mx-auto px-6 py-16">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -1135,7 +1157,7 @@ export default function Home() {
         </footer>
       </main>
 
-      {/* ✅ Modal - Props पास करा */}
+      {/* Modal */}
       <LoanModal
         selectedLoan={selectedLoan}
         setModalOpen={setModalOpen}
