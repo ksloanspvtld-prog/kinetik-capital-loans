@@ -1,10 +1,8 @@
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret_for_dev";
+// ✅ Fallback secret for development
+const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret_for_dev_only";
 
-/**
- * Generate JWT token for authenticated user
- */
 export function generateToken(userId: string, role: string): string {
   return jwt.sign(
     { id: userId, role },
@@ -13,22 +11,18 @@ export function generateToken(userId: string, role: string): string {
   );
 }
 
-/**
- * Verify JWT token and return decoded payload
- */
 export function verifyToken(token: string): any {
   try {
-    return jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
+    console.log("✅ Token verified successfully:", decoded);
+    return decoded;
   } catch (error) {
+    console.error("❌ Token verification failed:", error);
     return null;
   }
 }
 
-/**
- * Generate random verification token for email verification
- */
 export function generateVerificationToken(): string {
-  const part1 = Math.random().toString(36).substring(2, 15);
-  const part2 = Math.random().toString(36).substring(2, 15);
-  return part1 + part2;
+  return Math.random().toString(36).substring(2, 15) + 
+         Math.random().toString(36).substring(2, 15);
 }

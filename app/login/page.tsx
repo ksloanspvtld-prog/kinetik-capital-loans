@@ -5,8 +5,6 @@ import Link from "next/link";
 import Navbar from "../../components/Navbar";
 import WhatsAppButton from "../../components/WhatsAppButton";
 
-const COMPANY_NAME = "Kinetik Capital";
-
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
@@ -46,17 +44,21 @@ export default function LoginPage() {
         return;
       }
 
+      // ✅ Save
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // ✅ Redirect using window.location
+      // ✅ Cookie
+      document.cookie = `token=${data.token}; path=/; max-age=604800`;
+
+      // ✅ Redirect
       if (data.user.role === "admin") {
         window.location.href = "/admin";
       } else {
         window.location.href = "/dashboard";
       }
     } catch (error) {
-      console.error(error);
+      console.error("Login error:", error);
       setError("Something went wrong. Please try again.");
       setLoading(false);
     }
@@ -78,7 +80,6 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
-            {/* Email */}
             <div>
               <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1">Email Address</label>
               <input
@@ -96,7 +97,6 @@ export default function LoginPage() {
               <div className="flex-grow border-t border-slate-300 dark:border-slate-600"></div>
             </div>
 
-            {/* Mobile */}
             <div>
               <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1">Mobile Number</label>
               <input
@@ -109,7 +109,6 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* Password */}
             <div>
               <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1">Password</label>
               <input
@@ -127,17 +126,7 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl transition font-medium disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading ? (
-                <>
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Logging in...
-                </>
-              ) : (
-                "Login →"
-              )}
+              {loading ? "Logging in..." : "Login →"}
             </button>
           </form>
 

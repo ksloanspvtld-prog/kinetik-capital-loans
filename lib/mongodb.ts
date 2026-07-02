@@ -1,4 +1,3 @@
-// lib/mongodb.ts
 import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI!;
@@ -7,18 +6,15 @@ if (!MONGODB_URI) {
   throw new Error("⚠️ Please define MONGODB_URI environment variable");
 }
 
-// ✅ Global cache with proper type declaration
 interface MongooseCache {
   conn: mongoose.Connection | null;
   promise: Promise<mongoose.Mongoose> | null;
 }
 
-// ✅ Extend global type safely
 declare global {
   var mongoose: MongooseCache | undefined;
 }
 
-// ✅ Initialize cache
 const cached: MongooseCache = global.mongoose || { conn: null, promise: null };
 
 if (!global.mongoose) {
@@ -26,13 +22,11 @@ if (!global.mongoose) {
 }
 
 export async function connectDB(): Promise<mongoose.Connection> {
-  // ✅ If already connected, return cached connection
   if (cached.conn) {
     console.log("✅ Using cached MongoDB connection");
     return cached.conn;
   }
 
-  // ✅ If connection is in progress, wait for it
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
@@ -62,14 +56,4 @@ export async function connectDB(): Promise<mongoose.Connection> {
   }
 
   return cached.conn;
-}
-
-// ✅ Optional: Disconnect function (for testing)
-export async function disconnectDB(): Promise<void> {
-  if (cached.conn) {
-    await mongoose.disconnect();
-    cached.conn = null;
-    cached.promise = null;
-    console.log("🔌 MongoDB Disconnected");
-  }
 }
