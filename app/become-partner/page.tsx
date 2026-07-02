@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import WhatsAppButton from "../../components/WhatsAppButton";
 import Chatbot from "../../components/Chatbot";
+import { State, City } from "country-state-city";
 
 const COMPANY_NAME = "Kinetik Capital";
 
@@ -13,17 +14,64 @@ export default function BecomePartnerPage() {
     email: "",
     mobile: "",
     city: "",
+    state: "",
     experience: "",
     partnerType: "",
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  // ✅ State & City Dropdown Data
+  const [states, setStates] = useState<{ name: string; isoCode: string }[]>([]);
+  const [cities, setCities] = useState<string[]>([]);
+  const [selectedState, setSelectedState] = useState("");
+
+  // ✅ Load Indian states
+  useEffect(() => {
+    const indianStates = State.getStatesOfCountry("IN").map((state) => ({
+      name: state.name,
+      isoCode: state.isoCode,
+    }));
+    setStates(indianStates);
+  }, []);
+
+  // ✅ Load cities when state changes
+  useEffect(() => {
+    if (selectedState) {
+      const stateObj = State.getStatesOfCountry("IN").find((s) => s.name === selectedState);
+      if (stateObj) {
+        const cityList = City.getCitiesOfState("IN", stateObj.isoCode).map((c) => c.name);
+        setCities(cityList);
+      } else {
+        setCities([]);
+      }
+    } else {
+      setCities([]);
+    }
+  }, [selectedState]);
+
+  // ✅ Handle state change
+  const handleStateChange = (stateName: string) => {
+    setSelectedState(stateName);
+    setFormData({ ...formData, state: stateName, city: "" });
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
+    setSuccess("");
 
+    // ✅ Validation
     if (formData.mobile.length !== 10) {
-      alert("Please enter a valid 10-digit mobile number");
+      setError("Please enter a valid 10-digit mobile number");
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.fullName || !formData.email || !formData.state || !formData.city) {
+      setError("Please fill all required fields (including State & City)");
       setLoading(false);
       return;
     }
@@ -38,22 +86,26 @@ export default function BecomePartnerPage() {
       const data = await res.json();
 
       if (!data.success) {
-        alert(data.message || "Something went wrong");
+        setError(data.message || "Something went wrong");
+        setLoading(false);
         return;
       }
 
-      alert("✅ Partner Registration Successful! We'll contact you soon.");
+      setSuccess("✅ Partner Registration Successful! We'll contact you soon.");
       setFormData({
         fullName: "",
         email: "",
         mobile: "",
         city: "",
+        state: "",
         experience: "",
         partnerType: "",
       });
+      setSelectedState("");
+      setCities([]);
     } catch (error) {
       console.error(error);
-      alert("❌ Failed to submit. Please try again.");
+      setError("❌ Failed to submit. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -231,7 +283,20 @@ export default function BecomePartnerPage() {
               </p>
             </div>
 
+            {/* Error / Success Messages */}
+            {error && (
+              <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 mb-6">
+                <p className="text-rose-600 text-sm text-center">{error}</p>
+              </div>
+            )}
+            {success && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6">
+                <p className="text-emerald-600 text-sm text-center">{success}</p>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-5">
+              {/* Full Name */}
               <div className="md:col-span-2">
                 <label className="text-sm font-medium text-slate-700 block mb-1">Full Name *</label>
                 <input
@@ -244,6 +309,7 @@ export default function BecomePartnerPage() {
                 />
               </div>
 
+              {/* Email */}
               <div>
                 <label className="text-sm font-medium text-slate-700 block mb-1">Email Address *</label>
                 <input
@@ -256,6 +322,7 @@ export default function BecomePartnerPage() {
                 />
               </div>
 
+              {/* Mobile */}
               <div>
                 <label className="text-sm font-medium text-slate-700 block mb-1">Mobile Number *</label>
                 <div className="flex border-2 border-slate-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500 transition">
@@ -278,26 +345,44 @@ export default function BecomePartnerPage() {
                 </div>
               </div>
 
+              {/* ✅ State Dropdown */}
               <div>
-                <label className="text-sm font-medium text-slate-700 block mb-1">City</label>
+                <label className="text-sm font-medium text-slate-700 block mb-1">State *</label>
+                <select
+                  value={formData.state}
+                  onChange={(e) => handleStateChange(e.target.value)}
+                  className="w-full border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+                  required
+                >
+                  <option value="">Select State</option>
+                  {states.map((state) => (
+                    <option key={state.isoCode} value={state.name}>
+                      {state.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* ✅ City Dropdown */}
+              <div>
+                <label className="text-sm font-medium text-slate-700 block mb-1">City *</label>
                 <select
                   value={formData.city}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                   className="w-full border-2 border-slate-200 p-3 rounded-xl focus:outline-none focus:border-indigo-500 transition"
+                  required
+                  disabled={!formData.state}
                 >
-                  <option value="">Select your city</option>
-                  <option value="mumbai">Mumbai</option>
-                  <option value="delhi">Delhi</option>
-                  <option value="bangalore">Bangalore</option>
-                  <option value="pune">Pune</option>
-                  <option value="hyderabad">Hyderabad</option>
-                  <option value="chennai">Chennai</option>
-                  <option value="ahmedabad">Ahmedabad</option>
-                  <option value="kolkata">Kolkata</option>
-                  <option value="other">Other</option>
+                  <option value="">Select City</option>
+                  {cities.map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
                 </select>
               </div>
 
+              {/* Partner Type */}
               <div>
                 <label className="text-sm font-medium text-slate-700 block mb-1">I want to become a</label>
                 <select
@@ -312,6 +397,7 @@ export default function BecomePartnerPage() {
                 </select>
               </div>
 
+              {/* Experience */}
               <div className="md:col-span-2">
                 <label className="text-sm font-medium text-slate-700 block mb-1">Your Experience / Message</label>
                 <textarea
@@ -323,6 +409,7 @@ export default function BecomePartnerPage() {
                 />
               </div>
 
+              {/* Agreement */}
               <div className="md:col-span-2">
                 <div className="flex items-start gap-2">
                   <input
@@ -337,6 +424,7 @@ export default function BecomePartnerPage() {
                 </div>
               </div>
 
+              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}
